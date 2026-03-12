@@ -52,7 +52,7 @@ function validateIdentifier(value) {
   if (!value) return "This field is required.";
 
   const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-  const isNif = /^\d{15,20}$/.test(value);
+  const isNif = /^\d{15}$/.test(value);
   const looksLikeNif = /^\d+$/.test(value); // user is typing digits
 
   if (isEmail || isNif) return null; // valid
@@ -61,11 +61,11 @@ function validateIdentifier(value) {
   if (looksLikeNif) {
     const len = value.length;
     if (len < 15)
-      return `NIF is too short &mdash; ${len} of 15 &mdash; 20 digits entered.`;
-    if (len > 20) return "NIF is too long &mdash; maximum 20 digits.";
+      return `NIF is too short &mdash; ${len} of 15 digits entered.`;
+    if (len > 15) return "NIF is too long &mdash; maximum 15 digits.";
   }
 
-  return "Enter a valid NIF (15 &mdash; 20 digits) or admin email address.";
+  return "Enter a valid NIF (15 digits) or admin email address.";
 }
 
 function validatePassword(value) {
@@ -179,9 +179,7 @@ async function handleLogin() {
     // Redirect based on role
     if (match.role === "admin") {
       window.location.href = "admin/dashboard.html";
-    } else if (match.role === "organization") {
-      window.location.href = "user/dashboard.html";
-    } else {
+    } else if (match.role === "user") {
       window.location.href = "user/dashboard.html";
     }
   } catch (err) {

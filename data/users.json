@@ -18,24 +18,6 @@
     "role": "user"
   },
   {
-    "id": "12345678901234567890",
-    "idType": "nif",
-    "password": "org_alpha2024",
-    "role": "organization"
-  },
-  {
-    "id": "98765432109876543210",
-    "idType": "nif",
-    "password": "org_beta2024",
-    "role": "organization"
-  },
-  {
-    "id": "55544433322211100000",
-    "idType": "nif",
-    "password": "org_gamma2024",
-    "role": "organization"
-  },
-  {
     "id": "admin@dashboard.com",
     "idType": "email",
     "password": "admin1234",
