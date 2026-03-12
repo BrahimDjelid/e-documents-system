@@ -1,0 +1,183 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  /* Primary Colors */
+  --primary-blue: #035e7b; /* Main brand color - buttons, logos, links */
+  --primary-dark: #034b63; /* Darker version for hover states */
+
+  /* Background & Text - Page defaults */
+  --background: #f8fafc; /* Main page background */
+  --text-primary: #1f2937; /* Main text color */
+  --text-muted: #6b7280; /* Secondary/subtle text */
+
+  /* Borders & Status */
+  --border-light: #e5e7eb; /* Subtle borders */
+  --error: #e53935; /* Error messages */
+  --success: #16a34a; /* Success messages */
+
+  /* Extended Palette */
+  --secondary-accent: #f59e0b;
+  --info-blue: #3b82f6;
+  --purple-accent: #8b5cf6;
+  --teal-accent: #14b8a6;
+
+  /* Gray Scale */
+  --gray-50: #f9fafb; /* Lightest - near white */
+  --gray-100: #f3f4f6; /* Very light gray */
+  --gray-300: #d1d5db; /* Medium light gray */
+  --gray-900: #111827; /* Almost black */
+
+  /* Status Colors */
+  --status-pending: #f59e0b;
+  --status-pending-bg: #fef3c7;
+  --status-approved: #10b981;
+  --status-approved-bg: #d1fae5;
+  --status-rejected: #ef4444;
+  --status-rejected-bg: #fee2e2;
+  --status-ready: #3b82f6;
+  --status-ready-bg: #dbeafe;
+  --status-download: #8b5cf6;
+  --status-download-bg: #ede9fe;
+
+  /* Typography */
+  --font-main: "Roboto", sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Surface layers — cards, panels, sidebars */
+  --surface-1: #ffffff; /* for card/panel backgrounds */
+  --surface-2: #f9fafb; /* Inputs */
+
+  /* Input tokens */
+  --input-bg: #f9fafb; /* Default input background */
+  --input-bg-focus: #ffffff; /* Input background when focused */
+  --input-border: #e5e7eb; /* Default input border */
+  --input-placeholder: #d1d5db; /* Placeholder text color */
+  --input-focus-ring: rgba(3, 94, 123, 0.1); /* Focus glow effect */
+
+  /* Shadows */
+  --shadow-default:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-hover:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-elevated:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-button: 0 4px 6px rgba(3, 94, 123, 0.25);
+}
+
+/*
+  Dark Mode Variables
+  Applied when <html> has class="dark"
+ */
+.dark {
+  --background: #0f172a;
+  --text-primary: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-light: #1e293b;
+  --gray-50: #1e293b;
+  --gray-100: #1e293b;
+  --gray-300: #475569;
+
+  /*
+    Surface layers — use these for cards, modals, panels, tables, etc.
+    --surface-1 : slightly elevated above background  (cards, sidebars)
+    --surface-2 : deeper / sunken inputs, table rows, code blocks
+  */
+  --surface-1: #1e293b;
+  --surface-2: #0f172a;
+
+  /* Input-specific tokens (reused by every form across the app) */
+  --input-bg: #0f172a;
+  --input-bg-focus: #0f172a;
+  --input-border: #334155;
+  --input-placeholder: #475569;
+  --input-focus-ring: rgba(3, 94, 123, 0.2);
+
+  /* shadows deepen in dark mode */
+  --shadow-default:
+    0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-hover:
+    0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-elevated:
+    0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+}
+
+/*
+  Dark Mode Toggle Button — global, used on all pages
+  Position is set per-page context (fixed on login,
+  inside topbar on dashboard pages)
+*/
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-light);
+  background: var(--gray-50);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.2s;
+  box-shadow: var(--shadow-default);
+}
+
+.theme-toggle:hover {
+  background: var(--gray-100);
+  color: var(--primary-blue);
+  transform: rotate(15deg);
+}
+
+/* On the login page specifically — fixed position top right */
+.theme-toggle--fixed {
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 100;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--background);
+  transition:
+    background 0.3s,
+    color 0.3s;
+}
+
+.error-message {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.success-message {
+  color: var(--success);
+}

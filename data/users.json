@@ -1,0 +1,56 @@
+[
+  {
+    "id": "123456789012345",
+    "idType": "nif",
+    "password": "brahim1234",
+    "role": "user"
+  },
+  {
+    "id": "987654321098765",
+    "idType": "nif",
+    "password": "amine1234",
+    "role": "user"
+  },
+  {
+    "id": "555444333222111",
+    "idType": "nif",
+    "password": "fatima2024",
+    "role": "user"
+  },
+  {
+    "id": "12345678901234567890",
+    "idType": "nif",
+    "password": "org_alpha2024",
+    "role": "organization"
+  },
+  {
+    "id": "98765432109876543210",
+    "idType": "nif",
+    "password": "org_beta2024",
+    "role": "organization"
+  },
+  {
+    "id": "55544433322211100000",
+    "idType": "nif",
+    "password": "org_gamma2024",
+    "role": "organization"
+  },
+  {
+    "id": "admin@dashboard.com",
+    "idType": "email",
+    "password": "admin1234",
+    "role": "admin"
+  },
+  {
+    "id": "super.admin@system.com",
+    "idType": "email",
+    "password": "superadmin2024",
+    "role": "admin"
+  },
+  {
+    "id": "moderator@dashboard.com",
+    "idType": "email",
+    "password": "mod123456",
+    "role": "admin"
+  }
+]

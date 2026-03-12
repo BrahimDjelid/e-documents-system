@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - e-Documents</title>
+    <link rel="stylesheet" href="../assets/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/auth.css" />
+</head>
+
+<body>
+    <!-- Dark mode toggle -->
+    <button class="theme-toggle theme-toggle--fixed" id="theme-toggle" aria-label="Toggle dark mode">
+        <i class="fa-solid fa-moon" id="theme-icon"></i>
+    </button>
+
+    <div class="auth-page">
+
+        <!-- LEFT PANEL -->
+        <div class="auth-left">
+
+            <!-- Logo -->
+            <div class="auth-logo">
+                <div class="auth-logo-icon">
+                    <i class="fa-regular fa-file-lines"></i>
+                </div>
+                <div class="auth-logo-text">
+                    <h2>e-Documents</h2>
+                    <span>Digital Request &amp; Tracking System</span>
+                </div>
+            </div>
+
+            <!-- Hero text -->
+            <div class="auth-hero">
+                <h1>Your documents,<br />digitized and<br />at your fingertips.</h1>
+                <p>
+                    Request, track, and download official government documents
+                    securely and efficiently from anywhere.
+                </p>
+                <ul class="auth-features">
+                    <li>
+                        <i class="fa-regular fa-circle-check"></i>
+                        Secure &amp; encrypted document processing
+                    </li>
+                    <li>
+                        <i class="fa-regular fa-circle-check"></i>
+
+                        Real-time status tracking &amp; notifications
+                    </li>
+                    <li>
+                        <i class="fa-regular fa-circle-check"></i>
+
+                        Instant digital download for eligible documents
+                    </li>
+                    <li>
+                        <i class="fa-regular fa-circle-check"></i>
+
+                        WCAG 2.1 AA accessible platform
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Stats -->
+            <div class="auth-stats">
+                <div>
+                    <span class="auth-stat-value">12K+</span>
+                    <span class="auth-stat-label">Citizens Served</span>
+                </div>
+                <div>
+                    <span class="auth-stat-value">98%</span>
+                    <span class="auth-stat-label">Satisfaction Rate</span>
+                </div>
+                <div>
+                    <span class="auth-stat-value">&lt; 2min</span>
+                    <span class="auth-stat-label">Avg. Process Time</span>
+                </div>
+            </div>
+
+        </div>
+        <!-- end auth-left -->
+
+        <!-- RIGHT PANEL -->
+        <div class="auth-right">
+            <div class="auth-card">
+
+                <!-- Card logo -->
+                <div class="card-logo">
+                    <i class="fa-regular fa-file-lines"></i>
+                </div>
+
+                <h2>Login</h2>
+                <p class="auth-subtitle">National Administrative Documents Platform</p>
+
+                <!-- Form -->
+                <form method="post" id="loginForm">
+                    <div class="auth-form">
+
+                        <!-- Identifier field (NIF or email) -->
+                        <div class="form-group">
+                            <label for="identifier">NIF / Email</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-id-card input-icon"></i>
+                                <input type="text" id="identifier" placeholder="Enter your NIF or admin email"
+                                    autocomplete="off" required />
+                            </div>
+                            <span class="field-hint">
+                                Citizens &amp; organizations: enter your NIF (15-20 digits) &nbsp;|&nbsp; Admins: enter
+                                your
+                                email
+                            </span>
+                            <span class="form-error" id="identifier-error"></span>
+                        </div>
+
+                        <!-- Password field -->
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="password" placeholder="••••••••"
+                                    autocomplete="current-password" required />
+                                <!-- toggle button -->
+                                <button class="toggle-password" id="toggle-password" type="button"
+                                    aria-label="Toggle password visibility">
+                                    <i class="fa-regular fa-eye" id="eye-icon"></i>
+                                </button>
+                            </div>
+                            <span class="form-error" id="password-error"></span>
+                        </div>
+
+                        <!-- Forgot password -->
+                        <a href="#" class="forgot-link">Forgot your password?</a>
+
+                        <!-- General error (wrong credentials / connection failure) -->
+                        <div class="general-error" id="general-error">
+                            <i class="general-error-icon"></i>
+                            <span class="general-error-text"></span>
+                        </div>
+
+                        <!-- Submit -->
+                        <button class="btn-login" id="login-btn" type="button">
+                            <div class="btn-spinner"></div>
+                            <span class="btn-text">Login</span>
+                        </button>
+
+                    </div>
+                </form>
+                <!-- end auth-form -->
+
+                <p class="auth-footer-note">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Protected by 256-bit SSL encryption. Official government platform.
+                </p>
+
+            </div>
+            <!-- end auth-card -->
+        </div>
+        <!-- end auth-right -->
+
+    </div>
+    <!-- end auth-page -->
+
+
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/auth.js"></script>
+</body>
+
+</html>
