@@ -1,0 +1,78 @@
+<aside class="sidebar" id="sidebar">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+            <i class="fa-regular fa-file-lines"></i>
+        </div>
+        <div class="sidebar-logo-text">
+            <span class="sidebar-logo-name">e-Documents</span>
+            <span class="sidebar-logo-sub">Digital Gov Platform</span>
+        </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="sidebar-nav">
+        <span class="sidebar-section-label">Citizen Portal</span>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html" class="sidebar-link" data-page="dashboard">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Dashboard</span>
+                    <i class="fa-solid fa-chevron-right sidebar-arrow"></i>
+                </a>
+            </li>
+            <li>
+                <a href="request.html" class="sidebar-link" data-page="request">
+                    <i class="fa-regular fa-file-lines"></i>
+                    <span>Request Documents</span>
+                    <i class="fa-solid fa-chevron-right sidebar-arrow"></i>
+                </a>
+            </li>
+            <li>
+                <a href="track.html" class="sidebar-link" data-page="track">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Track Requests</span>
+                    <i class="fa-solid fa-chevron-right sidebar-arrow"></i>
+                </a>
+            </li>
+            <li>
+                <a href="documents.html" class="sidebar-link" data-page="documents">
+                    <i class="fa-regular fa-folder-open"></i>
+                    <span>My Documents</span>
+                    <i class="fa-solid fa-chevron-right sidebar-arrow"></i>
+                </a>
+            </li>
+            <li>
+                <a href="profile.html" class="sidebar-link" data-page="profile">
+                    <i class="fa-regular fa-user"></i>
+                    <span>Profile</span>
+                    <i class="fa-solid fa-chevron-right sidebar-arrow"></i>
+                </a>
+            </li>
+            <li>
+                <a href="settings.html" class="sidebar-link" data-page="settings">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                    <i class="fa-solid fa-chevron-right sidebar-arrow"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- User info + logout -->
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="sidebar-avatar" id="sidebar-avatar">A</div>
+            <div class="sidebar-user-info">
+                <span class="sidebar-user-name" id="sidebar-user-name">—</span>
+                <span class="sidebar-user-role">Citizen</span>
+            </div>
+        </div>
+        <button class="sidebar-logout" onclick="logout()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+
+</aside>

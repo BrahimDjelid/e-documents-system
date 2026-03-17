@@ -175,6 +175,7 @@ async function handleLogin() {
     // Save session
     sessionStorage.setItem("role", match.role);
     sessionStorage.setItem("userId", match.id);
+    sessionStorage.setItem("userFirstName", match.firstName);
 
     // Redirect based on role
     if (match.role === "admin") {
