@@ -1,38 +1,133 @@
 [
   {
-    "id": "123456789012345",
-    "idType": "nif",
-    "password": "brahim1234",
-    "role": "user"
+    "auth": {
+      "id": "123456789012345",
+      "idType": "nif",
+      "password": "brahim1234"
+    },
+    "profile": {
+      "firstName": "Brahim",
+      "lastName": "Djelid"
+    },
+    "role": "user",
+    "eligibility": {
+      "civilStatus": true,
+      "taxCompliance": true,
+      "identityVerified": true,
+      "addressConfirmed": false
+    },
+    "requests": [
+      {
+        "requestId": "REQ-18-26-001",
+        "type": "C20",
+        "status": "pending",
+        "submittedAt": "2026-03-18"
+      },
+      {
+        "requestId": "REQ-18-26-002",
+        "type": "Extrait de rôle",
+        "status": "approved",
+        "submittedAt": "2026-03-15"
+      },
+      {
+        "requestId": "REQ-18-26-003",
+        "type": "Déclaration d'existence",
+        "status": "rejected",
+        "submittedAt": "2026-03-10"
+      },
+      {
+        "requestId": "REQ-18-26-004",
+        "type": "C20",
+        "status": "approved",
+        "submittedAt": "2026-03-05"
+      }
+    ]
   },
   {
-    "id": "987654321098765",
-    "idType": "nif",
-    "password": "amine1234",
-    "role": "user"
+    "auth": {
+      "id": "987654321098765",
+      "idType": "nif",
+      "password": "amine1234"
+    },
+    "profile": {
+      "firstName": "Amine",
+      "lastName": "Haddad"
+    },
+    "role": "user",
+    "eligibility": {
+      "civilStatus": true,
+      "taxCompliance": false,
+      "identityVerified": true,
+      "addressConfirmed": false
+    },
+    "requests": [
+      {
+        "requestId": "REQ-18-26-005",
+        "type": "C20",
+        "status": "rejected",
+        "submittedAt": "2026-03-10"
+      },
+      {
+        "requestId": "REQ-18-26-006",
+        "type": "Extrait de rôle",
+        "status": "pending",
+        "submittedAt": "2026-03-17"
+      }
+    ]
   },
   {
-    "id": "555444333222111",
-    "idType": "nif",
-    "password": "fatima2024",
-    "role": "user"
+    "auth": {
+      "id": "555444333222111",
+      "idType": "nif",
+      "password": "fatima2024"
+    },
+    "profile": {
+      "firstName": "Fatima",
+      "lastName": "Zahra"
+    },
+    "role": "user",
+    "eligibility": {
+      "civilStatus": false,
+      "taxCompliance": false,
+      "identityVerified": false,
+      "addressConfirmed": false
+    },
+    "requests": []
   },
   {
-    "id": "admin@dashboard.com",
-    "idType": "email",
-    "password": "admin1234",
+    "auth": {
+      "id": "admin@dashboard.com",
+      "idType": "email",
+      "password": "admin1234"
+    },
+    "profile": {
+      "firstName": "Admin",
+      "lastName": "User"
+    },
     "role": "admin"
   },
   {
-    "id": "super.admin@system.com",
-    "idType": "email",
-    "password": "superadmin2024",
+    "auth": {
+      "id": "super.admin@system.com",
+      "idType": "email",
+      "password": "superadmin2024"
+    },
+    "profile": {
+      "firstName": "Super",
+      "lastName": "Admin"
+    },
     "role": "admin"
   },
   {
-    "id": "moderator@dashboard.com",
-    "idType": "email",
-    "password": "mod123456",
+    "auth": {
+      "id": "moderator@dashboard.com",
+      "idType": "email",
+      "password": "mod123456"
+    },
+    "profile": {
+      "firstName": "System",
+      "lastName": "Moderator"
+    },
     "role": "admin"
   }
 ]

@@ -163,7 +163,7 @@ async function handleLogin() {
     const users = await res.json();
 
     const match = users.find(
-      (u) => u.id === identifier && u.password === password,
+      (u) => u.auth.id === identifier && u.auth.password === password,
     );
 
     if (!match) {
@@ -174,8 +174,8 @@ async function handleLogin() {
 
     // Save session
     sessionStorage.setItem("role", match.role);
-    sessionStorage.setItem("userId", match.id);
-    sessionStorage.setItem("userFirstName", match.firstName);
+    sessionStorage.setItem("userId", match.auth.id);
+    sessionStorage.setItem("userFirstName", match.profile.firstName);
 
     // Redirect based on role
     if (match.role === "admin") {

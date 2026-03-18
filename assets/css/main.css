@@ -97,7 +97,7 @@ html {
   --background: #0f172a;
   --text-primary: #f1f5f9;
   --text-muted: #94a3b8;
-  --border-light: #1e293b;
+  --border-light: #334155;
   --gray-50: #1e293b;
   --gray-100: #1e293b;
   --gray-300: #475569;
@@ -180,4 +180,21 @@ body {
 
 .success-message {
   color: var(--success);
+}
+
+
+/* main.css */
+.page-transition {
+  animation: pageIn 0.4s ease-out both;
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
