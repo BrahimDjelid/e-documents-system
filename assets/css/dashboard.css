@@ -27,7 +27,7 @@
 
 /* Sidebar */
 .sidebar {
-  width: 268px;
+  width: 260px;
   min-height: 100vh;
   background: var(--primary-blue);
   display: flex;

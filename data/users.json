@@ -21,7 +21,8 @@
         "requestId": "REQ-18-26-001",
         "type": "C20",
         "status": "pending",
-        "submittedAt": "2026-03-18"
+        "submittedAt": "2026-03-18",
+        "note": "Your request is currently under review by the tax office."
       },
       {
         "requestId": "REQ-18-26-002",
@@ -33,7 +34,8 @@
         "requestId": "REQ-18-26-003",
         "type": "Déclaration d'existence",
         "status": "rejected",
-        "submittedAt": "2026-03-10"
+        "submittedAt": "2026-03-10",
+        "note": "Missing supporting documentation. Please resubmit with a valid proof of address."
       },
       {
         "requestId": "REQ-18-26-004",
@@ -51,7 +53,7 @@
     },
     "profile": {
       "firstName": "Amine",
-      "lastName": "Haddad"
+      "lastName": "Benali"
     },
     "role": "user",
     "eligibility": {
@@ -65,13 +67,15 @@
         "requestId": "REQ-18-26-005",
         "type": "C20",
         "status": "rejected",
-        "submittedAt": "2026-03-10"
+        "submittedAt": "2026-03-10",
+        "note": "Request incomplete. NIF number could not be verified."
       },
       {
         "requestId": "REQ-18-26-006",
         "type": "Extrait de rôle",
         "status": "pending",
-        "submittedAt": "2026-03-17"
+        "submittedAt": "2026-03-17",
+        "note": "Awaiting verification from the fiscal department."
       }
     ]
   },

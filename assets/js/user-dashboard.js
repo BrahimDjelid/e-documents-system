@@ -125,10 +125,10 @@ async function initDashboard() {
       if (emptyState) emptyState.style.display = "none";
       if (tableWrapper) tableWrapper.style.display = "block";
 
-      // show last 4, most recent first
+      // show last 5, most recent first
       const recent = [...requests]
         .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
-        .slice(0, 6);
+        .slice(0, 5);
 
       if (tbody) {
         tbody.innerHTML = recent
@@ -139,11 +139,18 @@ async function initDashboard() {
             <td><span class="${getDocBadgeClass(req.type)}">${req.type}</span></td>
             <td class="req-date">${formatDate(req.submittedAt)}</td>
             <td>${getStatusBadge(req.status)}</td>
-            <td><button class="action-link">Details</button></td>
+            <td><button class="action-link" data-id="${req.requestId}">Details</button></td>
           </tr>
         `,
           )
           .join("");
+
+        // Navigate to documents page and auto-open the modal for this request
+        tbody.querySelectorAll(".action-link").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            window.location.href = `documents.html?id=${btn.dataset.id}`;
+          });
+        });
       }
     }
 
@@ -230,10 +237,6 @@ async function initDashboard() {
         `;
       }
     }
-
-    //  Set page title in topbar
-    const pageTitle = document.getElementById("page-title");
-    if (pageTitle) pageTitle.textContent = "Dashboard";
   } catch (err) {
     console.error("Dashboard error:", err);
   }

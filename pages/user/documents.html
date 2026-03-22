@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Documents - e-Documents</title>
+
+    <link rel="stylesheet" href="../../assets/css/all.min.css" />
+    <link rel="stylesheet" href="../../assets/css/documents.css" />
+</head>
+
+<body data-page="documents" data-title="My Documents">
+    <div class="dashboard-page">
+
+        <div id="sidebar-mount"></div>
+
+        <div class="dashboard-main">
+            <div id="topbar-mount"></div>
+
+            <main class="dashboard-content page-transition">
+
+                <!-- Banner -->
+                <section class="docs-banner">
+                    <div class="docs-banner-text">
+                        <h2 class="docs-banner-title">My Documents</h2>
+                        <p class="docs-banner-sub">View and manage all your requested documents</p>
+                    </div>
+                    <div class="docs-banner-badge" id="docs-total-badge">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <span id="docs-total-count">-</span> Documents
+                    </div>
+                </section>
+
+                <!-- Stats Cards -->
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label">Total Requests</span>
+                            <span class="stat-value" id="stat-total">-</span>
+                            <span class="stat-sub" id="stat-total-sub"></span>
+                        </div>
+                        <div class="stat-icon stat-icon--blue">
+                            <i class="fa-regular fa-file-lines"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label">Approved</span>
+                            <span class="stat-value" id="stat-approved">-</span>
+                            <span class="stat-sub stat-sub--green" id="stat-approved-sub"></span>
+                        </div>
+                        <div class="stat-icon stat-icon--green">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label">Pending</span>
+                            <span class="stat-value" id="stat-pending">-</span>
+                            <span class="stat-sub stat-sub--yellow" id="stat-pending-sub"></span>
+                        </div>
+                        <div class="stat-icon stat-icon--yellow">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label">Rejected</span>
+                            <span class="stat-value" id="stat-rejected">-</span>
+                            <span class="stat-sub stat-sub--red" id="stat-rejected-sub"></span>
+                        </div>
+                        <div class="stat-icon stat-icon--red">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="search-input" class="search-input" placeholder="Search by ID or type..."
+                            autocomplete="off" />
+                        <button class="search-clear" id="search-clear" style="display:none;">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <select class="filter-select" id="filter-type">
+                        <option value="">All Types</option>
+                        <option value="C20">C20</option>
+                        <option value="Extrait de rôle">Extrait de rôle</option>
+                        <option value="Déclaration d'existence">Déclaration d'existence</option>
+                    </select>
+
+                    <select class="filter-select" id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="approved">Approved</option>
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+
+                    <span class="results-count" id="results-count"></span>
+                </div>
+
+                <!-- Table Card -->
+                <div class="docs-card">
+
+                    <!-- Empty state - no requests at all -->
+                    <div class="empty-state" id="empty-no-data" style="display:none;">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <p>No documents yet</p>
+                        <span>Your submitted requests will appear here.</span>
+                    </div>
+
+                    <!-- Empty state - filters return nothing -->
+                    <div class="empty-state" id="empty-no-results" style="display:none;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <p>No results found</p>
+                        <span>Try adjusting your search or filter criteria.</span>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-wrapper" id="table-wrapper">
+                        <table class="docs-table">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="docs-tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal" id="detail-modal" role="dialog" aria-modal="true">
+
+            <!-- Modal header -->
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <h3 class="modal-title" id="modal-req-id">-</h3>
+                    <span class="modal-doc-type" id="modal-doc-badge"></span>
+                </div>
+                <button class="modal-close" id="modal-close" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+                <!-- Timeline -->
+                <div class="timeline">
+                    <div class="timeline-step" id="tl-step-1">
+                        <div class="timeline-icon">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div class="timeline-info">
+                            <span class="timeline-label">Submitted</span>
+                            <span class="timeline-desc">Request received</span>
+                        </div>
+                    </div>
+                    <div class="timeline-connector" id="tl-conn-1"></div>
+                    <div class="timeline-step" id="tl-step-2">
+                        <div class="timeline-icon">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <div class="timeline-info">
+                            <span class="timeline-label">Under Review</span>
+                            <span class="timeline-desc">Being processed</span>
+                        </div>
+                    </div>
+                    <div class="timeline-connector" id="tl-conn-2"></div>
+                    <div class="timeline-step" id="tl-step-3">
+                        <div class="timeline-icon" id="tl-step-3-icon">
+                            <i class="fa-solid fa-flag-checkered"></i>
+                        </div>
+                        <div class="timeline-info">
+                            <span class="timeline-label" id="tl-step-3-label">Completed</span>
+                            <span class="timeline-desc" id="tl-step-3-desc">Awaiting completion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-divider"></div>
+
+                <div class="modal-field">
+                    <span class="modal-field-label">
+                        <i class="fa-solid fa-circle-half-stroke"></i>
+                        Status
+                    </span>
+                    <span id="modal-status-badge"></span>
+                </div>
+
+                <div class="modal-field">
+                    <span class="modal-field-label">
+                        <i class="fa-regular fa-calendar"></i>
+                        Submitted Date
+                    </span>
+                    <span class="modal-field-value" id="modal-date">-</span>
+                </div>
+
+                <!-- Note - only shown if exists -->
+                <div class="modal-field modal-note-field" id="modal-note-wrapper" style="display:none;">
+                    <span class="modal-field-label">
+                        <i class="fa-regular fa-note-sticky"></i>
+                        Note
+                    </span>
+                    <p class="modal-note-text" id="modal-note">-</p>
+                </div>
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <div class="modal-download-wrapper" id="modal-download-wrapper" style="display:none;">
+                    <button class="btn-download" id="modal-download-btn">
+                        <i class="fa-solid fa-download"></i>
+                        Download Document
+                    </button>
+                </div>
+                <button class="btn-close-modal" id="modal-close-btn">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-info toast-icon"></i>
+        <span class="toast-msg" id="toast-msg"></span>
+    </div>
+
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/router.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script src="../../assets/js/documents.js"></script>
+</body>
+
+</html>

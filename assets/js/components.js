@@ -1,19 +1,17 @@
-// components.js - Loads sidebar + topbar into page
-// and wires up: active link, user info, avatar
+// components.js — Loads sidebar + topbar into page
+// Wires up: active link, user info, avatar,
+// page title, dark mode toggle
 
 (async function loadComponents() {
   const role = sessionStorage.getItem("role");
-  const userId = sessionStorage.getItem("userId");
-  const userName = sessionStorage.getItem("userFirstName");
   const currentPage = document.body.dataset.page || "";
+  const pageTitle = document.body.dataset.title || "";
 
   // Decide which sidebar to load
   const sidebarFile =
     role === "admin"
       ? "../../components/admin-sidebar.html"
       : "../../components/user-sidebar.html";
-
-  const topbarFile = "../../components/topbar.html";
 
   // Load sidebar
   const sidebarMount = document.getElementById("sidebar-mount");
@@ -31,7 +29,7 @@
   const topbarMount = document.getElementById("topbar-mount");
   if (topbarMount) {
     try {
-      const res = await fetch(topbarFile);
+      const res = await fetch("../../components/topbar.html");
       const html = await res.text();
       topbarMount.innerHTML = html;
     } catch (err) {
@@ -39,16 +37,23 @@
     }
   }
 
-  // Set active link in sidebar
+  // Set page title
+  const pageTitleEl = document.getElementById("page-title");
+  if (pageTitleEl && pageTitle) pageTitleEl.textContent = pageTitle;
+
+  // Set active sidebar link
   document.querySelectorAll(".sidebar-link").forEach(function (link) {
     if (link.dataset.page === currentPage) {
       link.classList.add("active");
     }
   });
 
-  // Fill user name + avatar initial
-  // Get first letter of userId for avatar
-  const initial = userName ? userName.charAt(0).toUpperCase() : "?";
+  // Fill user name + avatar
+  const firstName = sessionStorage.getItem("userFirstName") || "";
+  const lastName = sessionStorage.getItem("userLastName") || "";
+  const fullName =
+    firstName && lastName ? `${firstName} ${lastName}` : firstName || "—";
+  const initial = firstName ? firstName.charAt(0).toUpperCase() : "?";
 
   const sidebarAvatar = document.getElementById("sidebar-avatar");
   const sidebarUserName = document.getElementById("sidebar-user-name");
@@ -56,27 +61,16 @@
 
   if (sidebarAvatar) sidebarAvatar.textContent = initial;
   if (topbarAvatar) topbarAvatar.textContent = initial;
+  if (sidebarUserName) sidebarUserName.textContent = fullName;
 
-  // Show email for admin, NIF truncated for user/org
-  if (sidebarUserName) {
-    if (role === "admin") {
-      sidebarUserName.textContent = userId || "Admin";
-    } else {
-      sidebarUserName.textContent = userId ? userId.slice(0, 6) + "•••" : "—";
-    }
-  }
-
-  // theme.js runs before components.js, but the button didn't exist yet.
-  // Re-init it now that the topbar is in the DOM.
+  // Re-init dark mode toggle
   const themeBtn = document.getElementById("theme-toggle");
   const themeIcon = document.getElementById("theme-icon");
 
   if (themeBtn && themeIcon) {
-    // Apply saved theme to icon
+    // Sync icon with current theme state
     const isDark = document.documentElement.classList.contains("dark");
-    if (isDark) {
-      themeIcon.classList.replace("fa-moon", "fa-sun");
-    }
+    if (isDark) themeIcon.classList.replace("fa-moon", "fa-sun");
 
     themeBtn.addEventListener("click", function () {
       const nowDark = document.documentElement.classList.toggle("dark");
