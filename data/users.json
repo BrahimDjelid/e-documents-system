@@ -7,7 +7,12 @@
     },
     "profile": {
       "firstName": "Brahim",
-      "lastName": "Djelid"
+      "lastName": "Djelid",
+      "dateOfBirth": "1988-03-15",
+      "phone": "+213 555 01 23 45",
+      "address": "12 Rue Didouche Mourad, Annaba",
+      "email": "brahim.djelid@email.com",
+      "nationalId": "123456789"
     },
     "role": "user",
     "eligibility": {
@@ -53,7 +58,12 @@
     },
     "profile": {
       "firstName": "Amine",
-      "lastName": "Benali"
+      "lastName": "Benali",
+      "dateOfBirth": "1995-07-22",
+      "phone": "+213 661 44 55 66",
+      "address": "5 Boulevard Zighout Youcef, Alger",
+      "email": "amine.benali@email.com",
+      "nationalId": "987654321"
     },
     "role": "user",
     "eligibility": {
@@ -87,7 +97,12 @@
     },
     "profile": {
       "firstName": "Fatima",
-      "lastName": "Zahra"
+      "lastName": "Zahra",
+      "dateOfBirth": "2001-11-05",
+      "phone": "+213 770 88 99 00",
+      "address": "18 Rue des Frères Bouadou, Oran",
+      "email": "fatima.zahra@email.com",
+      "nationalId": "555444333"
     },
     "role": "user",
     "eligibility": {

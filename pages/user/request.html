@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Request Documents - e-Documents</title>
+
+    <link rel="stylesheet" href="../../assets/css/all.min.css" />
+    <link rel="stylesheet" href="../../assets/css/request.css" />
+</head>
+
+<body data-page="request" data-title="Request Documents">
+    <div class="dashboard-page">
+
+        <div id="sidebar-mount"></div>
+
+        <div class="dashboard-main">
+            <div id="topbar-mount"></div>
+
+            <main class="dashboard-content page-transition">
+
+                <!-- Step Indicator -->
+                <div class="step-indicator">
+                    <div class="step-item active" id="step-item-1">
+                        <div class="step-circle" id="step-circle-1">
+                            <span class="step-number">1</span>
+                            <i class="fa-solid fa-check step-check"></i>
+                        </div>
+                        <span class="step-label">Choose Document</span>
+                    </div>
+                    <div class="step-line" id="step-line-1"></div>
+                    <div class="step-item" id="step-item-2">
+                        <div class="step-circle" id="step-circle-2">
+                            <span class="step-number">2</span>
+                            <i class="fa-solid fa-check step-check"></i>
+                        </div>
+                        <span class="step-label">Fill Request Form</span>
+                    </div>
+                    <div class="step-line" id="step-line-2"></div>
+                    <div class="step-item" id="step-item-3">
+                        <div class="step-circle" id="step-circle-3">
+                            <span class="step-number">3</span>
+                            <i class="fa-solid fa-check step-check"></i>
+                        </div>
+                        <span class="step-label">Confirmed</span>
+                    </div>
+                </div>
+
+                <!-- ── STEP 1: Choose Document ── -->
+                <div class="step-panel active" id="panel-step-1">
+                    <div class="req-card">
+                        <div class="req-card-header">
+                            <h2 class="req-card-title">Select Document Type</h2>
+                            <p class="req-card-sub">Choose the official document you need to request</p>
+                        </div>
+
+                        <div class="doc-cards-grid" id="doc-cards-grid">
+
+                            <!-- Card: Certificate C20 -->
+                            <div class="doc-card" data-doc="C20" tabindex="0" role="button" aria-pressed="false">
+                                <div class="doc-card-check"><i class="fa-solid fa-check"></i></div>
+                                <div class="doc-card-icon doc-card-icon--purple">
+                                    <i class="fa-regular fa-file-lines"></i>
+                                </div>
+                                <div class="doc-card-body">
+                                    <h3 class="doc-card-name">Certificate C20</h3>
+                                    <p class="doc-card-desc">Official tax clearance and civil status certificate.
+                                        Required for administrative procedures.</p>
+                                    <span class="doc-delivery-badge doc-delivery-badge--digital">
+                                        <i class="fa-solid fa-download"></i>
+                                        Instant Download
+                                    </span>
+                                    <ul class="doc-card-bullets">
+                                        <li>Digitally signed &amp; sealed</li>
+                                        <li>Valid for 3 months</li>
+                                        <li>Download as PDF</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Card: Extrait de rôle -->
+                            <div class="doc-card" data-doc="Extrait de rôle" tabindex="0" role="button"
+                                aria-pressed="false">
+                                <div class="doc-card-check"><i class="fa-solid fa-check"></i></div>
+                                <div class="doc-card-icon doc-card-icon--blue">
+                                    <i class="fa-solid fa-receipt"></i>
+                                </div>
+                                <div class="doc-card-body">
+                                    <h3 class="doc-card-name">Extrait de rôle</h3>
+                                    <p class="doc-card-desc">Official tax roll extract confirming your fiscal situation
+                                        and registered tax obligations.</p>
+                                    <span class="doc-delivery-badge doc-delivery-badge--digital">
+                                        <i class="fa-solid fa-download"></i>
+                                        Instant Download
+                                    </span>
+                                    <ul class="doc-card-bullets">
+                                        <li>Digitally signed &amp; sealed</li>
+                                        <li>Valid for 6 months</li>
+                                        <li>Download as PDF</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Card: Déclaration d'existence -->
+                            <div class="doc-card" data-doc="Déclaration d'existence" tabindex="0" role="button"
+                                aria-pressed="false">
+                                <div class="doc-card-check"><i class="fa-solid fa-check"></i></div>
+                                <div class="doc-card-icon doc-card-icon--teal">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                </div>
+                                <div class="doc-card-body">
+                                    <h3 class="doc-card-name">Déclaration d'existence</h3>
+                                    <p class="doc-card-desc">Declaration confirming the existence of your business or
+                                        activity with the tax authority.</p>
+                                    <span class="doc-delivery-badge doc-delivery-badge--digital">
+                                        <i class="fa-solid fa-download"></i>
+                                        Instant Download
+                                    </span>
+                                    <ul class="doc-card-bullets">
+                                        <li>Auto-processed instantly</li>
+                                        <li>Digitally signed &amp; sealed</li>
+                                        <li>Download as PDF</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="req-card-footer">
+                            <div></div>
+                            <button class="btn-continue" id="btn-step1-continue" disabled>
+                                Continue
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── STEP 2: Fill Request Form ── -->
+                <div class="step-panel" id="panel-step-2">
+                    <div class="req-card">
+
+                        <!-- Form header -->
+                        <div class="form-doc-header">
+                            <div class="form-doc-icon" id="form-doc-icon">
+                                <i class="fa-regular fa-file-lines"></i>
+                            </div>
+                            <div>
+                                <h2 class="form-doc-title">Request Form – <span id="form-doc-name">–</span></h2>
+                                <p class="form-doc-sub">Pre-filled from your profile. Review and submit.</p>
+                            </div>
+                        </div>
+
+                        <!-- Profile info -->
+                        <div class="profile-section">
+                            <div class="profile-section-label">
+                                <i class="fa-solid fa-lock"></i>
+                                Profile Information (Auto-filled)
+                            </div>
+                            <div class="profile-grid">
+                                <div class="profile-field">
+                                    <label class="profile-field-label">Full Name</label>
+                                    <input type="text" class="profile-input" id="pf-fullname" readonly />
+                                </div>
+                                <div class="profile-field">
+                                    <label class="profile-field-label">National ID</label>
+                                    <input type="text" class="profile-input" id="pf-nationalid" readonly />
+                                </div>
+                                <div class="profile-field">
+                                    <label class="profile-field-label">Date of Birth</label>
+                                    <input type="text" class="profile-input" id="pf-dob" readonly value="–" />
+                                </div>
+                                <div class="profile-field">
+                                    <label class="profile-field-label">Phone Number</label>
+                                    <input type="text" class="profile-input" id="pf-phone" readonly />
+                                </div>
+                                <div class="profile-field profile-field--full">
+                                    <label class="profile-field-label">Address</label>
+                                    <input type="text" class="profile-input" id="pf-address" readonly />
+                                </div>
+                                <div class="profile-field profile-field--full">
+                                    <label class="profile-field-label">Email</label>
+                                    <input type="text" class="profile-input" id="pf-email" readonly />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Number of copies -->
+                        <div class="form-field-group">
+                            <label class="form-field-label" for="copies-select">Number of Copies</label>
+                            <div class="select-wrapper">
+                                <select class="form-select" id="copies-select">
+                                    <option value="1">1 copy</option>
+                                    <option value="2">2 copies</option>
+                                    <option value="3">3 copies</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down select-arrow"></i>
+                            </div>
+                        </div>
+
+                        <!-- Purpose / Notes -->
+                        <div class="form-field-group">
+                            <label class="form-field-label" for="purpose-textarea">
+                                Purpose / Notes
+                                <span class="optional-tag">(optional)</span>
+                            </label>
+                            <textarea class="form-textarea" id="purpose-textarea"
+                                placeholder="Describe the purpose of this document request..." rows="4"></textarea>
+                        </div>
+
+                        <!-- Declaration checkbox -->
+                        <div class="declaration-box" id="declaration-box">
+                            <label class="declaration-label">
+                                <input type="checkbox" class="declaration-checkbox" id="declaration-check" />
+                                <span class="declaration-custom-check">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                                <span class="declaration-text">
+                                    I hereby declare that the information provided is accurate and complete. I
+                                    understand that false declarations may result in legal consequences.
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="req-card-footer">
+                            <button class="btn-back" id="btn-step2-back">
+                                <i class="fa-solid fa-arrow-left"></i>
+                                Back
+                            </button>
+                            <button class="btn-submit" id="btn-step2-submit" disabled>
+                                Submit Request
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ── STEP 3: Confirmation ── -->
+                <div class="step-panel" id="panel-step-3">
+                    <div class="req-card confirm-card">
+
+                        <div class="confirm-icon-wrap">
+                            <div class="confirm-icon" id="confirm-icon">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+
+                        <h2 class="confirm-title">Request Submitted!</h2>
+                        <p class="confirm-sub">Your document request has been received and is now being processed.</p>
+
+                        <div class="confirm-id-badge">
+                            <span class="confirm-id-label">Request ID</span>
+                            <span class="confirm-id-value" id="confirm-req-id">–</span>
+                            <button class="confirm-copy-btn" id="confirm-copy-btn" title="Copy ID">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+
+                        <div class="confirm-summary">
+                            <div class="confirm-summary-row">
+                                <span class="confirm-summary-key">Document Type</span>
+                                <span class="confirm-summary-val" id="confirm-doc-type">–</span>
+                            </div>
+                            <div class="confirm-summary-row">
+                                <span class="confirm-summary-key">Number of Copies</span>
+                                <span class="confirm-summary-val" id="confirm-copies">–</span>
+                            </div>
+                            <div class="confirm-summary-row">
+                                <span class="confirm-summary-key">Submission Date</span>
+                                <span class="confirm-summary-val" id="confirm-date">–</span>
+                            </div>
+                        </div>
+
+                        <div class="confirm-actions">
+                            <a href="documents.html" class="btn-go-docs">
+                                <i class="fa-regular fa-folder-open"></i>
+                                Go to My Documents
+                            </a>
+                            <button class="btn-another" id="btn-another">
+                                <i class="fa-solid fa-plus"></i>
+                                Submit Another Request
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="req-toast" id="req-toast">
+        <i class="fa-solid fa-circle-check req-toast-icon"></i>
+        <span class="req-toast-msg" id="req-toast-msg"></span>
+    </div>
+
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/router.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script src="../../assets/js/request.js"></script>
+</body>
+
+</html>
