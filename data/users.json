@@ -8,13 +8,35 @@
     "profile": {
       "firstName": "Brahim",
       "lastName": "Djelid",
-      "dateOfBirth": "1988-03-15",
+      "dateOfBirth": "2004-06-13",
       "phone": "+213 555 01 23 45",
       "address": "12 Rue Didouche Mourad, Annaba",
       "email": "brahim.djelid@email.com",
       "nationalId": "123456789"
     },
     "role": "user",
+
+    "taxInfo": {
+      "nature": "personne_physique",
+      "mainActivity": {
+        "activityName": "Commerce de vêtements",
+        "activityCode": "4711",
+        "address": "12 Rue Didouche Mourad, Annaba"
+      },
+      "secondaryActivities": [
+        {
+          "activityName": "Vente en ligne",
+          "activityCode": "4791",
+          "address": "Plateforme e-commerce"
+        }
+      ],
+      "businessAddress": "12 Rue Didouche Mourad, Annaba",
+      "commercialRegisterNumber": "RC-23/00-1234567 B 18",
+      "taxIdentificationNumber": "123456789012345",
+      "establishmentDate": "2022-06-10",
+      "taxRegime": "Régime réel"
+    },
+
     "eligibility": {
       "civilStatus": true,
       "taxCompliance": true,
@@ -26,27 +48,13 @@
         "requestId": "REQ-18-26-001",
         "type": "C20",
         "status": "pending",
-        "submittedAt": "2026-03-18",
-        "note": "Your request is currently under review by the tax office."
+        "submittedAt": "2026-03-18"
       },
       {
         "requestId": "REQ-18-26-002",
         "type": "Extrait de rôle",
         "status": "approved",
         "submittedAt": "2026-03-15"
-      },
-      {
-        "requestId": "REQ-18-26-003",
-        "type": "Déclaration d'existence",
-        "status": "rejected",
-        "submittedAt": "2026-03-10",
-        "note": "Missing supporting documentation. Please resubmit with a valid proof of address."
-      },
-      {
-        "requestId": "REQ-18-26-004",
-        "type": "C20",
-        "status": "approved",
-        "submittedAt": "2026-03-05"
       }
     ]
   },
@@ -66,28 +74,29 @@
       "nationalId": "987654321"
     },
     "role": "user",
+
+    "taxInfo": {
+      "nature": "personne_physique",
+      "mainActivity": {
+        "activityName": "Développement informatique",
+        "activityCode": "6201",
+        "address": "5 Boulevard Zighout Youcef, Alger"
+      },
+      "secondaryActivities": [],
+      "businessAddress": "Travail à domicile",
+      "commercialRegisterNumber": "",
+      "taxIdentificationNumber": "987654321098765",
+      "establishmentDate": "2020-02-20",
+      "taxRegime": "Régime simplifié"
+    },
+
     "eligibility": {
       "civilStatus": true,
       "taxCompliance": false,
       "identityVerified": true,
       "addressConfirmed": false
     },
-    "requests": [
-      {
-        "requestId": "REQ-18-26-005",
-        "type": "C20",
-        "status": "rejected",
-        "submittedAt": "2026-03-10",
-        "note": "Request incomplete. NIF number could not be verified."
-      },
-      {
-        "requestId": "REQ-18-26-006",
-        "type": "Extrait de rôle",
-        "status": "pending",
-        "submittedAt": "2026-03-17",
-        "note": "Awaiting verification from the fiscal department."
-      }
-    ]
+    "requests": []
   },
   {
     "auth": {
@@ -105,6 +114,22 @@
       "nationalId": "555444333"
     },
     "role": "user",
+
+    "taxInfo": {
+      "nature": "personne_physique",
+      "mainActivity": {
+        "activityName": "Coiffure à domicile",
+        "activityCode": "9602",
+        "address": "Oran"
+      },
+      "secondaryActivities": [],
+      "businessAddress": "Domicile",
+      "commercialRegisterNumber": "",
+      "taxIdentificationNumber": "555444333222111",
+      "establishmentDate": "2023-01-12",
+      "taxRegime": "Régime forfaitaire"
+    },
+
     "eligibility": {
       "civilStatus": false,
       "taxCompliance": false,
@@ -113,6 +138,7 @@
     },
     "requests": []
   },
+
   {
     "auth": {
       "id": "admin@dashboard.com",
@@ -122,30 +148,6 @@
     "profile": {
       "firstName": "Admin",
       "lastName": "User"
-    },
-    "role": "admin"
-  },
-  {
-    "auth": {
-      "id": "super.admin@system.com",
-      "idType": "email",
-      "password": "superadmin2024"
-    },
-    "profile": {
-      "firstName": "Super",
-      "lastName": "Admin"
-    },
-    "role": "admin"
-  },
-  {
-    "auth": {
-      "id": "moderator@dashboard.com",
-      "idType": "email",
-      "password": "mod123456"
-    },
-    "profile": {
-      "firstName": "System",
-      "lastName": "Moderator"
     },
     "role": "admin"
   }
