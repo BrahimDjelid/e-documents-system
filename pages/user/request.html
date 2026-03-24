@@ -102,17 +102,16 @@
                                 </div>
                             </div>
 
-                            <!-- Card: Déclaration d'existence -->
-                            <!-- <div class="doc-card" data-doc="Déclaration d'existence" tabindex="0" role="button"
-                                aria-pressed="false">
+                            <!-- Card: Déclaration d'existence — commented out, coming soon -->
+                            <!--
+                            <div class="doc-card" data-doc="Déclaration d'existence" tabindex="0" role="button" aria-pressed="false">
                                 <div class="doc-card-check"><i class="fa-solid fa-check"></i></div>
                                 <div class="doc-card-icon doc-card-icon--teal">
                                     <i class="fa-solid fa-building-columns"></i>
                                 </div>
                                 <div class="doc-card-body">
                                     <h3 class="doc-card-name">Déclaration d'existence</h3>
-                                    <p class="doc-card-desc">Declaration confirming the existence of your business or
-                                        activity with the tax authority.</p>
+                                    <p class="doc-card-desc">Declaration confirming the existence of your business or activity with the tax authority.</p>
                                     <span class="doc-delivery-badge doc-delivery-badge--digital">
                                         <i class="fa-solid fa-download"></i>
                                         Instant Download
@@ -123,7 +122,8 @@
                                         <li>Download as PDF</li>
                                     </ul>
                                 </div>
-                            </div> -->
+                            </div>
+                            -->
 
                         </div>
 
@@ -176,12 +176,28 @@
                                     <input type="text" class="profile-input" id="pf-phone" readonly />
                                 </div>
                                 <div class="profile-field profile-field--full">
-                                    <label class="profile-field-label">Address</label>
-                                    <input type="text" class="profile-input" id="pf-address" readonly />
-                                </div>
-                                <div class="profile-field profile-field--full">
                                     <label class="profile-field-label">Email</label>
                                     <input type="text" class="profile-input" id="pf-email" readonly />
+                                </div>
+                            </div>
+
+                            <!-- Tax / Business Info -->
+                            <div class="profile-section-label" style="margin-top: var(--space-lg);">
+                                <i class="fa-solid fa-building-columns"></i>
+                                Business Information (Auto-filled)
+                            </div>
+                            <div class="profile-grid">
+                                <div class="profile-field">
+                                    <label class="profile-field-label">Main Activity</label>
+                                    <input type="text" class="profile-input" id="pf-main-activity" readonly />
+                                </div>
+                                <div class="profile-field">
+                                    <label class="profile-field-label">Tax Regime</label>
+                                    <input type="text" class="profile-input" id="pf-tax-regime" readonly />
+                                </div>
+                                <div class="profile-field profile-field--full">
+                                    <label class="profile-field-label">Business Address</label>
+                                    <input type="text" class="profile-input" id="pf-biz-address" readonly />
                                 </div>
                             </div>
                         </div>

@@ -1,12 +1,18 @@
+/*
+  On submit, builds a clean JSON payload ready for:
+  POST /api/requests
+  Currently logs to console — replace the TODO block with a real fetch() when Flask is ready.
+*/
+
 (() => {
   "use strict";
 
-  /* State */
+  /* Stat─ */
   let currentStep = 1;
   let selectedDoc = null;
-  let userProfile = null;
+  let userData = null; // full user object from users.json
 
-  /* Icon & color config per doc type */
+  /* Doc confi */
   const DOC_CONFIG = {
     C20: {
       icon: "fa-regular fa-file-lines",
@@ -16,13 +22,10 @@
       icon: "fa-solid fa-receipt",
       iconClass: "form-doc-icon--blue",
     },
-    // "Déclaration d'existence": {
-    //   icon: "fa-solid fa-building-columns",
-    //   iconClass: "form-doc-icon--teal",
-    // },
+    /* Déclaration d'existence — commented out, coming soon */
   };
 
-  /* DOM refs  */
+  /* DOM ref */
   const docCards = document.querySelectorAll(".doc-card");
   const btnContinue = document.getElementById("btn-step1-continue");
   const btnBack = document.getElementById("btn-step2-back");
@@ -32,7 +35,6 @@
   const confirmCopyBtn = document.getElementById("confirm-copy-btn");
   const btnAnother = document.getElementById("btn-another");
 
-  /* Step UI */
   const stepItems = [1, 2, 3].map((n) =>
     document.getElementById(`step-item-${n}`),
   );
@@ -43,19 +45,18 @@
     document.getElementById(`panel-step-${n}`),
   );
 
-  /* Helpers */
+  /* Helper─ */
   function showToast(msg, isError = false) {
     const toast = document.getElementById("req-toast");
     const msgEl = document.getElementById("req-toast-msg");
     const icon = toast.querySelector(".req-toast-icon");
     msgEl.textContent = msg;
-    if (isError) {
-      icon.className = "fa-solid fa-circle-exclamation req-toast-icon";
-      icon.style.color = "var(--status-rejected)";
-    } else {
-      icon.className = "fa-solid fa-circle-check req-toast-icon";
-      icon.style.color = "var(--status-approved)";
-    }
+    icon.className = isError
+      ? "fa-solid fa-circle-exclamation req-toast-icon"
+      : "fa-solid fa-circle-check req-toast-icon";
+    icon.style.color = isError
+      ? "var(--status-rejected)"
+      : "var(--status-approved)";
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 3000);
   }
@@ -76,43 +77,35 @@
     });
   }
 
-  /* Convert stored YYYY-MM-DD → DD/MM/YYYY for display */
   function formatDOB(raw) {
     if (!raw) return "-";
     const [y, m, d] = raw.split("-");
-    if (!y || !m || !d) return raw; // return as-is if unexpected format
+    if (!y || !m || !d) return raw;
     return `${d}/${m}/${y}`;
   }
 
   function maskNationalId(id) {
     if (!id) return "-";
     const s = String(id);
-    if (s.length <= 4) return s;
-    return "****" + s.slice(-4);
+    return s.length <= 4 ? s : "****" + s.slice(-4);
   }
 
-  /* Fetch user profile from users.json */
-  async function loadUserProfile() {
+  /* Load full user from users.json */
+  async function loadUser() {
     const authId = sessionStorage.getItem("userId");
     if (!authId) return null;
-
     try {
       const res = await fetch("../../data/users.json");
-      if (!res.ok) throw new Error("Could not load users.json");
+      if (!res.ok) throw new Error("fetch failed");
       const users = await res.json();
-
-      const match = users.find((u) => u.auth && u.auth.id === authId);
-      return match ? match.profile : null;
+      return users.find((u) => u.auth && u.auth.id === authId) || null;
     } catch (err) {
-      console.warn("[request.js] Falling back to sessionStorage keys:", err);
-      return {
-        firstName: sessionStorage.getItem("userFirstName") || "",
-        lastName: sessionStorage.getItem("userLastName") || "",
-      };
+      console.warn("[request.js] Falling back to sessionStorage:", err);
+      return null;
     }
   }
 
-  /* Step indicator  */
+  /* Step indicato */
   function updateStepIndicator(toStep) {
     stepItems.forEach((item, i) => {
       const n = i + 1;
@@ -126,12 +119,11 @@
     });
   }
 
-  /* Panel transition  */
+  /* Panel transitio */
   function goToStep(nextStep) {
     if (nextStep === currentStep) return;
     const currentPanel = stepPanels[currentStep - 1];
     const nextPanel = stepPanels[nextStep - 1];
-
     currentPanel.classList.add("exit-left");
     setTimeout(() => {
       currentPanel.classList.remove("active", "exit-left");
@@ -170,9 +162,8 @@
     goToStep(2);
   });
 
-  /* Step 2: Pre-fill form  */
+  /* Step 2: Pre-fill form─ */
   function populateStep2() {
-    // Form header icon + title
     const cfg = DOC_CONFIG[selectedDoc] || DOC_CONFIG["C20"];
     const docNameEl = document.getElementById("form-doc-name");
     const docIconEl = document.getElementById("form-doc-icon");
@@ -180,21 +171,36 @@
     docIconEl.className = "form-doc-icon " + cfg.iconClass;
     docIconEl.innerHTML = `<i class="${cfg.icon}"></i>`;
 
-    // Profile fields
-    const p = userProfile || {};
+    if (!userData) return;
+
+    const p = userData.profile || {};
+    const t = userData.taxInfo || {};
+    const main = t.mainActivity || {};
+
     const fullName = [p.firstName, p.lastName].filter(Boolean).join(" ");
 
-    document.getElementById("pf-fullname").value = fullName || "-";
-    document.getElementById("pf-nationalid").value = maskNationalId(
-      p.nationalId,
-    );
-    document.getElementById("pf-dob").value = formatDOB(p.dateOfBirth);
-    document.getElementById("pf-phone").value = p.phone || "-";
-    document.getElementById("pf-address").value = p.address || "-";
-    document.getElementById("pf-email").value = p.email || "-";
+    /* Personal info fields */
+    setField("pf-fullname", fullName);
+    setField("pf-nationalid", maskNationalId(p.nationalId));
+    setField("pf-dob", formatDOB(p.dateOfBirth));
+    setField("pf-phone", p.phone);
+    setField("pf-email", p.email);
+
+    /* Business / tax fields */
+    const activityLabel = main.activityName
+      ? `${main.activityName}${main.activityCode ? " — Code " + main.activityCode : ""}`
+      : "-";
+    setField("pf-main-activity", activityLabel);
+    setField("pf-tax-regime", t.taxRegime || "-");
+    setField("pf-biz-address", t.businessAddress || "-");
   }
 
-  /* Declaration checkbox ─ */
+  function setField(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.value = value || "-";
+  }
+
+  /* Declaration checkbo */
   declarationCheck.addEventListener("change", () => {
     btnSubmit.disabled = !declarationCheck.checked;
     declarationBox.classList.toggle("checked", declarationCheck.checked);
@@ -202,27 +208,84 @@
 
   btnBack.addEventListener("click", () => goToStep(1));
 
-  /* Step 2: Submit  */
+  /* Step 2: Submi */
   btnSubmit.addEventListener("click", () => {
     if (!declarationCheck.checked) return;
     submitRequest();
   });
 
-  function submitRequest() {
+  async function submitRequest() {
     const copies = document.getElementById("copies-select").value;
+    const purpose = document.getElementById("purpose-textarea").value.trim();
     const reqId = generateRequestId();
-    const today = formatDate(new Date());
+    const now = new Date();
 
+    const p = userData?.profile || {};
+    const t = userData?.taxInfo || {};
+    const main = t.mainActivity || {};
+
+    /* Clean payload — ready for Flask─ */
+    const payload = {
+      requestId: reqId,
+      submittedAt: now.toISOString(),
+      status: "pending",
+
+      /* Who is requesting */
+      userId: sessionStorage.getItem("userId"),
+
+      /* What they're requesting */
+      documentType: selectedDoc,
+      copies: Number(copies),
+      purpose: purpose || null,
+
+      /* Snapshot of personal info at time of request */
+      applicant: {
+        fullName: [p.firstName, p.lastName].filter(Boolean).join(" "),
+        nationalId: p.nationalId || null,
+        dateOfBirth: p.dateOfBirth || null,
+        phone: p.phone || null,
+        email: p.email || null,
+      },
+
+      /* Snapshot of business info at time of request */
+      business: {
+        mainActivityName: main.activityName || null,
+        mainActivityCode: main.activityCode || null,
+        businessAddress: t.businessAddress || null,
+        taxRegime: t.taxRegime || null,
+        commercialRegisterNumber: t.commercialRegisterNumber || null,
+      },
+    };
+
+    /* TODO: replace console.log with real fetch when Flask is ready
+     *
+     * const res = await fetch("/api/requests", {
+     *     method: "POST",
+     *     headers: {
+     *         "Content-Type": "application/json",
+     *         "Authorization": `Bearer ${sessionStorage.getItem("token")}`,
+     *     },
+     *     body: JSON.stringify(payload),
+     * });
+     *
+     * if (!res.ok) {
+     *     showToast("Submission failed. Please try again.", true);
+     *     return;
+     * }
+     */
+    console.log("[request.js] Payload ready for POST /api/requests:", payload);
+
+    /* Populate step 3 confirmation */
     document.getElementById("confirm-req-id").textContent = reqId;
     document.getElementById("confirm-doc-type").textContent = selectedDoc;
     document.getElementById("confirm-copies").textContent =
       copies + (copies === "1" ? " copy" : " copies");
-    document.getElementById("confirm-date").textContent = today;
+    document.getElementById("confirm-date").textContent = formatDate(now);
 
     goToStep(3);
   }
 
-  /* Step 3: Copy request ID  */
+  /* Step 3: Copy request ID─ */
   confirmCopyBtn.addEventListener("click", () => {
     const id = document.getElementById("confirm-req-id").textContent;
     navigator.clipboard
@@ -256,8 +319,7 @@
   /* Init */
   updateStepIndicator(1);
 
-  // Fetch fresh profile from users.json on page load
-  loadUserProfile().then((profile) => {
-    userProfile = profile;
+  loadUser().then((user) => {
+    userData = user;
   });
 })();
