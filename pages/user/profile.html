@@ -124,6 +124,58 @@
                             </ul>
                         </div>
 
+                        <!-- Security & Password -->
+                        <div class="profile-card security-card">
+                            <div class="security-header">
+                                <div class="security-icon">
+                                    <i class="fa-solid fa-lock"></i>
+                                </div>
+                                <div>
+                                    <h4 class="card-section-title">Security &amp; Password</h4>
+                                    <p class="card-section-sub">Update your password</p>
+                                </div>
+                            </div>
+
+                            <div class="security-form">
+                                <div class="sec-field-group">
+                                    <label class="sec-label" for="sec-current">Current Password</label>
+                                    <div class="sec-input-wrap">
+                                        <input type="password" class="sec-input" id="sec-current"
+                                            placeholder="Enter current password" autocomplete="current-password" />
+                                        <button class="sec-toggle-pw" data-target="sec-current" type="button"
+                                            tabindex="-1">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="sec-field-group">
+                                    <label class="sec-label" for="sec-new">New Password</label>
+                                    <div class="sec-input-wrap">
+                                        <input type="password" class="sec-input" id="sec-new"
+                                            placeholder="Enter new password" autocomplete="new-password" />
+                                        <button class="sec-toggle-pw" data-target="sec-new" type="button" tabindex="-1">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="sec-field-group">
+                                    <label class="sec-label" for="sec-confirm">Confirm New Password</label>
+                                    <div class="sec-input-wrap">
+                                        <input type="password" class="sec-input" id="sec-confirm"
+                                            placeholder="Confirm new password" autocomplete="new-password" />
+                                        <button class="sec-toggle-pw" data-target="sec-confirm" type="button"
+                                            tabindex="-1">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <span class="sec-error" id="sec-error" style="display:none;"></span>
+                                </div>
+                                <button class="btn-update-pw" id="btn-update-pw">
+                                    Update Password
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- ── RIGHT COLUMN ── -->
@@ -243,56 +295,71 @@
                             </div>
                         </div>
 
-                        <!-- Security & Password -->
-                        <div class="profile-card security-card">
-                            <div class="security-header">
-                                <div class="security-icon">
-                                    <i class="fa-solid fa-lock"></i>
+                        <!-- Tax Information -->
+                        <div class="profile-card tax-card" id="tax-section">
+
+                            <div class="tax-card-header">
+                                <div class="tax-card-title-row">
+                                    <div class="tax-card-icon">
+                                        <i class="fa-solid fa-building-columns"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="card-section-title">Tax Information</h4>
+                                        <p class="card-section-sub">Your registered fiscal and business information.</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h4 class="card-section-title">Security &amp; Password</h4>
-                                    <p class="card-section-sub">Update your password</p>
+                                <span class="tax-regime-badge" id="tax-regime-badge">-</span>
+                            </div>
+
+                            <!-- General fields: 2-col grid -->
+                            <div class="tax-general-grid">
+                                <div class="tax-field">
+                                    <span class="tax-field-label">Nature</span>
+                                    <span class="tax-field-value" id="tax-nature">-</span>
+                                </div>
+                                <div class="tax-field">
+                                    <span class="tax-field-label">Establishment Date</span>
+                                    <span class="tax-field-value" id="tax-estab-date">-</span>
+                                </div>
+                                <div class="tax-field">
+                                    <span class="tax-field-label">Business Address</span>
+                                    <span class="tax-field-value" id="tax-biz-address">-</span>
+                                </div>
+                                <div class="tax-field" id="tax-rc-row">
+                                    <span class="tax-field-label">Commercial Register</span>
+                                    <span class="tax-field-value tax-field-value--mono" id="tax-rc">-</span>
                                 </div>
                             </div>
 
-                            <div class="security-form">
-                                <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-current">Current Password</label>
-                                    <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-current"
-                                            placeholder="Enter current password" autocomplete="current-password" />
-                                        <button class="sec-toggle-pw" data-target="sec-current" type="button"
-                                            tabindex="-1">
-                                            <i class="fa-regular fa-eye"></i>
-                                        </button>
+                            <!-- Main Activity -->
+                            <div class="tax-subsection-inline">
+                                <h5 class="tax-subsection-title">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                    Main Activity
+                                </h5>
+                                <div class="tax-activity-card tax-activity-card--main">
+                                    <div class="tax-activity-top">
+                                        <span class="tax-activity-name" id="tax-main-name">-</span>
+                                        <span class="tax-activity-code" id="tax-main-code">-</span>
+                                    </div>
+                                    <div class="tax-activity-addr">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <span id="tax-main-addr">-</span>
                                     </div>
                                 </div>
-                                <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-new">New Password</label>
-                                    <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-new"
-                                            placeholder="Enter new password" autocomplete="new-password" />
-                                        <button class="sec-toggle-pw" data-target="sec-new" type="button" tabindex="-1">
-                                            <i class="fa-regular fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-confirm">Confirm New Password</label>
-                                    <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-confirm"
-                                            placeholder="Confirm new password" autocomplete="new-password" />
-                                        <button class="sec-toggle-pw" data-target="sec-confirm" type="button"
-                                            tabindex="-1">
-                                            <i class="fa-regular fa-eye"></i>
-                                        </button>
-                                    </div>
-                                    <span class="sec-error" id="sec-error" style="display:none;"></span>
-                                </div>
-                                <button class="btn-update-pw" id="btn-update-pw">
-                                    Update Password
-                                </button>
                             </div>
+
+                            <!-- Secondary Activities -->
+                            <div class="tax-subsection-inline">
+                                <h5 class="tax-subsection-title">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    Secondary Activities
+                                </h5>
+                                <div id="tax-secondary-list">
+                                    <!-- populated by JS -->
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>

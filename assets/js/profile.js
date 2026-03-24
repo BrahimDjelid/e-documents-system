@@ -42,14 +42,14 @@
   }
 
   function formatDOB(raw) {
-    if (!raw) return "–";
+    if (!raw) return "-";
     const [y, m, d] = raw.split("-");
     if (!y || !m || !d) return raw;
     return `${d}/${m}/${y}`;
   }
 
   function maskNationalId(id) {
-    if (!id) return "–";
+    if (!id) return "-";
     const s = String(id);
     return s.length <= 4 ? s : "****" + s.slice(-4);
   }
@@ -62,7 +62,7 @@
 
   function setField(id, value) {
     const el = document.getElementById(id);
-    if (el) el.value = value || "–";
+    if (el) el.value = value || "-";
   }
 
   /* Fetch user from users.json */
@@ -93,7 +93,7 @@
 
     /* Avatar */
     avatarInitials.textContent = getInitials(p.firstName, p.lastName);
-    document.getElementById("avatar-name").textContent = fullName || "–";
+    document.getElementById("avatar-name").textContent = fullName || "-";
 
     /* Load saved photo from localStorage */
     const savedPhoto = localStorage.getItem(`avatar_${user.auth.id}`);
@@ -131,6 +131,111 @@
     /* Eligibility */
     renderEligibility(e);
 
+    /* Tax info */
+    renderTaxInfo(user.taxInfo || {});
+  }
+
+  /* Tax regime badge colors */
+  const TAX_REGIME_CONFIG = {
+    "Régime réel": { cls: "tax-regime--blue", label: "Régime réel" },
+    "Régime simplifié": { cls: "tax-regime--teal", label: "Régime simplifié" },
+    "Régime forfaitaire": {
+      cls: "tax-regime--amber",
+      label: "Régime forfaitaire",
+    },
+  };
+
+  function formatTaxDate(raw) {
+    if (!raw) return "-";
+    const [y, m, d] = raw.split("-");
+    if (!y || !m || !d) return raw;
+    return `${d}/${m}/${y}`;
+  }
+
+  function renderTaxInfo(t) {
+    if (!t || Object.keys(t).length === 0) {
+      const section = document.getElementById("tax-section");
+      if (section) section.style.display = "none";
+      return;
+    }
+
+    /* Nature */
+    const natureMap = {
+      personne_physique: "Physical Person",
+      personne_morale: "Legal Entity",
+    };
+    const natureEl = document.getElementById("tax-nature");
+    if (natureEl) natureEl.textContent = natureMap[t.nature] || t.nature || "-";
+
+    /* Establishment date */
+    const estabEl = document.getElementById("tax-estab-date");
+    if (estabEl) estabEl.textContent = formatTaxDate(t.establishmentDate);
+
+    /* Business address */
+    const bizAddrEl = document.getElementById("tax-biz-address");
+    if (bizAddrEl) bizAddrEl.textContent = t.businessAddress || "-";
+
+    /* Commercial register — hide row if empty */
+    const rcRow = document.getElementById("tax-rc-row");
+    const rcEl = document.getElementById("tax-rc");
+    if (t.commercialRegisterNumber && t.commercialRegisterNumber.trim()) {
+      if (rcEl) rcEl.textContent = t.commercialRegisterNumber;
+      if (rcRow) rcRow.style.display = "";
+    } else {
+      if (rcRow) rcRow.style.display = "none";
+    }
+
+    /* Tax regime badge */
+    const regimeBadge = document.getElementById("tax-regime-badge");
+    if (regimeBadge && t.taxRegime) {
+      const cfg = TAX_REGIME_CONFIG[t.taxRegime] || {
+        cls: "tax-regime--blue",
+        label: t.taxRegime,
+      };
+      regimeBadge.textContent = cfg.label;
+      regimeBadge.className = `tax-regime-badge ${cfg.cls}`;
+    }
+
+    /* Main activity */
+    const main = t.mainActivity || {};
+    const mainNameEl = document.getElementById("tax-main-name");
+    const mainCodeEl = document.getElementById("tax-main-code");
+    const mainAddrEl = document.getElementById("tax-main-addr");
+    if (mainNameEl) mainNameEl.textContent = main.activityName || "-";
+    if (mainCodeEl)
+      mainCodeEl.textContent = main.activityCode
+        ? `Code ${main.activityCode}`
+        : "-";
+    if (mainAddrEl) mainAddrEl.textContent = main.address || "-";
+
+    /* Secondary activities */
+    const secList = document.getElementById("tax-secondary-list");
+    if (secList) {
+      const secondaries = t.secondaryActivities || [];
+      if (secondaries.length === 0) {
+        secList.innerHTML = `
+          <div class="tax-no-secondary">
+            <i class="fa-regular fa-folder-open"></i>
+            <span>No secondary activities registered.</span>
+          </div>`;
+      } else {
+        secList.innerHTML = secondaries
+          .map(
+            (s) => `
+          <div class="tax-activity-card tax-activity-card--secondary">
+            <div class="tax-activity-top">
+              <span class="tax-activity-name">${s.activityName || "-"}</span>
+              <span class="tax-activity-code">${s.activityCode ? `Code ${s.activityCode}` : "-"}</span>
+            </div>
+            <div class="tax-activity-addr">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>${s.address || "-"}</span>
+            </div>
+          </div>`,
+          )
+          .join("");
+      }
+    }
   }
 
   function renderEligibility(e) {
@@ -161,7 +266,6 @@
     scoreEl.textContent = `${verifiedCount}/${fields.length}`;
     if (verifiedCount === fields.length) scoreEl.classList.add("full");
   }
-
 
   /* Edit mode */
   btnEditProfile.addEventListener("click", () => {
@@ -194,8 +298,8 @@
 
     if (!save) {
       // Restore original values
-      document.getElementById("pf-email").value = originalEmail || "–";
-      document.getElementById("pf-phone").value = originalPhone || "–";
+      document.getElementById("pf-email").value = originalEmail || "-";
+      document.getElementById("pf-phone").value = originalPhone || "-";
     } else {
       // Update originals to saved values
       originalEmail = document.getElementById("pf-email").value;

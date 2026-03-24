@@ -62,6 +62,7 @@
     grid-template-columns: 300px 1fr;
     gap: var(--space-lg);
     align-items: start;
+    margin-bottom: var(--space-lg);
 }
 
 .profile-col {
@@ -608,6 +609,74 @@
     margin-bottom: var(--space-lg);
 }
 
+/* RECENT ACTIVITY CARD */
+.activity-card .card-section-title {
+    margin-bottom: var(--space-md);
+}
+
+.activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--surface-2);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    transition: background 0.2s;
+}
+
+.activity-item:hover {
+    background: var(--gray-100);
+}
+
+.activity-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.activity-icon--profile  { background: rgba(59,130,246,0.1);  color: var(--info-blue); }
+.activity-icon--document { background: rgba(139,92,246,0.1);  color: var(--purple-accent); }
+.activity-icon--login    { background: rgba(20,184,166,0.1);  color: var(--teal-accent); }
+.activity-icon--security { background: rgba(239,68,68,0.1);   color: var(--status-rejected); }
+.activity-icon--approved { background: var(--status-approved-bg); color: var(--status-approved); }
+
+.activity-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--font-main);
+    margin-top: 2px;
+}
+
 /* TOAST */
 .profile-toast {
     position: fixed;
@@ -650,6 +719,14 @@
     background: var(--surface-2);
 }
 
+.dark .activity-item {
+    background: var(--surface-2);
+}
+
+.dark .activity-item:hover {
+    background: var(--surface-1);
+}
+
 /* RESPONSIVE */
 @media (max-width: 960px) {
     .profile-grid {
@@ -683,5 +760,228 @@
 
     .info-field--full {
         grid-column: 1;
+    }
+}
+
+/* TAX INFORMATION SECTION */
+.tax-card {
+    margin-top: 0;
+}
+
+.tax-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-light);
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.tax-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.tax-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: rgba(3, 94, 123, 0.1);
+    color: var(--primary-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+/* Tax regime badge */
+.tax-regime-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font-main);
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+}
+
+.tax-regime--blue {
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--info-blue);
+}
+
+.tax-regime--teal {
+    background: rgba(20, 184, 166, 0.12);
+    color: var(--teal-accent);
+}
+
+.tax-regime--amber {
+    background: var(--status-pending-bg);
+    color: var(--status-pending);
+}
+
+/* 2-col grid for general fields inside right column tax card */
+.tax-general-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md) var(--space-lg);
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Inline subsection — stacks vertically inside the card */
+.tax-subsection-inline {
+    margin-bottom: var(--space-lg);
+}
+
+.tax-subsection-inline:last-child {
+    margin-bottom: 0;
+}
+
+.tax-subsection-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    font-family: var(--font-main);
+    margin: 0 0 var(--space-md) 0;
+}
+
+.tax-subsection-title i {
+    color: var(--primary-blue);
+    font-size: 11px;
+}
+
+/* General fields */
+.tax-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.tax-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tax-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-family: var(--font-main);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tax-field-value {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-weight: 500;
+}
+
+.tax-field-value--mono {
+    font-family: monospace;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--primary-blue);
+}
+
+/* Activity cards */
+.tax-activity-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.tax-activity-card--main {
+    border-left: 3px solid var(--primary-blue);
+}
+
+.tax-activity-card--secondary {
+    border-left: 3px solid var(--teal-accent);
+}
+
+.tax-activity-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+    flex-wrap: wrap;
+}
+
+.tax-activity-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    flex: 1;
+}
+
+.tax-activity-code {
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--font-main);
+    background: rgba(3, 94, 123, 0.1);
+    color: var(--primary-blue);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.tax-activity-addr {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--font-main);
+}
+
+.tax-activity-addr i {
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+/* No secondary activities */
+.tax-no-secondary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background: var(--surface-2);
+    border: 1px dashed var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: var(--font-main);
+}
+
+.tax-no-secondary i {
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+/* Responsive — tax general grid collapses to 1 col on small screens */
+@media (max-width: 600px) {
+    .tax-general-grid {
+        grid-template-columns: 1fr;
     }
 }
