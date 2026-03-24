@@ -16,10 +16,10 @@
       icon: "fa-solid fa-receipt",
       iconClass: "form-doc-icon--blue",
     },
-    "Déclaration d'existence": {
-      icon: "fa-solid fa-building-columns",
-      iconClass: "form-doc-icon--teal",
-    },
+    // "Déclaration d'existence": {
+    //   icon: "fa-solid fa-building-columns",
+    //   iconClass: "form-doc-icon--teal",
+    // },
   };
 
   /* DOM refs  */

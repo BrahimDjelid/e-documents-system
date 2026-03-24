@@ -24,7 +24,7 @@ function getDocBadgeClass(type) {
   const t = type.toLowerCase();
   if (t.includes("c20")) return "doc-badge doc-badge--c20";
   if (t.includes("extrait")) return "doc-badge doc-badge--extrait";
-  if (t.includes("d\u00e9cla")) return "doc-badge doc-badge--declaration";
+  // if (t.includes("d\u00e9cla")) return "doc-badge doc-badge--declaration";
   return "doc-badge";
 }
 
