@@ -44,7 +44,7 @@
                                 <div class="avatar-circle" id="avatar-circle">
                                     <img src="" alt="Profile photo" class="avatar-img" id="avatar-img"
                                         style="display:none;" />
-                                    <span class="avatar-initials" id="avatar-initials">–</span>
+                                    <span class="avatar-initials" id="avatar-initials">-</span>
                                 </div>
                                 <label class="avatar-upload-btn" id="avatar-upload-label" title="Change photo"
                                     style="display:none;">
@@ -52,7 +52,7 @@
                                     <input type="file" id="avatar-upload-input" accept="image/*" hidden />
                                 </label>
                             </div>
-                            <h3 class="avatar-name" id="avatar-name">–</h3>
+                            <h3 class="avatar-name" id="avatar-name">-</h3>
                             <p class="avatar-role">Citizen Account</p>
                             <span class="avatar-verified-badge">
                                 <i class="fa-solid fa-circle-check"></i>
@@ -69,28 +69,28 @@
                                         <i class="fa-regular fa-file-lines"></i>
                                     </div>
                                     <span class="summary-label">Total Requests</span>
-                                    <span class="summary-value" id="sum-total">–</span>
+                                    <span class="summary-value" id="sum-total">-</span>
                                 </li>
                                 <li class="summary-item">
                                     <div class="summary-icon summary-icon--green">
                                         <i class="fa-solid fa-circle-check"></i>
                                     </div>
                                     <span class="summary-label">Approved</span>
-                                    <span class="summary-value" id="sum-approved">–</span>
+                                    <span class="summary-value" id="sum-approved">-</span>
                                 </li>
                                 <li class="summary-item">
                                     <div class="summary-icon summary-icon--yellow">
                                         <i class="fa-regular fa-clock"></i>
                                     </div>
                                     <span class="summary-label">Pending</span>
-                                    <span class="summary-value" id="sum-pending">–</span>
+                                    <span class="summary-value" id="sum-pending">-</span>
                                 </li>
                                 <li class="summary-item">
                                     <div class="summary-icon summary-icon--red">
                                         <i class="fa-solid fa-circle-xmark"></i>
                                     </div>
                                     <span class="summary-label">Rejected</span>
-                                    <span class="summary-value" id="sum-rejected">–</span>
+                                    <span class="summary-value" id="sum-rejected">-</span>
                                 </li>
                             </ul>
                         </div>
@@ -102,78 +102,26 @@
                                     <i class="fa-solid fa-shield-halved"></i>
                                     <h4 class="card-section-title">Eligibility Status</h4>
                                 </div>
-                                <span class="eligibility-score" id="eligibility-score">–</span>
+                                <span class="eligibility-score" id="eligibility-score">-</span>
                             </div>
                             <ul class="eligibility-list">
                                 <li class="eligibility-item">
                                     <span class="eligibility-label">Civil Status</span>
-                                    <span class="eligibility-badge" id="elig-civil">–</span>
+                                    <span class="eligibility-badge" id="elig-civil">-</span>
                                 </li>
                                 <li class="eligibility-item">
                                     <span class="eligibility-label">Tax Compliance</span>
-                                    <span class="eligibility-badge" id="elig-tax">–</span>
+                                    <span class="eligibility-badge" id="elig-tax">-</span>
                                 </li>
                                 <li class="eligibility-item">
                                     <span class="eligibility-label">Identity Verified</span>
-                                    <span class="eligibility-badge" id="elig-identity">–</span>
+                                    <span class="eligibility-badge" id="elig-identity">-</span>
                                 </li>
                                 <li class="eligibility-item">
                                     <span class="eligibility-label">Address Confirmed</span>
-                                    <span class="eligibility-badge" id="elig-address">–</span>
+                                    <span class="eligibility-badge" id="elig-address">-</span>
                                 </li>
                             </ul>
-                        </div>
-
-                        <!-- Security & Password -->
-                        <div class="profile-card security-card">
-                            <div class="security-header">
-                                <div class="security-icon">
-                                    <i class="fa-solid fa-lock"></i>
-                                </div>
-                                <div>
-                                    <h4 class="card-section-title">Security &amp; Password</h4>
-                                    <p class="card-section-sub">Update your password</p>
-                                </div>
-                            </div>
-
-                            <div class="security-form">
-                                <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-current">Current Password</label>
-                                    <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-current"
-                                            placeholder="Enter current password" autocomplete="current-password" />
-                                        <button class="sec-toggle-pw" data-target="sec-current" type="button"
-                                            tabindex="-1">
-                                            <i class="fa-regular fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-new">New Password</label>
-                                    <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-new"
-                                            placeholder="Enter new password" autocomplete="new-password" />
-                                        <button class="sec-toggle-pw" data-target="sec-new" type="button" tabindex="-1">
-                                            <i class="fa-regular fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-confirm">Confirm New Password</label>
-                                    <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-confirm"
-                                            placeholder="Confirm new password" autocomplete="new-password" />
-                                        <button class="sec-toggle-pw" data-target="sec-confirm" type="button"
-                                            tabindex="-1">
-                                            <i class="fa-regular fa-eye"></i>
-                                        </button>
-                                    </div>
-                                    <span class="sec-error" id="sec-error" style="display:none;"></span>
-                                </div>
-                                <button class="btn-update-pw" id="btn-update-pw">
-                                    Update Password
-                                </button>
-                            </div>
                         </div>
 
                     </div>
@@ -295,12 +243,56 @@
                             </div>
                         </div>
 
-                        <!-- Recent Activity -->
-                        <div class="profile-card activity-card">
-                            <h4 class="card-section-title">Recent Activity</h4>
-                            <ul class="activity-list" id="activity-list">
-                                <!-- populated by JS -->
-                            </ul>
+                        <!-- Security & Password -->
+                        <div class="profile-card security-card">
+                            <div class="security-header">
+                                <div class="security-icon">
+                                    <i class="fa-solid fa-lock"></i>
+                                </div>
+                                <div>
+                                    <h4 class="card-section-title">Security &amp; Password</h4>
+                                    <p class="card-section-sub">Update your password</p>
+                                </div>
+                            </div>
+
+                            <div class="security-form">
+                                <div class="sec-field-group">
+                                    <label class="sec-label" for="sec-current">Current Password</label>
+                                    <div class="sec-input-wrap">
+                                        <input type="password" class="sec-input" id="sec-current"
+                                            placeholder="Enter current password" autocomplete="current-password" />
+                                        <button class="sec-toggle-pw" data-target="sec-current" type="button"
+                                            tabindex="-1">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="sec-field-group">
+                                    <label class="sec-label" for="sec-new">New Password</label>
+                                    <div class="sec-input-wrap">
+                                        <input type="password" class="sec-input" id="sec-new"
+                                            placeholder="Enter new password" autocomplete="new-password" />
+                                        <button class="sec-toggle-pw" data-target="sec-new" type="button" tabindex="-1">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="sec-field-group">
+                                    <label class="sec-label" for="sec-confirm">Confirm New Password</label>
+                                    <div class="sec-input-wrap">
+                                        <input type="password" class="sec-input" id="sec-confirm"
+                                            placeholder="Confirm new password" autocomplete="new-password" />
+                                        <button class="sec-toggle-pw" data-target="sec-confirm" type="button"
+                                            tabindex="-1">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <span class="sec-error" id="sec-error" style="display:none;"></span>
+                                </div>
+                                <button class="btn-update-pw" id="btn-update-pw">
+                                    Update Password
+                                </button>
+                            </div>
                         </div>
 
                     </div>

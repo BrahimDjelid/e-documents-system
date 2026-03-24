@@ -7,29 +7,6 @@
   let originalEmail = "";
   let originalPhone = "";
 
-  /* Mock recent activity*/
-  const MOCK_ACTIVITY = [
-    { type: "profile", title: "Profile updated", time: "2026-03-20 14:30" },
-    { type: "document", title: "Document requested", time: "2026-03-18 10:15" },
-    { type: "approved", title: "Request approved", time: "2026-03-15 09:00" },
-    { type: "login", title: "Login from new device", time: "2026-03-12 08:45" },
-    { type: "security", title: "Password changed", time: "2026-03-01 16:20" },
-  ];
-
-  const ACTIVITY_ICONS = {
-    profile: { icon: "fa-regular fa-user", cls: "activity-icon--profile" },
-    document: {
-      icon: "fa-regular fa-file-lines",
-      cls: "activity-icon--document",
-    },
-    approved: {
-      icon: "fa-solid fa-circle-check",
-      cls: "activity-icon--approved",
-    },
-    login: { icon: "fa-solid fa-shield-halved", cls: "activity-icon--login" },
-    security: { icon: "fa-solid fa-lock", cls: "activity-icon--security" },
-  };
-
   /* DOM refs*/
   const btnEditProfile = document.getElementById("btn-edit-profile");
   const btnSaveEdit = document.getElementById("btn-save-edit");
@@ -154,8 +131,6 @@
     /* Eligibility */
     renderEligibility(e);
 
-    /* Recent activity */
-    renderActivity();
   }
 
   function renderEligibility(e) {
@@ -187,23 +162,6 @@
     if (verifiedCount === fields.length) scoreEl.classList.add("full");
   }
 
-  function renderActivity() {
-    const list = document.getElementById("activity-list");
-    if (!list) return;
-    list.innerHTML = MOCK_ACTIVITY.map((item) => {
-      const cfg = ACTIVITY_ICONS[item.type] || ACTIVITY_ICONS.profile;
-      return `
-            <li class="activity-item">
-                <div class="activity-icon ${cfg.cls}">
-                    <i class="${cfg.icon}"></i>
-                </div>
-                <div class="activity-info">
-                    <div class="activity-title">${item.title}</div>
-                    <div class="activity-time">${item.time}</div>
-                </div>
-            </li>`;
-    }).join("");
-  }
 
   /* Edit mode */
   btnEditProfile.addEventListener("click", () => {
