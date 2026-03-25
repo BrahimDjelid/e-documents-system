@@ -240,7 +240,6 @@
 
   function renderEligibility(e) {
     const fields = [
-      { id: "elig-civil", value: e.civilStatus, label: "Verified" },
       { id: "elig-tax", value: e.taxCompliance, label: "Verified" },
       { id: "elig-identity", value: e.identityVerified, label: "Verified" },
       { id: "elig-address", value: e.addressConfirmed, label: "Verified" },

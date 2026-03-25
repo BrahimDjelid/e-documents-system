@@ -22,7 +22,6 @@
       icon: "fa-solid fa-receipt",
       iconClass: "form-doc-icon--blue",
     },
-    /* Déclaration d'existence — commented out, coming soon */
   };
 
   /* DOM ref */

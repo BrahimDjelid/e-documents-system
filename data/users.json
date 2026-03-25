@@ -12,10 +12,10 @@
       "phone": "+213 555 01 23 45",
       "address": "12 Rue Didouche Mourad, Annaba",
       "email": "brahim.djelid@email.com",
-      "nationalId": "123456789"
+      "nationalId": "123456789",
+      "civilStatus": "single"
     },
     "role": "user",
-
     "taxInfo": {
       "nature": "personne_physique",
       "mainActivity": {
@@ -34,27 +34,30 @@
       "commercialRegisterNumber": "RC-23/00-1234567 B 18",
       "taxIdentificationNumber": "123456789012345",
       "establishmentDate": "2022-06-10",
-      "taxRegime": "Régime réel"
+      "taxRegime": "Régime forfaitaire",
+      "taxStatus": "À jour",
+      "taxPayments": [{ "year": 2025, "type": "IRG", "paid": true }],
+      "declarations": {
+        "submitted": true
+      }
     },
-
     "eligibility": {
-      "civilStatus": true,
-      "taxCompliance": true,
       "identityVerified": true,
-      "addressConfirmed": false
+      "taxCompliance": true,
+      "addressConfirmed": true
     },
     "requests": [
       {
-        "requestId": "REQ-18-26-001",
+        "requestId": "REQ-26-03-001",
         "type": "C20",
-        "status": "pending",
-        "submittedAt": "2026-03-18"
+        "status": "approved",
+        "submittedAt": "2026-03-20"
       },
       {
-        "requestId": "REQ-18-26-002",
+        "requestId": "REQ-26-03-002",
         "type": "Extrait de rôle",
         "status": "approved",
-        "submittedAt": "2026-03-15"
+        "submittedAt": "2026-03-18"
       }
     ]
   },
@@ -66,15 +69,15 @@
     },
     "profile": {
       "firstName": "Amine",
-      "lastName": "Benali",
+      "lastName": "Haddad",
       "dateOfBirth": "1995-07-22",
       "phone": "+213 661 44 55 66",
       "address": "5 Boulevard Zighout Youcef, Alger",
       "email": "amine.benali@email.com",
-      "nationalId": "987654321"
+      "nationalId": "987654321",
+      "civilStatus": "married"
     },
     "role": "user",
-
     "taxInfo": {
       "nature": "personne_physique",
       "mainActivity": {
@@ -87,14 +90,19 @@
       "commercialRegisterNumber": "",
       "taxIdentificationNumber": "987654321098765",
       "establishmentDate": "2020-02-20",
-      "taxRegime": "Régime simplifié"
+      "taxRegime": "Régime forfaitaire",
+      "taxStatus": "Non à jour",
+      "taxPayments": [
+        { "year": 2025, "type": "IRG", "amount": 12000, "paid": false }
+      ],
+      "declarations": {
+        "submitted": true
+      }
     },
-
     "eligibility": {
-      "civilStatus": true,
-      "taxCompliance": false,
       "identityVerified": true,
-      "addressConfirmed": false
+      "taxCompliance": false,
+      "addressConfirmed": true
     },
     "requests": []
   },
@@ -111,10 +119,10 @@
       "phone": "+213 770 88 99 00",
       "address": "18 Rue des Frères Bouadou, Oran",
       "email": "fatima.zahra@email.com",
-      "nationalId": "555444333"
+      "nationalId": "555444333",
+      "civilStatus": "single"
     },
     "role": "user",
-
     "taxInfo": {
       "nature": "personne_physique",
       "mainActivity": {
@@ -127,18 +135,22 @@
       "commercialRegisterNumber": "",
       "taxIdentificationNumber": "555444333222111",
       "establishmentDate": "2023-01-12",
-      "taxRegime": "Régime forfaitaire"
+      "taxRegime": "Régime forfaitaire",
+      "taxStatus": "Non à jour",
+      "taxPayments": [
+        { "year": 2025, "type": "IRG", "amount": 8000, "paid": false }
+      ],
+      "declarations": {
+        "submitted": false
+      }
     },
-
     "eligibility": {
-      "civilStatus": false,
+      "identityVerified": true,
       "taxCompliance": false,
-      "identityVerified": false,
-      "addressConfirmed": false
+      "addressConfirmed": true
     },
     "requests": []
   },
-
   {
     "auth": {
       "id": "admin@dashboard.com",

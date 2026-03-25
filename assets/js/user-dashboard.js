@@ -159,7 +159,7 @@ async function initDashboard() {
     const eligibilityScore = document.getElementById("eligibility-score");
 
     const eligibilityItems = [
-      { key: "civilStatus", label: "Civil Status" },
+   
       { key: "taxCompliance", label: "Tax Compliance" },
       { key: "identityVerified", label: "Identity Verified" },
       { key: "addressConfirmed", label: "Address Confirmed" },
