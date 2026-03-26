@@ -153,14 +153,28 @@
   },
   {
     "auth": {
-      "id": "admin@dashboard.com",
+      "id": "admin-c20@dashboard.com",
       "idType": "email",
       "password": "admin1234"
     },
     "profile": {
       "firstName": "Admin",
-      "lastName": "User"
+      "lastName": "C20"
     },
-    "role": "admin"
+    "role": "admin",
+    "service": "C20"
+  },
+  {
+    "auth": {
+      "id": "admin-extrait@dashboard.com",
+      "idType": "email",
+      "password": "admin1234"
+    },
+    "profile": {
+      "firstName": "Admin",
+      "lastName": "Extrait"
+    },
+    "role": "admin",
+    "service": "Extrait de rôle"
   }
 ]
