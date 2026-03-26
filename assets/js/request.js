@@ -1,18 +1,18 @@
 /*
   On submit, builds a clean JSON payload ready for:
   POST /api/requests
-  Currently logs to console — replace the TODO block with a real fetch() when Flask is ready.
+  Currently logs to console - replace the TODO block with a real fetch() when Flask is ready.
 */
 
 (() => {
   "use strict";
 
-  /* Stat─ */
+  /* State */
   let currentStep = 1;
   let selectedDoc = null;
   let userData = null; // full user object from users.json
 
-  /* Doc confi */
+  /* Doc config */
   const DOC_CONFIG = {
     C20: {
       icon: "fa-regular fa-file-lines",
@@ -24,7 +24,7 @@
     },
   };
 
-  /* DOM ref */
+  /* DOM refs */
   const docCards = document.querySelectorAll(".doc-card");
   const btnContinue = document.getElementById("btn-step1-continue");
   const btnBack = document.getElementById("btn-step2-back");
@@ -44,7 +44,7 @@
     document.getElementById(`panel-step-${n}`),
   );
 
-  /* Helper─ */
+  /* Helpers */
   function showToast(msg, isError = false) {
     const toast = document.getElementById("req-toast");
     const msgEl = document.getElementById("req-toast-msg");
@@ -89,6 +89,64 @@
     return s.length <= 4 ? s : "****" + s.slice(-4);
   }
 
+  /* C20 validation */
+  function canRequestC20() {
+    if (!userData) {
+      showToast("User data not loaded", true);
+      return false;
+    }
+
+    const t = userData.taxInfo || {};
+    const e = userData.eligibility || {};
+
+    if (!e.identityVerified) {
+      showToast("Identity not verified", true);
+      return false;
+    }
+
+    if (userData.auth.id !== t.taxIdentificationNumber) {
+      showToast("NIF mismatch", true);
+      return false;
+    }
+
+    return true;
+  }
+
+  /* Compliance computation - never trust stored taxStatus */
+  function computeCompliance(user) {
+    const declared = user.taxInfo?.declarations?.submitted === true;
+    const paid = user.taxInfo?.taxPayments?.[0]?.paid === true;
+    return declared && paid;
+  }
+
+  /* Extrait de rôle validation */
+  function canRequestExtrait() {
+    if (!userData) {
+      showToast("User data not loaded", true);
+      return false;
+    }
+
+    const t = userData.taxInfo || {};
+    const e = userData.eligibility || {};
+
+    if (!e.identityVerified) {
+      showToast("Identity not verified", true);
+      return false;
+    }
+
+    if (userData.auth.id !== t.taxIdentificationNumber) {
+      showToast("NIF mismatch", true);
+      return false;
+    }
+
+    if (!t.taxPayments || t.taxPayments.length === 0) {
+      showToast("No tax records available", true);
+      return false;
+    }
+
+    return true;
+  }
+
   /* Load full user from users.json */
   async function loadUser() {
     const authId = sessionStorage.getItem("userId");
@@ -104,7 +162,7 @@
     }
   }
 
-  /* Step indicato */
+  /* Step indicator */
   function updateStepIndicator(toStep) {
     stepItems.forEach((item, i) => {
       const n = i + 1;
@@ -118,7 +176,7 @@
     });
   }
 
-  /* Panel transitio */
+  /* Panel transition */
   function goToStep(nextStep) {
     if (nextStep === currentStep) return;
     const currentPanel = stepPanels[currentStep - 1];
@@ -161,7 +219,7 @@
     goToStep(2);
   });
 
-  /* Step 2: Pre-fill form─ */
+  /* Step 2: Pre-fill form */
   function populateStep2() {
     const cfg = DOC_CONFIG[selectedDoc] || DOC_CONFIG["C20"];
     const docNameEl = document.getElementById("form-doc-name");
@@ -178,16 +236,14 @@
 
     const fullName = [p.firstName, p.lastName].filter(Boolean).join(" ");
 
-    /* Personal info fields */
     setField("pf-fullname", fullName);
     setField("pf-nationalid", maskNationalId(p.nationalId));
     setField("pf-dob", formatDOB(p.dateOfBirth));
     setField("pf-phone", p.phone);
     setField("pf-email", p.email);
 
-    /* Business / tax fields */
     const activityLabel = main.activityName
-      ? `${main.activityName}${main.activityCode ? " — Code " + main.activityCode : ""}`
+      ? `${main.activityName}${main.activityCode ? " - Code " + main.activityCode : ""}`
       : "-";
     setField("pf-main-activity", activityLabel);
     setField("pf-tax-regime", t.taxRegime || "-");
@@ -199,7 +255,7 @@
     if (el) el.value = value || "-";
   }
 
-  /* Declaration checkbo */
+  /* Declaration checkbox */
   declarationCheck.addEventListener("change", () => {
     btnSubmit.disabled = !declarationCheck.checked;
     declarationBox.classList.toggle("checked", declarationCheck.checked);
@@ -207,14 +263,17 @@
 
   btnBack.addEventListener("click", () => goToStep(1));
 
-  /* Step 2: Submi */
+  /* Submit button */
   btnSubmit.addEventListener("click", () => {
     if (!declarationCheck.checked) return;
+    if (selectedDoc === "C20" && !canRequestC20()) return;
+    if (selectedDoc === "Extrait de rôle" && !canRequestExtrait()) return;
     submitRequest();
   });
 
+  /* Submit request */
   async function submitRequest() {
-    const copies = document.getElementById("copies-select").value;
+    const copies = Number(document.getElementById("copies-select").value);
     const purpose = document.getElementById("purpose-textarea").value.trim();
     const reqId = generateRequestId();
     const now = new Date();
@@ -223,21 +282,18 @@
     const t = userData?.taxInfo || {};
     const main = t.mainActivity || {};
 
-    /* Clean payload — ready for Flask─ */
     const payload = {
       requestId: reqId,
       submittedAt: now.toISOString(),
       status: "pending",
-
-      /* Who is requesting */
       userId: sessionStorage.getItem("userId"),
-
-      /* What they're requesting */
       documentType: selectedDoc,
-      copies: Number(copies),
+      copies: copies,
       purpose: purpose || null,
 
-      /* Snapshot of personal info at time of request */
+      // Always computed - never trust stored taxStatus
+      taxStatus: computeCompliance(userData) ? "À jour" : "Non à jour",
+
       applicant: {
         fullName: [p.firstName, p.lastName].filter(Boolean).join(" "),
         nationalId: p.nationalId || null,
@@ -246,7 +302,6 @@
         email: p.email || null,
       },
 
-      /* Snapshot of business info at time of request */
       business: {
         mainActivityName: main.activityName || null,
         mainActivityCode: main.activityCode || null,
@@ -254,37 +309,42 @@
         taxRegime: t.taxRegime || null,
         commercialRegisterNumber: t.commercialRegisterNumber || null,
       },
+
+      // Only included for Extrait de rôle - undefined is stripped by JSON.stringify
+      taxPayments:
+        selectedDoc === "Extrait de rôle" ? t.taxPayments : undefined,
     };
 
-    /* TODO: replace console.log with real fetch when Flask is ready
-     *
-     * const res = await fetch("/api/requests", {
-     *     method: "POST",
-     *     headers: {
-     *         "Content-Type": "application/json",
-     *         "Authorization": `Bearer ${sessionStorage.getItem("token")}`,
-     *     },
-     *     body: JSON.stringify(payload),
-     * });
-     *
-     * if (!res.ok) {
-     *     showToast("Submission failed. Please try again.", true);
-     *     return;
-     * }
-     */
+    // TODO: replace with real fetch when Flask is ready
+    //
+    // const res = await fetch("/api/requests", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Authorization": `Bearer ${sessionStorage.getItem("token")}`,
+    //   },
+    //   body: JSON.stringify(payload),
+    // });
+    // if (!res.ok) {
+    //   showToast("Submission failed. Please try again.", true);
+    //   return;
+    // }
+    // const data = await res.json();
+    // console.log("[request.js] Server response:", data);
+
     console.log("[request.js] Payload ready for POST /api/requests:", payload);
 
-    /* Populate step 3 confirmation */
+    // Populate step 3 confirmation
     document.getElementById("confirm-req-id").textContent = reqId;
     document.getElementById("confirm-doc-type").textContent = selectedDoc;
     document.getElementById("confirm-copies").textContent =
-      copies + (copies === "1" ? " copy" : " copies");
+      copies + (copies === 1 ? " copy" : " copies");
     document.getElementById("confirm-date").textContent = formatDate(now);
 
     goToStep(3);
   }
 
-  /* Step 3: Copy request ID─ */
+  /* Step 3: Copy request ID */
   confirmCopyBtn.addEventListener("click", () => {
     const id = document.getElementById("confirm-req-id").textContent;
     navigator.clipboard
@@ -296,7 +356,7 @@
           confirmCopyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
         }, 2000);
       })
-      .catch(() => showToast("Could not copy — please copy manually.", true));
+      .catch(() => showToast("Could not copy - please copy manually.", true));
   });
 
   /* Step 3: Submit another */
