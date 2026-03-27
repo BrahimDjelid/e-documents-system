@@ -136,7 +136,7 @@ async function initDashboard() {
             (req) => `
           <tr>
             <td class="req-id">${req.requestId}</td>
-            <td><span class="${getDocBadgeClass(req.type)}">${req.type}</span></td>
+            <td><span class="${getDocBadgeClass(req.documentType)}">${req.documentType}</span></td>
             <td class="req-date">${formatDate(req.submittedAt)}</td>
             <td>${getStatusBadge(req.status)}</td>
             <td><button class="action-link" data-id="${req.requestId}">Details</button></td>
@@ -223,7 +223,7 @@ async function initDashboard() {
               <div class="download-item">
                 <div class="download-item-info">
                   <span class="download-item-id">${req.requestId}</span>
-                  <span class="download-item-type">${req.type}</span>
+                  <span class="download-item-type">${req.documentType}</span>
                 </div>
                 <button class="download-btn">
                   <i class="fa-solid fa-download"></i>

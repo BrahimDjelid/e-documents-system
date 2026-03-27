@@ -35,8 +35,24 @@
       "taxIdentificationNumber": "123456789012345",
       "establishmentDate": "2022-06-10",
       "taxRegime": "Régime forfaitaire",
-      "taxStatus": "À jour",
-      "taxPayments": [{ "year": 2025, "type": "IRG", "paid": true }],
+      "taxRecords": [
+        {
+          "type": "IRG",
+          "year": 2025,
+          "principal": 15000,
+          "penalties": 0,
+          "paidPrincipal": 15000,
+          "paidPenalties": 0
+        },
+        {
+          "type": "TAP",
+          "year": 2025,
+          "principal": 5000,
+          "penalties": 0,
+          "paidPrincipal": 5000,
+          "paidPenalties": 0
+        }
+      ],
       "declarations": {
         "submitted": true
       }
@@ -49,13 +65,13 @@
     "requests": [
       {
         "requestId": "REQ-26-03-001",
-        "type": "C20",
+        "documentType": "C20",
         "status": "approved",
         "submittedAt": "2026-03-20"
       },
       {
         "requestId": "REQ-26-03-002",
-        "type": "Extrait de rôle",
+        "documentType": "Extrait de rôle",
         "status": "approved",
         "submittedAt": "2026-03-18"
       }
@@ -91,9 +107,23 @@
       "taxIdentificationNumber": "987654321098765",
       "establishmentDate": "2020-02-20",
       "taxRegime": "Régime forfaitaire",
-      "taxStatus": "Non à jour",
-      "taxPayments": [
-        { "year": 2025, "type": "IRG", "amount": 12000, "paid": false }
+      "taxRecords": [
+        {
+          "type": "IRG",
+          "year": 2025,
+          "principal": 12000,
+          "penalties": 1500,
+          "paidPrincipal": 0,
+          "paidPenalties": 0
+        },
+        {
+          "type": "TAP",
+          "year": 2025,
+          "principal": 4000,
+          "penalties": 500,
+          "paidPrincipal": 4000,
+          "paidPenalties": 0
+        }
       ],
       "declarations": {
         "submitted": true
@@ -136,9 +166,15 @@
       "taxIdentificationNumber": "555444333222111",
       "establishmentDate": "2023-01-12",
       "taxRegime": "Régime forfaitaire",
-      "taxStatus": "Non à jour",
-      "taxPayments": [
-        { "year": 2025, "type": "IRG", "amount": 8000, "paid": false }
+      "taxRecords": [
+        {
+          "type": "IRG",
+          "year": 2025,
+          "principal": 8000,
+          "penalties": 800,
+          "paidPrincipal": 0,
+          "paidPenalties": 0
+        }
       ],
       "declarations": {
         "submitted": false

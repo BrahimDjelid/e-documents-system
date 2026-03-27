@@ -114,9 +114,15 @@
 
   /* Compliance computation - never trust stored taxStatus */
   function computeCompliance(user) {
-    const declared = user.taxInfo?.declarations?.submitted === true;
-    const paid = user.taxInfo?.taxPayments?.[0]?.paid === true;
-    return declared && paid;
+    const records = user.taxInfo?.taxRecords || [];
+    return (
+      records.length > 0 &&
+      records.every((r) => {
+        const total = r.principal + r.penalties;
+        const paid = r.paidPrincipal + r.paidPenalties;
+        return paid >= total;
+      })
+    );
   }
 
   /* Extrait de rôle validation */
@@ -139,7 +145,7 @@
       return false;
     }
 
-    if (!t.taxPayments || t.taxPayments.length === 0) {
+    if (!t.taxRecords || t.taxRecords.length === 0) {
       showToast("No tax records available", true);
       return false;
     }
@@ -311,8 +317,7 @@
       },
 
       // Only included for Extrait de rôle - undefined is stripped by JSON.stringify
-      taxPayments:
-        selectedDoc === "Extrait de rôle" ? t.taxPayments : undefined,
+      ...(selectedDoc === "Extrait de rôle" && { taxRecords: t.taxRecords }),
     };
 
     // TODO: replace with real fetch when Flask is ready

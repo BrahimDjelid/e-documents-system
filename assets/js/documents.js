@@ -101,7 +101,7 @@ function renderTable(requests) {
       return `
       <tr>
         <td class="req-id">${req.requestId}</td>
-        <td><span class="${getDocBadgeClass(req.type)}">${req.type}</span></td>
+        <td><span class="${getDocBadgeClass(req.documentType)}">${req.documentType}</span></td>
         <td class="req-date">${formatDate(req.submittedAt)}</td>
         <td>${getStatusBadgeHTML(req.status)}</td>
         <td>
@@ -150,9 +150,9 @@ function applyFilters() {
     const matchSearch =
       !query ||
       req.requestId.toLowerCase().includes(query) ||
-      req.type.toLowerCase().includes(query);
+      req.documentType.toLowerCase().includes(query);
 
-    const matchType = !type || req.type === type;
+    const matchType = !type || req.documentType === type;
     const matchStatus = !status || req.status === status;
 
     return matchSearch && matchType && matchStatus;
@@ -210,7 +210,7 @@ function openModal(requestId) {
   if (!req) return;
 
   modalReqId.textContent = req.requestId;
-  modalDocBadge.textContent = req.type;
+  modalDocBadge.textContent = req.documentType;
   modalDocBadge.className = "modal-doc-type";
   modalDate.textContent = formatDate(req.submittedAt);
   modalStatusBadge.innerHTML = getStatusBadgeHTML(req.status);
