@@ -59,9 +59,35 @@
   const sidebarUserName = document.getElementById("sidebar-user-name");
   const topbarAvatar = document.getElementById("topbar-avatar");
 
-  if (sidebarAvatar) sidebarAvatar.textContent = initial;
-  if (topbarAvatar) topbarAvatar.textContent = initial;
+  const userId = sessionStorage.getItem("userId");
+  const avatar = localStorage.getItem(`avatar_${userId}`);
+
+  function applyAvatar(el, initial) {
+    if (!el) return;
+
+    if (avatar) {
+      el.innerHTML = `<img src="${avatar}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+    } else {
+      el.textContent = initial;
+    }
+  }
+
+  applyAvatar(sidebarAvatar, initial);
+  applyAvatar(topbarAvatar, initial);
+
   if (sidebarUserName) sidebarUserName.textContent = fullName;
+
+  if (topbarAvatar) {
+    topbarAvatar.addEventListener("click", () => {
+      const role = sessionStorage.getItem("role");
+
+      if (role === "admin") {
+        window.location.href = "../admin/profile.html";
+      } else {
+        window.location.href = "../user/profile.html";
+      }
+    });
+  }
 
   // Re-init dark mode toggle
   const themeBtn = document.getElementById("theme-toggle");
