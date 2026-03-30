@@ -114,15 +114,9 @@
 
   /* Compliance computation - never trust stored taxStatus */
   function computeCompliance(user) {
-    const records = user.taxInfo?.taxRecords || [];
-    return (
-      records.length > 0 &&
-      records.every((r) => {
-        const total = r.principal + r.penalties;
-        const paid = r.paidPrincipal + r.paidPenalties;
-        return paid >= total;
-      })
-    );
+    const declared = user.taxInfo?.declarations?.submitted === true;
+    const paid = user.taxInfo?.taxPayments?.[0]?.paid === true;
+    return declared && paid;
   }
 
   /* Extrait de rôle validation */
@@ -145,7 +139,7 @@
       return false;
     }
 
-    if (!t.taxRecords || t.taxRecords.length === 0) {
+    if (!t.taxPayments || t.taxPayments.length === 0) {
       showToast("No tax records available", true);
       return false;
     }
@@ -279,7 +273,6 @@
 
   /* Submit request */
   async function submitRequest() {
-    const copies = Number(document.getElementById("copies-select").value);
     const purpose = document.getElementById("purpose-textarea").value.trim();
     const reqId = generateRequestId();
     const now = new Date();
@@ -294,7 +287,6 @@
       status: "pending",
       userId: sessionStorage.getItem("userId"),
       documentType: selectedDoc,
-      copies: copies,
       purpose: purpose || null,
 
       // Always computed - never trust stored taxStatus
@@ -317,7 +309,8 @@
       },
 
       // Only included for Extrait de rôle - undefined is stripped by JSON.stringify
-      ...(selectedDoc === "Extrait de rôle" && { taxRecords: t.taxRecords }),
+      taxPayments:
+        selectedDoc === "Extrait de rôle" ? t.taxPayments : undefined,
     };
 
     // TODO: replace with real fetch when Flask is ready
@@ -342,8 +335,6 @@
     // Populate step 3 confirmation
     document.getElementById("confirm-req-id").textContent = reqId;
     document.getElementById("confirm-doc-type").textContent = selectedDoc;
-    document.getElementById("confirm-copies").textContent =
-      copies + (copies === 1 ? " copy" : " copies");
     document.getElementById("confirm-date").textContent = formatDate(now);
 
     goToStep(3);
@@ -375,7 +366,6 @@
     declarationCheck.checked = false;
     declarationBox.classList.remove("checked");
     btnSubmit.disabled = true;
-    document.getElementById("copies-select").value = "1";
     document.getElementById("purpose-textarea").value = "";
     goToStep(1);
   });

@@ -486,42 +486,6 @@
     margin-left: 4px;
 }
 
-/* Select */
-.select-wrapper {
-    position: relative;
-}
-
-.form-select {
-    width: 100%;
-    appearance: none;
-    background: var(--input-bg);
-    border: 1.5px solid var(--input-border);
-    border-radius: var(--radius-md);
-    padding: 11px var(--space-xl) 11px var(--space-md);
-    font-size: 14px;
-    font-family: var(--font-main);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-}
-
-.form-select:focus {
-    outline: none;
-    border-color: var(--primary-blue);
-    background: var(--input-bg-focus);
-    box-shadow: 0 0 0 3px var(--input-focus-ring);
-}
-
-.select-arrow {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-    font-size: 12px;
-    pointer-events: none;
-}
-
 /* Textarea */
 .form-textarea {
     width: 100%;
