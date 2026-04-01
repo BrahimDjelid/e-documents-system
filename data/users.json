@@ -53,9 +53,7 @@
           "paidPenalties": 0
         }
       ],
-      "declarations": {
-        "submitted": true
-      }
+      "declarations": { "submitted": true }
     },
     "eligibility": {
       "identityVerified": true,
@@ -67,13 +65,29 @@
         "requestId": "REQ-26-03-001",
         "documentType": "C20",
         "status": "approved",
-        "submittedAt": "2026-03-20"
+        "submittedAt": "2026-03-20",
+        "note": ""
       },
       {
         "requestId": "REQ-26-03-002",
         "documentType": "Extrait de rôle",
         "status": "approved",
-        "submittedAt": "2026-03-18"
+        "submittedAt": "2026-03-18",
+        "note": ""
+      },
+      {
+        "requestId": "REQ-26-03-007",
+        "documentType": "C20",
+        "status": "pending",
+        "submittedAt": "2026-03-25",
+        "note": ""
+      },
+      {
+        "requestId": "REQ-26-03-008",
+        "documentType": "Extrait de rôle",
+        "status": "pending",
+        "submittedAt": "2026-03-26",
+        "note": ""
       }
     ]
   },
@@ -125,16 +139,29 @@
           "paidPenalties": 0
         }
       ],
-      "declarations": {
-        "submitted": true
-      }
+      "declarations": { "submitted": true }
     },
     "eligibility": {
       "identityVerified": true,
       "taxCompliance": false,
       "addressConfirmed": true
     },
-    "requests": []
+    "requests": [
+      {
+        "requestId": "REQ-26-03-003",
+        "documentType": "C20",
+        "status": "pending",
+        "submittedAt": "2026-03-22",
+        "note": ""
+      },
+      {
+        "requestId": "REQ-26-03-004",
+        "documentType": "Extrait de rôle",
+        "status": "pending",
+        "submittedAt": "2026-03-23",
+        "note": ""
+      }
+    ]
   },
   {
     "auth": {
@@ -176,16 +203,29 @@
           "paidPenalties": 0
         }
       ],
-      "declarations": {
-        "submitted": false
-      }
+      "declarations": { "submitted": false }
     },
     "eligibility": {
       "identityVerified": true,
       "taxCompliance": false,
       "addressConfirmed": true
     },
-    "requests": []
+    "requests": [
+      {
+        "requestId": "REQ-26-03-005",
+        "documentType": "C20",
+        "status": "pending",
+        "submittedAt": "2026-03-24",
+        "note": ""
+      },
+      {
+        "requestId": "REQ-26-03-006",
+        "documentType": "C20",
+        "status": "rejected",
+        "submittedAt": "2026-03-10",
+        "note": "Missing supporting documentation."
+      }
+    ]
   },
   {
     "auth": {
@@ -193,10 +233,7 @@
       "idType": "email",
       "password": "admin1234"
     },
-    "profile": {
-      "firstName": "Admin",
-      "lastName": "C20"
-    },
+    "profile": { "firstName": "Admin", "lastName": "C20" },
     "role": "admin",
     "service": "C20"
   },
@@ -206,10 +243,7 @@
       "idType": "email",
       "password": "admin1234"
     },
-    "profile": {
-      "firstName": "Admin",
-      "lastName": "Extrait"
-    },
+    "profile": { "firstName": "Admin", "lastName": "Extrait" },
     "role": "admin",
     "service": "Extrait de rôle"
   }

@@ -180,6 +180,7 @@ async function handleLogin() {
 
     // Redirect based on role
     if (match.role === "admin") {
+      sessionStorage.setItem("service",match.service)
       window.location.href = "admin/dashboard.html";
     } else if (match.role === "user") {
       window.location.href = "user/dashboard.html";

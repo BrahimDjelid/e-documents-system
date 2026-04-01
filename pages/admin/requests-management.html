@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Request Management - e-Documents</title>
+
+    <link rel="stylesheet" href="../../assets/css/all.min.css" />
+    <link rel="stylesheet" href="../../assets/css/requests-management.css" />
+</head>
+
+<body data-page="requests-management" data-title="Request Management">
+    <div class="dashboard-page">
+
+        <div id="sidebar-mount"></div>
+
+        <div class="dashboard-main">
+            <div id="topbar-mount"></div>
+
+            <main class="dashboard-content page-transition">
+
+                <!-- Service Banner -->
+                <div class="service-banner" id="service-banner">
+                    <div class="service-banner-left">
+                        <div class="service-icon" id="service-icon">
+                            <i class="fa-regular fa-file-lines"></i>
+                        </div>
+                        <div>
+                            <h2 class="service-title" id="service-title">-</h2>
+                            <p class="service-sub">You are managing requests for this document type only</p>
+                        </div>
+                    </div>
+                    <div class="service-stats">
+                        <div class="service-stat">
+                            <span class="service-stat-value" id="stat-total">-</span>
+                            <span class="service-stat-label">Total</span>
+                        </div>
+                        <div class="service-stat">
+                            <span class="service-stat-value stat-pending" id="stat-pending">-</span>
+                            <span class="service-stat-label">Pending</span>
+                        </div>
+                        <div class="service-stat">
+                            <span class="service-stat-value stat-approved" id="stat-approved">-</span>
+                            <span class="service-stat-label">Approved</span>
+                        </div>
+                        <div class="service-stat">
+                            <span class="service-stat-value stat-rejected" id="stat-rejected">-</span>
+                            <span class="service-stat-label">Rejected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="search-input" class="search-input"
+                            placeholder="Search by Request ID or user name..." autocomplete="off" />
+                        <button class="search-clear" id="search-clear" style="display:none;">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <select class="filter-select" id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <span class="results-count" id="results-count"></span>
+                </div>
+
+                <!-- Requests Table -->
+                <div class="rm-card">
+
+                    <div class="empty-state" id="empty-no-data" style="display:none;">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <p>No requests found</p>
+                        <span>No requests have been submitted for your document type yet.</span>
+                    </div>
+
+                    <div class="empty-state" id="empty-no-results" style="display:none;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <p>No results found</p>
+                        <span>Try adjusting your search or filter.</span>
+                    </div>
+
+                    <div class="table-wrapper" id="table-wrapper">
+                        <table class="rm-table">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>User</th>
+                                    <th>Submitted</th>
+                                    <th>Compliance</th>
+                                    <th>Recommendation</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rm-tbody">
+                                <!-- filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-backdrop" id="modal-backdrop">
+        <div class="modal" id="rm-modal" role="dialog" aria-modal="true">
+
+            <!-- Modal header -->
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <h3 class="modal-title" id="modal-req-id">-</h3>
+                    <p class="modal-user-name" id="modal-user-name">-</p>
+                </div>
+                <button class="modal-close" id="modal-close" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+                <!-- Applicant info -->
+                <div class="modal-section">
+                    <div class="modal-section-label">
+                        <i class="fa-regular fa-user"></i> Applicant
+                    </div>
+                    <div class="modal-info-grid">
+                        <div class="modal-info-item">
+                            <span class="modal-info-key">NIF</span>
+                            <span class="modal-info-val" id="modal-nif">-</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-key">Date of Birth</span>
+                            <span class="modal-info-val" id="modal-dob">-</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-key">Phone</span>
+                            <span class="modal-info-val" id="modal-phone">-</span>
+                        </div>
+                        <div class="modal-info-item">
+                            <span class="modal-info-key">Email</span>
+                            <span class="modal-info-val" id="modal-email">-</span>
+                        </div>
+                        <div class="modal-info-item modal-info-item--full">
+                            <span class="modal-info-key">Tax Regime</span>
+                            <span class="modal-info-val" id="modal-tax-regime">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance -->
+                <div class="modal-section">
+                    <div class="modal-section-label">
+                        <i class="fa-solid fa-scale-balanced"></i> Tax Compliance
+                    </div>
+                    <div class="compliance-row">
+                        <span class="compliance-badge" id="modal-compliance-badge">-</span>
+                        <span class="recommendation-badge" id="modal-recommendation-badge">-</span>
+                    </div>
+                </div>
+
+                <!-- Tax records - only for Extrait de rôle -->
+                <div class="modal-section" id="modal-tax-records-section" style="display:none;">
+                    <div class="modal-section-label">
+                        <i class="fa-solid fa-table-list"></i> Tax Records
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="tax-records-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Year</th>
+                                    <th>Principal</th>
+                                    <th>Penalties</th>
+                                    <th>Paid</th>
+                                    <th>Remaining</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modal-tax-records-tbody">
+                                <!-- filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Status selector -->
+                <div class="modal-section">
+                    <div class="modal-section-label">
+                        <i class="fa-solid fa-circle-half-stroke"></i> New Status
+                    </div>
+                    <div class="status-options">
+                        <button class="status-option" data-status="pending" id="status-opt-pending">
+                            <i class="fa-regular fa-clock"></i>
+                            Pending
+                        </button>
+                        <button class="status-option" data-status="approved" id="status-opt-approved">
+                            <i class="fa-solid fa-circle-check"></i>
+                            Approved
+                        </button>
+                        <button class="status-option" data-status="rejected" id="status-opt-rejected">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                            Rejected
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin notes -->
+                <div class="modal-section">
+                    <div class="modal-section-label">
+                        <i class="fa-regular fa-note-sticky"></i> Admin Notes
+                        <span class="optional-tag">(optional)</span>
+                    </div>
+                    <textarea class="modal-notes-input" id="modal-notes"
+                        placeholder="Add a note visible to the citizen..." rows="3"></textarea>
+                </div>
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button class="btn-cancel" id="modal-cancel">Cancel</button>
+                <button class="btn-save" id="modal-save">
+                    <i class="fa-solid fa-check"></i>
+                    Save Changes
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="rm-toast" id="rm-toast">
+        <i class="fa-solid fa-circle-check rm-toast-icon" id="rm-toast-icon"></i>
+        <span id="rm-toast-msg"></span>
+    </div>
+
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/router.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script src="../../assets/js/requests-management.js"></script>
+</body>
+
+</html>
