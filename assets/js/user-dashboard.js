@@ -31,11 +31,7 @@ function getDocBadgeClass(type) {
 //  Main
 async function initDashboard() {
   try {
-    const res = await fetch("../../data/users.json");
-    const users = await res.json();
-
-    // Find logged-in user by auth.id
-    const user = users.find((u) => u.auth.id === userId);
+    const user = await apiGetCurrentUser();
 
     if (!user) {
       // User not found in data — clear session and redirect
@@ -159,7 +155,6 @@ async function initDashboard() {
     const eligibilityScore = document.getElementById("eligibility-score");
 
     const eligibilityItems = [
-   
       { key: "taxCompliance", label: "Tax Compliance" },
       { key: "identityVerified", label: "Identity Verified" },
       { key: "addressConfirmed", label: "Address Confirmed" },

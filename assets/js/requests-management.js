@@ -88,7 +88,7 @@ function showToast(msg, isError = false) {
   toastTimer = setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
-// Compliance - always recomputed, never trusted 
+// Compliance - always recomputed, never trusted
 function computeCompliance(taxRecords) {
   if (!taxRecords || taxRecords.length === 0) return false;
   return taxRecords.every((r) => {
@@ -98,34 +98,12 @@ function computeCompliance(taxRecords) {
   });
 }
 
-// Status override from localStorage (mock only)
-function getStoredStatus(requestId) {
-  try {
-    const stored = JSON.parse(localStorage.getItem("req_overrides") || "{}");
-    return stored[requestId] || null;
-  } catch {
-    return null;
-  }
-}
-
-function saveStoredDecision(requestId, status, note) {
-  try {
-    const stored = JSON.parse(localStorage.getItem("req_overrides") || "{}");
-    stored[requestId] = { status, note };
-    localStorage.setItem("req_overrides", JSON.stringify(stored));
-  } catch (err) {
-    console.error("localStorage error:", err);
-  }
-}
-
 function getEffectiveStatus(req) {
-  const override = getStoredStatus(req.requestId);
-  return override ? override.status : req.status;
+  return req.status;
 }
 
 function getEffectiveNote(req) {
-  const override = getStoredStatus(req.requestId);
-  return override ? override.note : req.note || "";
+  return req.note || "";
 }
 
 // Setup service banner
@@ -136,7 +114,7 @@ function setupBanner() {
   }
 }
 
-// Build stats 
+// Build stats
 function updateStats() {
   const total = allRequests.length;
   const pending = allRequests.filter(
@@ -341,24 +319,21 @@ statusOptions.forEach((opt) => {
 });
 
 // Save changes
-modalSave.addEventListener("click", () => {
+modalSave.addEventListener("click", async () => {
   if (!activeRequest || !selectedStatus) return;
 
   const note = modalNotes.value.trim();
 
-  // TODO: Replace with real Flask call when backend is ready:
-  // await fetch(`/api/requests/${activeRequest.requestId}/decision`, {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({
-  //     status: selectedStatus,
-  //     processedBy: adminId,
-  //     note: note || null
-  //   })
-  // });
+  try {
+    await apiSaveDecision(activeRequest.requestId, selectedStatus, note);
+  } catch (err) {
+    showToast("Could not save decision. Please try again.", true);
+    return;
+  }
 
-  // Mock: save to localStorage
-  saveStoredDecision(activeRequest.requestId, selectedStatus, note);
+  // Update local state to reflect the saved decision immediately
+  activeRequest.status = selectedStatus;
+  activeRequest.note = note;
 
   closeModal();
   updateStats();
@@ -369,8 +344,7 @@ modalSave.addEventListener("click", () => {
     rejected: "Request rejected",
     pending: "Request set to pending",
   };
-  const isError = false;
-  showToast(labels[selectedStatus] || "Status updated", isError);
+  showToast(labels[selectedStatus] || "Status updated");
 });
 
 // Close events
@@ -396,41 +370,7 @@ searchClear.addEventListener("click", () => {
 // Load data
 async function loadRequests() {
   try {
-    // TODO: Replace with Flask endpoint when ready:
-    // const res = await fetch("/api/requests", {
-    //   headers: { Authorization: `Bearer ${token}` }
-    // });
-    const res = await fetch("../../data/users.json");
-    const users = await res.json();
-
-    // Collect all requests from all users, enrich with user data
-    allRequests = [];
-
-    users.forEach((user) => {
-      if (user.role !== "user") return;
-      const requests = user.requests || [];
-      const profile = user.profile || {};
-      const taxInfo = user.taxInfo || {};
-
-      requests.forEach((req) => {
-        // Filter by this admin's service
-        if (req.documentType !== adminService) return;
-
-        allRequests.push({
-          ...req,
-          // enrich with user data for display
-          _fullName: [profile.firstName, profile.lastName]
-            .filter(Boolean)
-            .join(" "),
-          _nif: user.auth.id,
-          _dob: profile.dateOfBirth || null,
-          _phone: profile.phone || null,
-          _email: profile.email || null,
-          _taxRegime: taxInfo.taxRegime || null,
-          _taxRecords: taxInfo.taxRecords || [],
-        });
-      });
-    });
+    allRequests = await apiGetRequests();
 
     // Sort: pending first, then by date descending
     allRequests.sort((a, b) => {
@@ -454,5 +394,5 @@ async function loadRequests() {
   }
 }
 
-// Init 
+// Init
 loadRequests();

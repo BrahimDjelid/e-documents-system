@@ -274,10 +274,8 @@ filterStatus.addEventListener("change", applyFilters);
 // Init
 async function init() {
   try {
-    const res = await fetch("../../data/users.json");
-    const users = await res.json();
-
-    const user = users.find((u) => u.auth.id === userId);
+    const user = await apiGetCurrentUser();
+    
     if (!user) {
       sessionStorage.clear();
       window.location.replace("../../index.html");

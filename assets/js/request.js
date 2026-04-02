@@ -147,17 +147,12 @@
     return true;
   }
 
-  /* Load full user from users.json */
+  /* Load current user via API */
   async function loadUser() {
-    const authId = sessionStorage.getItem("userId");
-    if (!authId) return null;
     try {
-      const res = await fetch("../../data/users.json");
-      if (!res.ok) throw new Error("fetch failed");
-      const users = await res.json();
-      return users.find((u) => u.auth && u.auth.id === authId) || null;
+      return await apiGetCurrentUser();
     } catch (err) {
-      console.warn("[request.js] Falling back to sessionStorage:", err);
+      console.warn("[request.js] Could not load user:", err);
       return null;
     }
   }
@@ -313,24 +308,12 @@
         selectedDoc === "Extrait de rôle" ? t.taxPayments : undefined,
     };
 
-    // TODO: replace with real fetch when Flask is ready
-    //
-    // const res = await fetch("/api/requests", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "Authorization": `Bearer ${sessionStorage.getItem("token")}`,
-    //   },
-    //   body: JSON.stringify(payload),
-    // });
-    // if (!res.ok) {
-    //   showToast("Submission failed. Please try again.", true);
-    //   return;
-    // }
-    // const data = await res.json();
-    // console.log("[request.js] Server response:", data);
-
-    console.log("[request.js] Payload ready for POST /api/requests:", payload);
+    try {
+      await apiSubmitRequest(payload);
+    } catch (err) {
+      showToast("Submission failed. Please try again.", true);
+      return;
+    }
 
     // Populate step 3 confirmation
     document.getElementById("confirm-req-id").textContent = reqId;

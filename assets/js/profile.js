@@ -65,18 +65,12 @@
     if (el) el.value = value || "-";
   }
 
-  /* Fetch user from users.json */
+  /* Load current user via API */
   async function loadUser() {
-    const authId = sessionStorage.getItem("userId");
-    if (!authId) return null;
-
     try {
-      const res = await fetch("../../data/users.json");
-      if (!res.ok) throw new Error("fetch failed");
-      const users = await res.json();
-      return users.find((u) => u.auth && u.auth.id === authId) || null;
+      return await apiGetCurrentUser();
     } catch (err) {
-      console.warn("[profile.js] Could not load users.json:", err);
+      console.warn("[profile.js] Could not load user:", err);
       return null;
     }
   }
