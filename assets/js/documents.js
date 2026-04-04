@@ -34,7 +34,7 @@ let toastTimer = null;
 
 // Helpers
 function formatDate(str) {
-  if (!str) return "—";
+  if (!str) return "-";
   return new Date(str).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
@@ -60,8 +60,14 @@ function getStatusBadgeHTML(status) {
   </span>`;
 }
 
-function showToast(message) {
+function showToast(message, isError = false) {
   toastMsg.textContent = message;
+
+  toast.classList.remove("error");
+  if (isError) {
+    toast.classList.add("error");
+  }
+
   toast.classList.add("show");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove("show"), 3500);
@@ -131,8 +137,21 @@ function renderTable(requests) {
   });
 
   tbody.querySelectorAll(".btn-dl").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      showToast("Download will be available once the backend is connected.");
+    btn.addEventListener("click", async () => {
+      const req = allRequests.find((r) => r.requestId === btn.dataset.id);
+      if (!req) return;
+
+      try {
+        await apiDownloadDocument(req.requestId, req.documentType);
+      } catch (err) {
+        if (err.message === "MOCK") {
+          showToast(
+            "Download will be available once the backend is connected.",
+          );
+        } else {
+          showToast("Download failed. Please try again.", true);
+        }
+      }
     });
   });
 }
@@ -244,8 +263,20 @@ function closeModal() {
 
 modalClose.addEventListener("click", closeModal);
 modalCloseBtn.addEventListener("click", closeModal);
-modalDownloadBtn.addEventListener("click", () => {
-  showToast("Download will be available once the backend is connected.");
+modalDownloadBtn.addEventListener("click", async () => {
+  const reqId = modalReqId.textContent;
+  const req = allRequests.find((r) => r.requestId === reqId);
+  if (!req) return;
+
+  try {
+    await apiDownloadDocument(req.requestId, req.documentType);
+  } catch (err) {
+    if (err.message === "MOCK") {
+      showToast("Download will be available once the backend is connected.");
+    } else {
+      showToast("Download failed. Please try again.", true);
+    }
+  }
 });
 
 // Close on backdrop click
@@ -275,7 +306,7 @@ filterStatus.addEventListener("change", applyFilters);
 async function init() {
   try {
     const user = await apiGetCurrentUser();
-    
+
     if (!user) {
       sessionStorage.clear();
       window.location.replace("../../index.html");
@@ -322,7 +353,7 @@ async function init() {
         : "None rejected",
     );
 
-    // Initial render — show all
+    // Initial render - show all
     renderTable(allRequests);
 
     // Auto-open modal if ?id= param is in the URL

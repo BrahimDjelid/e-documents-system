@@ -1,4 +1,4 @@
-// theme.js — Dark mode toggle
+// theme.js - Dark mode toggle
 // Used on ALL pages (login + all dashboard pages)
 
 // Apply saved theme immediately

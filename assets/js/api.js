@@ -1,17 +1,11 @@
-// ================================================
-// api.js — Centralized API layer
-//
+// api.js - Centralized API layer
 // USE_MOCK = true  → reads from users.json (no backend needed)
 // USE_MOCK = false → calls Flask REST API
-//
+
 // When Flask is ready:
 //   1. Set USE_MOCK = false
 //   2. Set API_BASE to your production server URL
-//   3. Done — entire app switches to Flask
-//
-// Load this file BEFORE any page-specific JS:
-//   <script src="../../assets/js/api.js"></script>
-// ================================================
+//   3. Done - entire app switches to Flask
 
 const USE_MOCK = true;
 const API_BASE = "http://localhost:5000";
@@ -55,12 +49,10 @@ function _applyOverrides(requests) {
   }
 }
 
-// ================================================
 // AUTH
-// ================================================
 
 /**
- * Login — detect role from input format.
+ * Login - detect role from input format.
  * Returns user object on success, throws on failure.
  *
  * Flask replacement:
@@ -94,9 +86,7 @@ async function apiLogin(id, password) {
   return res.json();
 }
 
-// ================================================
 // USER
-// ================================================
 
 /**
  * Get the full object for the currently logged-in user.
@@ -127,9 +117,7 @@ async function apiGetCurrentUser() {
   return res.json();
 }
 
-// ================================================
-// REQUESTS — User side
-// ================================================
+// REQUESTS - User side
 
 /**
  * Submit a new document request.
@@ -144,7 +132,7 @@ async function apiGetCurrentUser() {
  */
 async function apiSubmitRequest(payload) {
   if (USE_MOCK) {
-    // Mock: just log — cannot write to users.json from browser
+    // Mock: just log - cannot write to users.json from browser
     console.log("[api.js | MOCK] POST /api/requests →", payload);
     // Return a fake success response matching Flask shape
     return { requestId: payload.requestId, status: "pending" };
@@ -160,9 +148,7 @@ async function apiSubmitRequest(payload) {
   return res.json();
 }
 
-// ================================================
-// REQUESTS — Admin side
-// ================================================
+// REQUESTS - Admin side
 
 /**
  * Get all requests assigned to the logged-in admin's service.
@@ -190,7 +176,7 @@ async function apiGetRequests() {
         if (req.documentType !== adminService) return;
         enriched.push({
           ...req,
-          // Enrich with user data — mirrors what Flask will return
+          // Enrich with user data - mirrors what Flask will return
           _fullName: [profile.firstName, profile.lastName]
             .filter(Boolean)
             .join(" "),
@@ -252,4 +238,57 @@ async function apiSaveDecision(requestId, status, note = "") {
   });
   if (!res.ok) throw new Error("Could not save decision");
   return res.json();
+}
+
+// USER - Password change
+
+/**
+ * Change the logged-in user's password.
+ *
+ * Flask replacement:
+ *   POST /api/user/password
+ *   Headers: Authorization: Bearer {token}
+ *   Body: { currentPassword, newPassword }
+ */
+async function apiChangePassword(currentPassword, newPassword) {
+  if (USE_MOCK) {
+    console.log("[api.js | MOCK] POST /api/user/password →", {
+      currentPassword: "***",
+      newPassword: "***",
+    });
+    return { success: true };
+  }
+
+  // Flask
+  const res = await fetch(`${API_BASE}/api/user/password`, {
+    method: "POST",
+    headers: _authHeaders(),
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  if (!res.ok) throw new Error("Password update failed");
+  return res.json();
+}
+
+
+// USER - Download Document
+async function apiDownloadDocument(requestId, documentType) {
+  if (USE_MOCK) {
+    console.log("[api.js | MOCK] GET /api/requests/" + requestId + "/document");
+    // Can't generate a real PDF - show toast instead
+    throw new Error("MOCK");
+  }
+
+  // Flask - fetch the PDF as a blob and trigger download
+  const res = await fetch(`${API_BASE}/api/requests/${requestId}/document`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new Error("Download failed");
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${documentType}_${requestId}.pdf`;
+  a.click();
+  URL.revokeObjectURL(url);
 }

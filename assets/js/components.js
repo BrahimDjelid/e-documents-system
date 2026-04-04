@@ -1,4 +1,4 @@
-// components.js — Loads sidebar + topbar into page
+// components.js - Loads sidebar + topbar into page
 // Wires up: active link, user info, avatar,
 // page title, dark mode toggle
 
@@ -52,7 +52,7 @@
   const firstName = sessionStorage.getItem("userFirstName") || "";
   const lastName = sessionStorage.getItem("userLastName") || "";
   const fullName =
-    firstName && lastName ? `${firstName} ${lastName}` : firstName || "—";
+    firstName && lastName ? `${firstName} ${lastName}` : firstName || "-";
   const initial = firstName ? firstName.charAt(0).toUpperCase() : "?";
 
   const sidebarAvatar = document.getElementById("sidebar-avatar");

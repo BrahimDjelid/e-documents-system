@@ -24,6 +24,8 @@
   const secConfirm = document.getElementById("sec-confirm");
   const secError = document.getElementById("sec-error");
   const btnUpdatePw = document.getElementById("btn-update-pw");
+  const btnEditSecurity = document.getElementById("btn-edit-security");
+  const securityEditIcon = document.getElementById("security-edit-icon");
 
   /* Helpers */
   function showToast(msg, isError = false) {
@@ -335,8 +337,43 @@
     e.target.value = "";
   });
 
-  /* Password update (mock)*/
-  btnUpdatePw.addEventListener("click", () => {
+  /* Security edit toggle */
+  let securityEditMode = false;
+
+  function lockSecurityFields() {
+    securityEditMode = false;
+    [secCurrent, secNew, secConfirm].forEach((f) => {
+      f.disabled = true;
+      f.value = "";
+      f.type = "password";
+    });
+    document.querySelectorAll(".sec-toggle-pw").forEach((btn) => {
+      btn.querySelector("i").className = "fa-regular fa-eye";
+    });
+    btnUpdatePw.disabled = true;
+    secError.style.display = "none";
+    if (securityEditIcon) securityEditIcon.className = "fa-solid fa-pen";
+  }
+
+  function unlockSecurityFields() {
+    securityEditMode = true;
+    [secCurrent, secNew, secConfirm].forEach((f) => (f.disabled = false));
+    btnUpdatePw.disabled = false;
+    if (securityEditIcon) securityEditIcon.className = "fa-solid fa-lock";
+    secCurrent.focus();
+  }
+
+  if (btnEditSecurity) {
+    btnEditSecurity.addEventListener("click", () => {
+      if (securityEditMode) lockSecurityFields();
+      else unlockSecurityFields();
+    });
+  }
+
+  /* Password update */
+  btnUpdatePw.addEventListener("click", async () => {
+    if (btnUpdatePw.disabled) return;
+
     const current = secCurrent.value.trim();
     const newPw = secNew.value.trim();
     const confirm = secConfirm.value.trim();
@@ -356,11 +393,14 @@
       return;
     }
 
-    // Mock success
-    secCurrent.value = "";
-    secNew.value = "";
-    secConfirm.value = "";
-    showToast("Password updated successfully!");
+    try {
+      await apiChangePassword(current, newPw);
+      lockSecurityFields();
+      showToast("Password updated successfully!");
+    } catch (err) {
+      showSecError("Could not update password. Try again.");
+      console.error("[profile.js] Password update error:", err);
+    }
   });
 
   function showSecError(msg) {

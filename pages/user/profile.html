@@ -130,16 +130,18 @@
                                     <h4 class="card-section-title">Security &amp; Password</h4>
                                     <p class="card-section-sub">Update your password</p>
                                 </div>
+                                <button class="btn-edit-security" id="btn-edit-security" title="Edit password">
+                                    <i class="fa-solid fa-pen" id="security-edit-icon"></i>
+                                </button>
                             </div>
-
+                        
                             <div class="security-form">
                                 <div class="sec-field-group">
                                     <label class="sec-label" for="sec-current">Current Password</label>
                                     <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-current"
-                                            placeholder="Enter current password" autocomplete="current-password" />
-                                        <button class="sec-toggle-pw" data-target="sec-current" type="button"
-                                            tabindex="-1">
+                                        <input type="password" class="sec-input" id="sec-current" placeholder="Enter current password"
+                                            autocomplete="current-password" disabled />
+                                        <button class="sec-toggle-pw" data-target="sec-current" type="button" tabindex="-1">
                                             <i class="fa-regular fa-eye"></i>
                                         </button>
                                     </div>
@@ -147,8 +149,8 @@
                                 <div class="sec-field-group">
                                     <label class="sec-label" for="sec-new">New Password</label>
                                     <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-new"
-                                            placeholder="Enter new password" autocomplete="new-password" />
+                                        <input type="password" class="sec-input" id="sec-new" placeholder="Enter new password"
+                                            autocomplete="new-password" disabled />
                                         <button class="sec-toggle-pw" data-target="sec-new" type="button" tabindex="-1">
                                             <i class="fa-regular fa-eye"></i>
                                         </button>
@@ -157,16 +159,15 @@
                                 <div class="sec-field-group">
                                     <label class="sec-label" for="sec-confirm">Confirm New Password</label>
                                     <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-confirm"
-                                            placeholder="Confirm new password" autocomplete="new-password" />
-                                        <button class="sec-toggle-pw" data-target="sec-confirm" type="button"
-                                            tabindex="-1">
+                                        <input type="password" class="sec-input" id="sec-confirm" placeholder="Confirm new password"
+                                            autocomplete="new-password" disabled />
+                                        <button class="sec-toggle-pw" data-target="sec-confirm" type="button" tabindex="-1">
                                             <i class="fa-regular fa-eye"></i>
                                         </button>
                                     </div>
                                     <span class="sec-error" id="sec-error" style="display:none;"></span>
                                 </div>
-                                <button class="btn-update-pw" id="btn-update-pw">
+                                <button class="btn-update-pw" id="btn-update-pw" disabled>
                                     Update Password
                                 </button>
                             </div>

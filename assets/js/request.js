@@ -1,9 +1,3 @@
-/*
-  On submit, builds a clean JSON payload ready for:
-  POST /api/requests
-  Currently logs to console - replace the TODO block with a real fetch() when Flask is ready.
-*/
-
 (() => {
   "use strict";
 
@@ -113,11 +107,21 @@
   }
 
   /* Compliance computation - never trust stored taxStatus */
-  function computeCompliance(user) {
-    const declared = user.taxInfo?.declarations?.submitted === true;
-    const paid = user.taxInfo?.taxPayments?.[0]?.paid === true;
-    return declared && paid;
-  }
+function computeCompliance(user) {
+  const declared = user.taxInfo?.declarations?.submitted === true;
+
+  const records = user.taxInfo?.taxRecords || [];
+
+  if (!declared || records.length === 0) return false;
+
+  const allPaid = records.every((r) => {
+    const total = (r.principal || 0) + (r.penalties || 0);
+    const paid = (r.paidPrincipal || 0) + (r.paidPenalties || 0);
+    return paid >= total;
+  });
+
+  return allPaid;
+}
 
   /* Extrait de rôle validation */
   function canRequestExtrait() {
@@ -139,7 +143,7 @@
       return false;
     }
 
-    if (!t.taxPayments || t.taxPayments.length === 0) {
+    if (!t.taxRecords || t.taxRecords.length === 0) {
       showToast("No tax records available", true);
       return false;
     }
@@ -304,8 +308,8 @@
       },
 
       // Only included for Extrait de rôle - undefined is stripped by JSON.stringify
-      taxPayments:
-        selectedDoc === "Extrait de rôle" ? t.taxPayments : undefined,
+      taxRecords:
+        selectedDoc === "Extrait de rôle" ? t.taxRecords : undefined,
     };
 
     try {

@@ -1,6 +1,11 @@
 const userId = sessionStorage.getItem("userId");
 const userRole = sessionStorage.getItem("role");
 
+// toast
+const toast = document.getElementById("toast");
+const toastMsg = document.getElementById("toast-msg");
+let toastTimer = null;
+
 //  Helpers
 function getGreeting() {
   const h = new Date().getHours();
@@ -10,7 +15,7 @@ function getGreeting() {
 }
 
 function formatDate(dateStr) {
-  if (!dateStr) return "—";
+  if (!dateStr) return "-";
   const d = new Date(dateStr);
   return d.toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -24,8 +29,20 @@ function getDocBadgeClass(type) {
   const t = type.toLowerCase();
   if (t.includes("c20")) return "doc-badge doc-badge--c20";
   if (t.includes("extrait")) return "doc-badge doc-badge--extrait";
-  // if (t.includes("d\u00e9cla")) return "doc-badge doc-badge--declaration";
   return "doc-badge";
+}
+
+function showToast(message, isError = false) {
+  toastMsg.textContent = message;
+
+  toast.classList.remove("error");
+  if (isError) {
+    toast.classList.add("error");
+  }
+
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 3500);
 }
 
 //  Main
@@ -34,7 +51,6 @@ async function initDashboard() {
     const user = await apiGetCurrentUser();
 
     if (!user) {
-      // User not found in data — clear session and redirect
       sessionStorage.clear();
       window.location.replace("../../index.html");
       return;
@@ -83,7 +99,6 @@ async function initDashboard() {
     setText("stat-pending", pending);
     setText("stat-rejected", rejected);
 
-    // sub labels
     setHTML(
       "stat-total-sub",
       total > 0
@@ -121,7 +136,6 @@ async function initDashboard() {
       if (emptyState) emptyState.style.display = "none";
       if (tableWrapper) tableWrapper.style.display = "block";
 
-      // show last 5, most recent first
       const recent = [...requests]
         .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
         .slice(0, 5);
@@ -141,7 +155,6 @@ async function initDashboard() {
           )
           .join("");
 
-        // Navigate to documents page and auto-open the modal for this request
         tbody.querySelectorAll(".action-link").forEach((btn) => {
           btn.addEventListener("click", () => {
             window.location.href = `documents.html?id=${btn.dataset.id}`;
@@ -166,17 +179,6 @@ async function initDashboard() {
 
     if (eligibilityScore) {
       eligibilityScore.textContent = `${verifiedCount}/${eligibilityItems.length}`;
-      // color score badge based on completion
-      if (verifiedCount === eligibilityItems.length) {
-        eligibilityScore.style.background = "var(--status-approved-bg)";
-        eligibilityScore.style.color = "var(--status-approved)";
-      } else if (verifiedCount >= 2) {
-        eligibilityScore.style.background = "var(--status-pending-bg)";
-        eligibilityScore.style.color = "var(--status-pending)";
-      } else {
-        eligibilityScore.style.background = "var(--status-rejected-bg)";
-        eligibilityScore.style.color = "var(--status-rejected)";
-      }
     }
 
     if (eligibilityList) {
@@ -220,7 +222,7 @@ async function initDashboard() {
                   <span class="download-item-id">${req.requestId}</span>
                   <span class="download-item-type">${req.documentType}</span>
                 </div>
-                <button class="download-btn">
+                <button class="download-btn" data-id="${req.requestId}">
                   <i class="fa-solid fa-download"></i>
                   Download
                 </button>
@@ -230,6 +232,25 @@ async function initDashboard() {
               .join("")}
           </div>
         `;
+
+        downloadList.querySelectorAll(".download-btn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const req = readyItems.find((r) => r.requestId === btn.dataset.id);
+            if (!req) return;
+
+            try {
+              await apiDownloadDocument(req.requestId, req.documentType);
+            } catch (err) {
+              if (err.message === "MOCK") {
+                showToast(
+                  "Download will be available once the backend is connected.",
+                );
+              } else {
+                showToast("Download failed. Please try again.", true);
+              }
+            }
+          });
+        });
       }
     }
   } catch (err) {
