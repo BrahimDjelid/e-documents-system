@@ -232,7 +232,6 @@
 }
 
 .user-name { font-weight: 600; font-size: 0.875rem; }
-.user-date { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 
 /* Status badges  */
 .status-badge {

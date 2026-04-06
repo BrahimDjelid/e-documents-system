@@ -175,7 +175,6 @@ function renderTable(requests) {
         <td class="req-id">${req.requestId}</td>
         <td>
           <div class="user-name">${req._fullName}</div>
-          <div class="user-date">${formatDate(req.submittedAt)}</div>
         </td>
         <td>${formatDate(req.submittedAt)}</td>
         <td>${complianceHTML}</td>
