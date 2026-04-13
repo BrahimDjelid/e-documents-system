@@ -8,7 +8,7 @@
 //   3. Done - entire app switches to Flask
 
 const USE_MOCK = true;
-const API_BASE = "http://localhost:5000";
+const API_BASE = "http://127.0.0.1:5000";
 const MOCK_PATH = "../../data/users.json";
 
 // Internal helpers
@@ -21,6 +21,7 @@ function _authHeaders() {
   return {
     "Content-Type": "application/json",
     Authorization: `Bearer ${_getToken()}`,
+    "X-User-Id": sessionStorage.getItem("userId") || "",
   };
 }
 
@@ -202,6 +203,51 @@ async function apiGetRequests() {
 }
 
 /**
+ * Get dashboard data for the logged-in admin.
+ * Returns all requests for the admin's service, each enriched with
+ * the applicant's full name and tax records (for compliance check).
+ *
+ * Flask replacement:
+ *   GET /api/admin/dashboard
+ *   Headers: Authorization: Bearer {token}  (admin only)
+ *   Backend filters by admin.service and returns enriched requests
+ */
+async function apiGetAdminDashboard() {
+  const adminService = sessionStorage.getItem("service") || "";
+
+  if (USE_MOCK) {
+    const users = await _loadMockUsers();
+    const requests = [];
+
+    users.forEach((user) => {
+      if (user.role !== "user") return;
+      const profile = user.profile || {};
+      const taxInfo = user.taxInfo || {};
+
+      _applyOverrides(user.requests || []).forEach((req) => {
+        if (req.documentType !== adminService) return;
+        requests.push({
+          ...req,
+          _fullName: [profile.firstName, profile.lastName]
+            .filter(Boolean)
+            .join(" "),
+          _taxRecords: taxInfo.taxRecords || [],
+        });
+      });
+    });
+
+    return requests;
+  }
+
+  // Flask
+  const res = await fetch(`${API_BASE}/api/admin/dashboard`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new Error("Could not load admin dashboard data");
+  return res.json();
+}
+
+/**
  * Save admin decision on a request (approve / reject / pending).
  *
  * Flask replacement:
@@ -269,6 +315,31 @@ async function apiChangePassword(currentPassword, newPassword) {
   return res.json();
 }
 
+// USER - Profile update
+
+/**
+ * Update the logged-in user's email and/or phone.
+ *
+ * Flask replacement:
+ *   PATCH /api/user/profile
+ *   Headers: Authorization: Bearer {token}
+ *   Body: { email, phone }
+ */
+async function apiUpdateProfile(email, phone) {
+  if (USE_MOCK) {
+    console.log("[api.js | MOCK] PATCH /api/user/profile →", { email, phone });
+    return { success: true };
+  }
+
+  // Flask
+  const res = await fetch(`${API_BASE}/api/user/profile`, {
+    method: "PATCH",
+    headers: _authHeaders(),
+    body: JSON.stringify({ email, phone }),
+  });
+  if (!res.ok) throw new Error("Profile update failed");
+  return res.json();
+}
 
 // USER - Download Document
 async function apiDownloadDocument(requestId, documentType) {

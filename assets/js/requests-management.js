@@ -387,6 +387,11 @@ async function loadRequests() {
     // Set topbar title
     const pageTitle = document.getElementById("page-title");
     if (pageTitle) pageTitle.textContent = "Request Management";
+
+    const params = new URLSearchParams(window.location.search);
+    const autoOpen = params.get("id");
+    if (autoOpen) setTimeout(() => openModal(autoOpen), 150);
+    
   } catch (err) {
     console.error("[requests-management.js] Error loading data:", err);
     showToast("Could not load requests. Please try again.", true);
