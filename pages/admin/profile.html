@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Profile - e-Documents</title>
+
+    <link rel="stylesheet" href="../../assets/css/all.min.css" />
+    <link rel="stylesheet" href="../../assets/css/admin-profile.css" />
+</head>
+
+<body data-page="profile" data-title="My Profile">
+    <div class="dashboard-page">
+
+        <div id="sidebar-mount"></div>
+
+        <div class="dashboard-main">
+            <div id="topbar-mount"></div>
+
+            <main class="dashboard-content page-transition">
+
+                <!-- Banner -->
+                <section class="ap-banner">
+                    <div class="ap-banner-text">
+                        <h2 class="ap-banner-title">Admin Profile</h2>
+                        <p class="ap-banner-sub">Manage your account information and security settings</p>
+                    </div>
+                    <button class="btn-edit-profile" id="btn-edit-profile">
+                        <i class="fa-solid fa-pen"></i>
+                        Edit Profile
+                    </button>
+                </section>
+
+                <!-- Main Grid -->
+                <div class="ap-grid">
+
+                    <!-- LEFT COLUMN -->
+                    <div class="ap-col ap-col--left">
+
+                        <!-- Avatar Card -->
+                        <div class="ap-card avatar-card">
+                            <div class="avatar-wrap">
+                                <div class="avatar-circle">
+                                    <img src="" alt="Profile photo" class="avatar-img" id="avatar-img"
+                                        style="display:none;" />
+                                    <span class="avatar-initials" id="avatar-initials">—</span>
+                                </div>
+                                <!-- Upload button — shown only in edit mode (via JS) -->
+                                <label class="avatar-upload-btn" id="avatar-upload-label" title="Change photo"
+                                    style="display:none;">
+                                    <i class="fa-solid fa-camera"></i>
+                                    <input type="file" id="avatar-upload-input" accept="image/*" hidden />
+                                </label>
+                                <!-- Remove button — shown only when a photo is set (via JS) -->
+                                <button class="avatar-remove-btn" id="avatar-remove-btn" title="Remove photo"
+                                    type="button" style="display:none;">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <h3 class="avatar-name" id="avatar-name">—</h3>
+                            <p class="avatar-role-label">Administrator</p>
+                            <div class="avatar-badges">
+                                <span class="role-badge">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                    Admin
+                                </span>
+                                <span class="service-badge" id="service-badge">
+                                    <i class="fa-regular fa-file-lines"></i>
+                                    <span id="service-badge-text">—</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Service Information (read-only) -->
+                        <div class="ap-card service-card">
+                            <div class="service-card-header">
+                                <div class="service-card-icon">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                </div>
+                                <div>
+                                    <h4 class="ap-card-title">Service Assignment</h4>
+                                    <p class="ap-card-sub">Managed by the system administrator</p>
+                                </div>
+                            </div>
+                            <div class="service-fields">
+                                <div class="service-field">
+                                    <span class="service-field-label">
+                                        <i class="fa-solid fa-user-tie"></i>
+                                        Role
+                                    </span>
+                                    <span class="service-field-value" id="svc-role">Administrator</span>
+                                </div>
+                                <div class="service-field">
+                                    <span class="service-field-label">
+                                        <i class="fa-regular fa-file-lines"></i>
+                                        Assigned Service
+                                    </span>
+                                    <span class="service-field-value service-field-value--highlight"
+                                        id="svc-service">—</span>
+                                </div>
+                                <div class="service-readonly-note">
+                                    <i class="fa-solid fa-lock"></i>
+                                    Service assignment is controlled by system administrators only.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT COLUMN -->
+                    <div class="ap-col ap-col--right">
+
+                        <!-- Account Information (editable) -->
+                        <div class="ap-card info-card" id="info-card">
+                            <div class="ap-card-header">
+                                <div>
+                                    <h4 class="ap-card-title">Account Information</h4>
+                                    <p class="ap-card-sub">Update your name and login email</p>
+                                </div>
+                                <div class="edit-actions" id="edit-actions" style="display:none;">
+                                    <button class="btn-cancel-edit" id="btn-cancel-edit">Cancel</button>
+                                    <button class="btn-save-edit" id="btn-save-edit">
+                                        <i class="fa-solid fa-check"></i>
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="info-grid">
+                                <!-- First Name -->
+                                <div class="info-field">
+                                    <label class="info-label" for="pf-firstname">
+                                        <i class="fa-regular fa-user"></i>
+                                        First Name
+                                    </label>
+                                    <div class="info-input-wrap">
+                                        <input type="text" class="info-input info-input--editable" id="pf-firstname"
+                                            readonly />
+                                    </div>
+                                </div>
+
+                                <!-- Last Name -->
+                                <div class="info-field">
+                                    <label class="info-label" for="pf-lastname">
+                                        <i class="fa-regular fa-user"></i>
+                                        Last Name
+                                    </label>
+                                    <div class="info-input-wrap">
+                                        <input type="text" class="info-input info-input--editable" id="pf-lastname"
+                                            readonly />
+                                    </div>
+                                </div>
+
+                                <!-- Email (full width) -->
+                                <div class="info-field info-field--full">
+                                    <label class="info-label" for="pf-email">
+                                        <i class="fa-regular fa-envelope"></i>
+                                        Email Address
+                                        <span class="info-label-note">(Login ID)</span>
+                                    </label>
+                                    <div class="info-input-wrap">
+                                        <input type="email" class="info-input info-input--editable" id="pf-email"
+                                            readonly />
+                                    </div>
+                                    <span class="info-hint">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                        Changing your email will update your login credentials.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security & Password -->
+                        <div class="ap-card security-card">
+                            <div class="ap-card-header">
+                                <div class="security-header-left">
+                                    <div class="security-icon">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="ap-card-title">Security &amp; Password</h4>
+                                        <p class="ap-card-sub">Change your account password</p>
+                                    </div>
+                                </div>
+                                <button class="btn-edit-security" id="btn-edit-security" title="Edit password">
+                                    <i class="fa-solid fa-pen" id="security-edit-icon"></i>
+                                </button>
+                            </div>
+
+                            <div class="security-form" id="security-form">
+                                <div class="sec-field-group">
+                                    <label class="sec-label" for="sec-current">Current Password</label>
+                                    <div class="sec-input-wrap">
+                                        <input type="password" class="sec-input" id="sec-current"
+                                            placeholder="Enter current password" autocomplete="current-password"
+                                            disabled />
+                                        <button class="sec-toggle-pw" data-target="sec-current" type="button"
+                                            tabindex="-1">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="sec-fields-row">
+                                    <div class="sec-field-group">
+                                        <label class="sec-label" for="sec-new">New Password</label>
+                                        <div class="sec-input-wrap">
+                                            <input type="password" class="sec-input" id="sec-new"
+                                                placeholder="New password" autocomplete="new-password" disabled />
+                                            <button class="sec-toggle-pw" data-target="sec-new" type="button"
+                                                tabindex="-1">
+                                                <i class="fa-regular fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="sec-field-group">
+                                        <label class="sec-label" for="sec-confirm">Confirm Password</label>
+                                        <div class="sec-input-wrap">
+                                            <input type="password" class="sec-input" id="sec-confirm"
+                                                placeholder="Confirm password" autocomplete="new-password" disabled />
+                                            <button class="sec-toggle-pw" data-target="sec-confirm" type="button"
+                                                tabindex="-1">
+                                                <i class="fa-regular fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <span class="sec-error" id="sec-error" style="display:none;"></span>
+
+                                <button class="btn-update-pw" id="btn-update-pw" disabled>
+                                    <i class="fa-solid fa-key"></i>
+                                    Update Password
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="ap-toast" id="ap-toast">
+        <i class="fa-solid fa-circle-check ap-toast-icon" id="ap-toast-icon"></i>
+        <span id="ap-toast-msg"></span>
+    </div>
+
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/router.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/admin-profile.js"></script>
+</body>
+
+</html>
