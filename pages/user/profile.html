@@ -46,11 +46,17 @@
                                         style="display:none;" />
                                     <span class="avatar-initials" id="avatar-initials">-</span>
                                 </div>
+                                <!-- Upload button — shown only in edit mode (via JS) -->
                                 <label class="avatar-upload-btn" id="avatar-upload-label" title="Change photo"
                                     style="display:none;">
                                     <i class="fa-solid fa-camera"></i>
                                     <input type="file" id="avatar-upload-input" accept="image/*" hidden />
                                 </label>
+                                <!-- Remove button — shown only when a photo is set (via JS) -->
+                                <button class="avatar-remove-btn" id="avatar-remove-btn" title="Remove photo"
+                                    type="button" style="display:none;">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
                             </div>
                             <h3 class="avatar-name" id="avatar-name">-</h3>
                             <p class="avatar-role">Citizen Account</p>
@@ -134,14 +140,16 @@
                                     <i class="fa-solid fa-pen" id="security-edit-icon"></i>
                                 </button>
                             </div>
-                        
+
                             <div class="security-form">
                                 <div class="sec-field-group">
                                     <label class="sec-label" for="sec-current">Current Password</label>
                                     <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-current" placeholder="Enter current password"
-                                            autocomplete="current-password" disabled />
-                                        <button class="sec-toggle-pw" data-target="sec-current" type="button" tabindex="-1">
+                                        <input type="password" class="sec-input" id="sec-current"
+                                            placeholder="Enter current password" autocomplete="current-password"
+                                            disabled />
+                                        <button class="sec-toggle-pw" data-target="sec-current" type="button"
+                                            tabindex="-1">
                                             <i class="fa-regular fa-eye"></i>
                                         </button>
                                     </div>
@@ -149,8 +157,8 @@
                                 <div class="sec-field-group">
                                     <label class="sec-label" for="sec-new">New Password</label>
                                     <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-new" placeholder="Enter new password"
-                                            autocomplete="new-password" disabled />
+                                        <input type="password" class="sec-input" id="sec-new"
+                                            placeholder="Enter new password" autocomplete="new-password" disabled />
                                         <button class="sec-toggle-pw" data-target="sec-new" type="button" tabindex="-1">
                                             <i class="fa-regular fa-eye"></i>
                                         </button>
@@ -159,9 +167,10 @@
                                 <div class="sec-field-group">
                                     <label class="sec-label" for="sec-confirm">Confirm New Password</label>
                                     <div class="sec-input-wrap">
-                                        <input type="password" class="sec-input" id="sec-confirm" placeholder="Confirm new password"
-                                            autocomplete="new-password" disabled />
-                                        <button class="sec-toggle-pw" data-target="sec-confirm" type="button" tabindex="-1">
+                                        <input type="password" class="sec-input" id="sec-confirm"
+                                            placeholder="Confirm new password" autocomplete="new-password" disabled />
+                                        <button class="sec-toggle-pw" data-target="sec-confirm" type="button"
+                                            tabindex="-1">
                                             <i class="fa-regular fa-eye"></i>
                                         </button>
                                     </div>
@@ -260,8 +269,8 @@
                         <!-- Government Information -->
                         <div class="profile-card gov-card">
                             <h4 class="card-section-title">Government Information</h4>
-                            <p class="card-section-sub gov-sub">These fields are managed by the tax authority and cannot
-                                be changed directly.</p>
+                            <p class="card-section-sub gov-sub">These fields are managed by the tax authority
+                                and cannot be changed directly.</p>
 
                             <div class="info-grid">
                                 <div class="info-field">
@@ -302,7 +311,8 @@
                                     </div>
                                     <div>
                                         <h4 class="card-section-title">Tax Information</h4>
-                                        <p class="card-section-sub">Your registered fiscal and business information.</p>
+                                        <p class="card-section-sub">Your registered fiscal and business
+                                            information.</p>
                                     </div>
                                 </div>
                                 <span class="tax-regime-badge" id="tax-regime-badge">-</span>

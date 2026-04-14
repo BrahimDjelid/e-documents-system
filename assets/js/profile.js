@@ -1,3 +1,8 @@
+// profile.js — User Profile Page
+// Handles: avatar upload/remove, profile edit/save, password update
+// Uses api.js: apiGetCurrentUser, apiUpdateProfile,
+//              apiUploadAvatar, apiRemoveAvatar, apiChangePassword
+
 (() => {
   "use strict";
 
@@ -7,7 +12,7 @@
   let originalEmail = "";
   let originalPhone = "";
 
-  /* DOM refs*/
+  /* DOM refs */
   const btnEditProfile = document.getElementById("btn-edit-profile");
   const btnSaveEdit = document.getElementById("btn-save-edit");
   const btnCancelEdit = document.getElementById("btn-cancel-edit");
@@ -18,6 +23,7 @@
   const avatarInitials = document.getElementById("avatar-initials");
   const avatarUploadLabel = document.getElementById("avatar-upload-label");
   const avatarUploadInput = document.getElementById("avatar-upload-input");
+  const avatarRemoveBtn = document.getElementById("avatar-remove-btn");
 
   const secCurrent = document.getElementById("sec-current");
   const secNew = document.getElementById("sec-new");
@@ -27,7 +33,7 @@
   const btnEditSecurity = document.getElementById("btn-edit-security");
   const securityEditIcon = document.getElementById("security-edit-icon");
 
-  /* Helpers */
+  /* Toast */
   function showToast(msg, isError = false) {
     const toast = document.getElementById("profile-toast");
     const msgEl = document.getElementById("profile-toast-msg");
@@ -43,6 +49,7 @@
     setTimeout(() => toast.classList.remove("show"), 3200);
   }
 
+  /* Helpers */
   function formatDOB(raw) {
     if (!raw) return "-";
     const [y, m, d] = raw.split("-");
@@ -67,7 +74,23 @@
     if (el) el.value = value || "-";
   }
 
-  /* Load current user via API */
+  /* Avatar helpers */
+  function showAvatar(src) {
+    avatarImg.src = src;
+    avatarImg.style.display = "block";
+    avatarInitials.style.display = "none";
+    if (avatarRemoveBtn) avatarRemoveBtn.style.display = "flex";
+  }
+
+  function showInitials(initials) {
+    avatarImg.src = "";
+    avatarImg.style.display = "none";
+    avatarInitials.textContent = initials;
+    avatarInitials.style.display = "";
+    if (avatarRemoveBtn) avatarRemoveBtn.style.display = "none";
+  }
+
+  /* Load & render */
   async function loadUser() {
     try {
       return await apiGetCurrentUser();
@@ -77,7 +100,6 @@
     }
   }
 
-  /* Render all sections */
   function render(user) {
     if (!user) return;
     userData = user;
@@ -86,17 +108,17 @@
     const requests = user.requests || [];
 
     const fullName = [p.firstName, p.lastName].filter(Boolean).join(" ");
+    const initials = getInitials(p.firstName, p.lastName);
 
     /* Avatar */
-    avatarInitials.textContent = getInitials(p.firstName, p.lastName);
+    avatarInitials.textContent = initials;
     document.getElementById("avatar-name").textContent = fullName || "-";
 
-    /* Load saved photo from localStorage */
     const savedPhoto = localStorage.getItem(`avatar_${user.auth.id}`);
     if (savedPhoto) {
-      avatarImg.src = savedPhoto;
-      avatarImg.style.display = "block";
-      avatarInitials.style.display = "none";
+      showAvatar(savedPhoto);
+    } else {
+      showInitials(initials);
     }
 
     /* Personal info */
@@ -131,7 +153,7 @@
     renderTaxInfo(user.taxInfo || {});
   }
 
-  /* Tax regime badge colors */
+  /* Tax info */
   const TAX_REGIME_CONFIG = {
     "Régime réel": { cls: "tax-regime--blue", label: "Régime réel" },
     "Régime simplifié": { cls: "tax-regime--teal", label: "Régime simplifié" },
@@ -155,7 +177,6 @@
       return;
     }
 
-    /* Nature */
     const natureMap = {
       personne_physique: "Physical Person",
       personne_morale: "Legal Entity",
@@ -163,15 +184,12 @@
     const natureEl = document.getElementById("tax-nature");
     if (natureEl) natureEl.textContent = natureMap[t.nature] || t.nature || "-";
 
-    /* Establishment date */
     const estabEl = document.getElementById("tax-estab-date");
     if (estabEl) estabEl.textContent = formatTaxDate(t.establishmentDate);
 
-    /* Business address */
     const bizAddrEl = document.getElementById("tax-biz-address");
     if (bizAddrEl) bizAddrEl.textContent = t.businessAddress || "-";
 
-    /* Commercial register — hide row if empty */
     const rcRow = document.getElementById("tax-rc-row");
     const rcEl = document.getElementById("tax-rc");
     if (t.commercialRegisterNumber && t.commercialRegisterNumber.trim()) {
@@ -181,7 +199,6 @@
       if (rcRow) rcRow.style.display = "none";
     }
 
-    /* Tax regime badge */
     const regimeBadge = document.getElementById("tax-regime-badge");
     if (regimeBadge && t.taxRegime) {
       const cfg = TAX_REGIME_CONFIG[t.taxRegime] || {
@@ -192,7 +209,6 @@
       regimeBadge.className = `tax-regime-badge ${cfg.cls}`;
     }
 
-    /* Main activity */
     const main = t.mainActivity || {};
     const mainNameEl = document.getElementById("tax-main-name");
     const mainCodeEl = document.getElementById("tax-main-code");
@@ -204,7 +220,6 @@
         : "-";
     if (mainAddrEl) mainAddrEl.textContent = main.address || "-";
 
-    /* Secondary activities */
     const secList = document.getElementById("tax-secondary-list");
     if (secList) {
       const secondaries = t.secondaryActivities || [];
@@ -234,11 +249,12 @@
     }
   }
 
+  /* Eligibility */
   function renderEligibility(e) {
     const fields = [
-      { id: "elig-tax", value: e.taxCompliance, label: "Verified" },
-      { id: "elig-identity", value: e.identityVerified, label: "Verified" },
-      { id: "elig-address", value: e.addressConfirmed, label: "Verified" },
+      { id: "elig-tax", value: e.taxCompliance },
+      { id: "elig-identity", value: e.identityVerified },
+      { id: "elig-address", value: e.addressConfirmed },
     ];
 
     let verifiedCount = 0;
@@ -247,19 +263,19 @@
       if (!el) return;
       if (f.value) {
         verifiedCount++;
-        el.textContent = "";
         el.innerHTML = `<i class="fa-solid fa-circle-check"></i> Verified`;
         el.className = "eligibility-badge eligibility-badge--verified";
       } else {
-        el.textContent = "";
         el.innerHTML = `<i class="fa-regular fa-clock"></i> Pending`;
         el.className = "eligibility-badge eligibility-badge--pending";
       }
     });
 
     const scoreEl = document.getElementById("eligibility-score");
-    scoreEl.textContent = `${verifiedCount}/${fields.length}`;
-    if (verifiedCount === fields.length) scoreEl.classList.add("full");
+    if (scoreEl) {
+      scoreEl.textContent = `${verifiedCount}/${fields.length}`;
+      if (verifiedCount === fields.length) scoreEl.classList.add("full");
+    }
   }
 
   /* Edit mode */
@@ -275,7 +291,6 @@
     btnEditProfile.style.display = "none";
     avatarUploadLabel.style.display = "flex";
 
-    // Make editable fields actually editable
     document.getElementById("pf-email").removeAttribute("readonly");
     document.getElementById("pf-phone").removeAttribute("readonly");
     document.getElementById("pf-email").focus();
@@ -292,24 +307,42 @@
     document.getElementById("pf-phone").setAttribute("readonly", true);
 
     if (!save) {
-      // Restore original values
       document.getElementById("pf-email").value = originalEmail || "-";
       document.getElementById("pf-phone").value = originalPhone || "-";
-    } else {
-      // Update originals to saved values
-      originalEmail = document.getElementById("pf-email").value;
-      originalPhone = document.getElementById("pf-phone").value;
-      showToast("Profile updated successfully!");
     }
   }
 
-  btnSaveEdit.addEventListener("click", () => exitEditMode(true));
   btnCancelEdit.addEventListener("click", () => exitEditMode(false));
 
+  btnSaveEdit.addEventListener("click", async () => {
+    const email = document.getElementById("pf-email").value.trim();
+    const phone = document.getElementById("pf-phone").value.trim();
+
+    if (!email) {
+      showToast("Email address is required.", true);
+      return;
+    }
+
+    try {
+      // apiUpdateProfile(email, phone) — defined in api.js
+      await apiUpdateProfile(email, phone);
+
+      originalEmail = email;
+      originalPhone = phone;
+
+      exitEditMode(true);
+      showToast("Profile updated successfully!");
+    } catch (err) {
+      showToast("Could not save changes. Please try again.", true);
+      console.error("[profile.js] Save error:", err);
+    }
+  });
+
   /* Avatar upload */
-  avatarUploadInput.addEventListener("change", (e) => {
+  avatarUploadInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     if (!file.type.startsWith("image/")) {
       showToast("Please select a valid image file.", true);
       return;
@@ -320,24 +353,46 @@
     }
 
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       const base64 = ev.target.result;
-      avatarImg.src = base64;
-      avatarImg.style.display = "block";
-      avatarInitials.style.display = "none";
 
-      // Persist per user
-      if (userData?.auth?.id) {
-        localStorage.setItem(`avatar_${userData.auth.id}`, base64);
+      try {
+        // apiUploadAvatar(base64, userId) — defined in api.js
+        const result = await apiUploadAvatar(base64, userData?.auth?.id);
+        showAvatar(result.avatarUrl);
+        showToast("Profile photo updated!");
+      } catch (err) {
+        showToast("Could not save photo. Please try again.", true);
+        console.error("[profile.js] Avatar upload error:", err);
       }
-      showToast("Profile photo updated!");
     };
     reader.readAsDataURL(file);
-    // Reset input so same file can be re-selected
-    e.target.value = "";
+    e.target.value = ""; // allow re-selecting the same file
   });
 
-  /* Security edit toggle */
+  /* Avatar remove */
+  if (avatarRemoveBtn) {
+    avatarRemoveBtn.addEventListener("click", async () => {
+      const userId = userData?.auth?.id;
+      if (!userId) return;
+
+      try {
+        // apiRemoveAvatar(userId) — defined in api.js
+        await apiRemoveAvatar(userId);
+        const initials = getInitials(
+          userData?.profile?.firstName,
+          userData?.profile?.lastName,
+        );
+        showInitials(initials);
+        showToast("Profile photo removed.");
+      } catch (err) {
+        showToast("Could not remove photo. Please try again.", true);
+        console.error("[profile.js] Avatar remove error:", err);
+      }
+    });
+  }
+
+  /* Security / Password */
   let securityEditMode = false;
 
   function lockSecurityFields() {
@@ -370,7 +425,6 @@
     });
   }
 
-  /* Password update */
   btnUpdatePw.addEventListener("click", async () => {
     if (btnUpdatePw.disabled) return;
 
@@ -406,7 +460,6 @@
   function showSecError(msg) {
     secError.textContent = msg;
     secError.style.display = "block";
-    // Shake animation
     secConfirm.style.borderColor = "var(--error)";
     setTimeout(() => {
       secConfirm.style.borderColor = "";
