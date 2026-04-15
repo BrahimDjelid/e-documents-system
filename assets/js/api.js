@@ -157,7 +157,7 @@ async function apiUpdateProfile(email, phone) {
   return res.json();
 }
 
-// ADMIN — PROFILE UPDATE 
+// ADMIN — PROFILE UPDATE
 
 /**
  * Update the logged-in admin's editable profile fields.
@@ -547,4 +547,254 @@ async function apiDownloadDocument(requestId, documentType) {
   a.download = `${documentType}_${requestId}.pdf`;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+// NOTIFICATIONS
+
+// Mock helpers
+
+/**
+ * Generate a deterministic notification ID from a requestId + type.
+ */
+function _notifId(requestId, type) {
+  return `NOTIF-${type.toUpperCase().replace(/_/g, "-")}-${requestId}`;
+}
+
+/**
+ * Load notification overrides from localStorage.
+ * Stores: { [notifId]: { read, deleted } }
+ */
+function _loadNotifOverrides() {
+  try {
+    return JSON.parse(localStorage.getItem("notif_overrides") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function _saveNotifOverrides(overrides) {
+  localStorage.setItem("notif_overrides", JSON.stringify(overrides));
+}
+
+/**
+ * For admins: track which requestIds have already generated a notification
+ * so we don't show duplicates on every page load.
+ */
+function _loadSeenRequests() {
+  try {
+    return JSON.parse(localStorage.getItem("seen_requests") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function _saveSeenRequests(ids) {
+  localStorage.setItem("seen_requests", JSON.stringify(ids));
+}
+
+// MOCK: derive notifications for a USER from their requests 
+function _mockUserNotifications(user) {
+  const overrides = _loadNotifOverrides();
+  const requests = _applyOverrides(user.requests || []);
+  const result = [];
+
+  requests.forEach((req) => {
+    if (req.status === "approved" || req.status === "rejected") {
+      const type =
+        req.status === "approved" ? "request_approved" : "request_rejected";
+      const id = _notifId(req.requestId, type);
+      const over = overrides[id] || {};
+
+      if (over.deleted) return; // soft-deleted
+
+      result.push({
+        id,
+        type,
+        message:
+          req.status === "approved"
+            ? `Your ${req.documentType} request has been approved.`
+            : `Your ${req.documentType} request was rejected.${req.note ? " Note: " + req.note : ""}`,
+        requestId: req.requestId,
+        read: over.read || false,
+        deleted: false,
+        createdAt: req.submittedAt
+          ? new Date(req.submittedAt).toISOString()
+          : new Date().toISOString(),
+      });
+    }
+  });
+
+  return result;
+}
+
+// MOCK: derive notifications for an ADMIN from all pending requests ─
+function _mockAdminNotifications(allUsers, adminService) {
+  const overrides = _loadNotifOverrides();
+  const seen = _loadSeenRequests();
+  const result = [];
+  const newSeen = [...seen];
+
+  allUsers.forEach((user) => {
+    if (user.role !== "user") return;
+    const profile = user.profile || {};
+    const requests = _applyOverrides(user.requests || []);
+
+    requests.forEach((req) => {
+      if (req.documentType !== adminService) return;
+      if (req.status !== "pending") return;
+
+      const id = _notifId(req.requestId, "new_request");
+      const over = overrides[id] || {};
+
+      if (over.deleted) return;
+
+      // Register as "seen" so it persists across page loads
+      if (!newSeen.includes(req.requestId)) {
+        newSeen.push(req.requestId);
+      }
+
+      const fullName = [profile.firstName, profile.lastName]
+        .filter(Boolean)
+        .join(" ");
+
+      result.push({
+        id,
+        type: "new_request",
+        message: `New ${req.documentType} request from ${fullName}.`,
+        requestId: req.requestId,
+        read: over.read || false,
+        deleted: false,
+        createdAt: req.submittedAt
+          ? new Date(req.submittedAt).toISOString()
+          : new Date().toISOString(),
+      });
+    });
+  });
+
+  _saveSeenRequests(newSeen);
+  return result;
+}
+
+// GET NOTIFICATIONS
+
+/**
+ * Fetch all notifications for the logged-in user or admin.
+ * Excludes soft-deleted entries.
+ *
+ * Flask: GET /api/notifications
+ * Headers: Authorization: Bearer {token}
+ * Response: Array<{
+ *   id, type, message, requestId, read, deleted, createdAt
+ * }>
+ */
+async function apiGetNotifications() {
+  const role = sessionStorage.getItem("role") || "user";
+  const userId = sessionStorage.getItem("userId") || "";
+  const service = sessionStorage.getItem("service") || "";
+
+  if (USE_MOCK) {
+    const allUsers = await _loadMockUsers();
+
+    if (role === "admin") {
+      return _mockAdminNotifications(allUsers, service);
+    } else {
+      const user = allUsers.find((u) => u.auth.id === userId);
+      if (!user) return [];
+      return _mockUserNotifications(user);
+    }
+  }
+
+  // Flask
+  const res = await fetch(`${API_BASE}/api/notifications`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new Error("Could not load notifications");
+  return res.json();
+}
+
+// MARK ONE AS READ 
+/**
+ * Mark a single notification as read.
+ *
+ * Flask: POST /api/notifications/{id}/read
+ * Headers: Authorization: Bearer {token}
+ * Response: { success: true }
+ */
+async function apiMarkNotificationRead(notifId) {
+  if (USE_MOCK) {
+    const overrides = _loadNotifOverrides();
+    overrides[notifId] = { ...(overrides[notifId] || {}), read: true };
+    _saveNotifOverrides(overrides);
+    console.log(`[api.js | MOCK] POST /api/notifications/${notifId}/read`);
+    return { success: true };
+  }
+
+  const res = await fetch(`${API_BASE}/api/notifications/${notifId}/read`, {
+    method: "POST",
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new Error("Could not mark notification as read");
+  return res.json();
+}
+
+// MARK ALL AS READ 
+/**
+ * Mark all notifications as read for the current user/admin.
+ *
+ * Flask: POST /api/notifications/read-all
+ * Headers: Authorization: Bearer {token}
+ * Response: { success: true }
+ */
+async function apiMarkAllNotificationsRead() {
+  if (USE_MOCK) {
+    // We don't have the full list here, so we patch each known override
+    // and rely on the caller having already updated _notifications state.
+    // Real IDs come from the caller context; just acknowledge.
+    console.log("[api.js | MOCK] POST /api/notifications/read-all");
+
+    // Read current overrides and mark all non-deleted as read
+    const overrides = _loadNotifOverrides();
+    Object.keys(overrides).forEach((key) => {
+      if (!overrides[key].deleted) {
+        overrides[key].read = true;
+      }
+    });
+    _saveNotifOverrides(overrides);
+    return { success: true };
+  }
+
+  const res = await fetch(`${API_BASE}/api/notifications/read-all`, {
+    method: "POST",
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new Error("Could not mark all notifications as read");
+  return res.json();
+}
+
+// DELETE (SOFT)
+
+/**
+ * Soft-delete a notification.
+ * Sets deleted: true — the record is NEVER removed from DB.
+ * Deleted notifications are not returned by apiGetNotifications().
+ *
+ * Flask: DELETE /api/notifications/{id}
+ * Headers: Authorization: Bearer {token}
+ * Response: { success: true }
+ */
+async function apiDeleteNotification(notifId) {
+  if (USE_MOCK) {
+    const overrides = _loadNotifOverrides();
+    overrides[notifId] = { ...(overrides[notifId] || {}), deleted: true };
+    _saveNotifOverrides(overrides);
+    console.log(`[api.js | MOCK] DELETE /api/notifications/${notifId} (soft)`);
+    return { success: true };
+  }
+
+  const res = await fetch(`${API_BASE}/api/notifications/${notifId}`, {
+    method: "DELETE",
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new Error("Could not delete notification");
+  return res.json();
 }

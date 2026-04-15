@@ -9,10 +9,43 @@
     <div class="topbar-right">
 
         <!-- Notification bell -->
-        <!-- <button class="topbar-btn" id="notif-btn" aria-label="Notifications">
-            <i class="fa-regular fa-bell"></i>
-            <span class="notif-badge" id="notif-badge">3</span>
-        </button> -->
+        <div class="notif-wrapper" id="notif-wrapper">
+            <button class="topbar-btn notif-btn" id="notif-btn" aria-label="Notifications" aria-haspopup="true"
+                aria-expanded="false">
+                <i class="fa-regular fa-bell" id="notif-bell-icon"></i>
+                <span class="notif-badge" id="notif-badge" style="display:none;"></span>
+            </button>
+
+            <!-- Notification Dropdown -->
+            <div class="notif-dropdown" id="notif-dropdown" role="dialog" aria-label="Notifications panel">
+
+                <!-- Dropdown header -->
+                <div class="notif-dropdown-header">
+                    <div class="notif-header-left">
+                        <i class="fa-regular fa-bell notif-header-icon"></i>
+                        <span class="notif-header-title">Notifications</span>
+                        <span class="notif-unread-count" id="notif-unread-pill" style="display:none;"></span>
+                    </div>
+                    <button class="notif-mark-all-btn" id="notif-mark-all-btn" title="Mark all as read">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>Mark all read</span>
+                    </button>
+                </div>
+
+                <!-- Notifications list -->
+                <div class="notif-list" id="notif-list">
+                    <!-- Populated by notifications.js -->
+                    <div class="notif-empty-state" id="notif-empty-state">
+                        <div class="notif-empty-icon">
+                            <i class="fa-regular fa-bell-slash"></i>
+                        </div>
+                        <p>No notifications yet</p>
+                        <span>You'll be notified about request updates here.</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
         <!-- Dark mode toggle -->
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">

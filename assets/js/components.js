@@ -1,6 +1,6 @@
 // components.js - Loads sidebar + topbar into page
 // Wires up: active link, user info, avatar,
-// page title, dark mode toggle
+// page title, dark mode toggle, notifications
 
 (async function loadComponents() {
   const role = sessionStorage.getItem("role");
@@ -104,5 +104,11 @@
       themeIcon.classList.toggle("fa-moon", !nowDark);
       localStorage.setItem("theme", nowDark ? "dark" : "light");
     });
+  }
+
+  // Initialize notification system
+  // initNotifications() is defined in notifications.js (loaded on every page)
+  if (typeof initNotifications === "function") {
+    initNotifications();
   }
 })();
