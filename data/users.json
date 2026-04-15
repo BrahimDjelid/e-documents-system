@@ -13,7 +13,8 @@
       "address": "12 Rue Didouche Mourad, Annaba",
       "email": "brahim.djelid@email.com",
       "nationalId": "123456789",
-      "civilStatus": "single"
+      "civilStatus": "single",
+      "avatarUrl": null
     },
     "role": "user",
     "taxInfo": {
@@ -65,29 +66,49 @@
         "requestId": "REQ-26-03-001",
         "documentType": "C20",
         "status": "approved",
-        "submittedAt": "2026-03-20",
+        "submittedAt": "2026-03-20T09:00:00Z",
         "note": ""
       },
       {
         "requestId": "REQ-26-03-002",
         "documentType": "Extrait de rôle",
         "status": "approved",
-        "submittedAt": "2026-03-18",
+        "submittedAt": "2026-03-18T11:00:00Z",
         "note": ""
       },
       {
         "requestId": "REQ-26-03-007",
         "documentType": "C20",
         "status": "pending",
-        "submittedAt": "2026-03-25",
+        "submittedAt": "2026-03-25T08:30:00Z",
         "note": ""
       },
       {
         "requestId": "REQ-26-03-008",
         "documentType": "Extrait de rôle",
         "status": "pending",
-        "submittedAt": "2026-03-26",
+        "submittedAt": "2026-03-26T14:15:00Z",
         "note": ""
+      }
+    ],
+    "notifications": [
+      {
+        "id": "NOTIF-REQUEST-APPROVED-REQ-26-03-001",
+        "type": "request_approved",
+        "message": "Your C20 request has been approved.",
+        "requestId": "REQ-26-03-001",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-03-21T10:00:00Z"
+      },
+      {
+        "id": "NOTIF-REQUEST-APPROVED-REQ-26-03-002",
+        "type": "request_approved",
+        "message": "Your Extrait de rôle request has been approved.",
+        "requestId": "REQ-26-03-002",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-03-19T14:00:00Z"
       }
     ]
   },
@@ -105,7 +126,8 @@
       "address": "5 Boulevard Zighout Youcef, Alger",
       "email": "amine.benali@email.com",
       "nationalId": "987654321",
-      "civilStatus": "married"
+      "civilStatus": "married",
+      "avatarUrl": null
     },
     "role": "user",
     "taxInfo": {
@@ -151,17 +173,18 @@
         "requestId": "REQ-26-03-003",
         "documentType": "C20",
         "status": "pending",
-        "submittedAt": "2026-03-22",
+        "submittedAt": "2026-03-22T10:00:00Z",
         "note": ""
       },
       {
         "requestId": "REQ-26-03-004",
         "documentType": "Extrait de rôle",
         "status": "pending",
-        "submittedAt": "2026-03-23",
+        "submittedAt": "2026-03-23T16:00:00Z",
         "note": ""
       }
-    ]
+    ],
+    "notifications": []
   },
   {
     "auth": {
@@ -177,7 +200,8 @@
       "address": "18 Rue des Frères Bouadou, Oran",
       "email": "fatima.zahra@email.com",
       "nationalId": "555444333",
-      "civilStatus": "single"
+      "civilStatus": "single",
+      "avatarUrl": null
     },
     "role": "user",
     "taxInfo": {
@@ -215,15 +239,26 @@
         "requestId": "REQ-26-03-005",
         "documentType": "C20",
         "status": "pending",
-        "submittedAt": "2026-03-24",
+        "submittedAt": "2026-03-24T09:45:00Z",
         "note": ""
       },
       {
         "requestId": "REQ-26-03-006",
         "documentType": "C20",
         "status": "rejected",
-        "submittedAt": "2026-03-10",
+        "submittedAt": "2026-03-10T13:00:00Z",
         "note": "Missing supporting documentation."
+      }
+    ],
+    "notifications": [
+      {
+        "id": "NOTIF-REQUEST-REJECTED-REQ-26-03-006",
+        "type": "request_rejected",
+        "message": "Your C20 request was rejected. Note: Missing supporting documentation.",
+        "requestId": "REQ-26-03-006",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-03-12T10:00:00Z"
       }
     ]
   },
@@ -233,9 +268,42 @@
       "idType": "email",
       "password": "admin1234"
     },
-    "profile": { "firstName": "Admin", "lastName": "C20" },
+    "profile": {
+      "firstName": "Admin",
+      "lastName": "C20",
+      "avatarUrl": null
+    },
     "role": "admin",
-    "service": "C20"
+    "service": "C20",
+    "notifications": [
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-26-03-003",
+        "type": "new_request",
+        "message": "New C20 request from Amine Haddad.",
+        "requestId": "REQ-26-03-003",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-03-22T10:00:00Z"
+      },
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-26-03-005",
+        "type": "new_request",
+        "message": "New C20 request from Fatima Zahra.",
+        "requestId": "REQ-26-03-005",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-03-24T09:45:00Z"
+      },
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-26-03-007",
+        "type": "new_request",
+        "message": "New C20 request from Brahim Djelid.",
+        "requestId": "REQ-26-03-007",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-03-25T08:30:00Z"
+      }
+    ]
   },
   {
     "auth": {
@@ -243,8 +311,32 @@
       "idType": "email",
       "password": "admin1234"
     },
-    "profile": { "firstName": "Admin", "lastName": "Extrait" },
+    "profile": {
+      "firstName": "Admin",
+      "lastName": "Extrait",
+      "avatarUrl": null
+    },
     "role": "admin",
-    "service": "Extrait de rôle"
+    "service": "Extrait de rôle",
+    "notifications": [
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-26-03-004",
+        "type": "new_request",
+        "message": "New Extrait de rôle request from Amine Haddad.",
+        "requestId": "REQ-26-03-004",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-03-23T16:00:00Z"
+      },
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-26-03-008",
+        "type": "new_request",
+        "message": "New Extrait de rôle request from Brahim Djelid.",
+        "requestId": "REQ-26-03-008",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-03-26T14:15:00Z"
+      }
+    ]
   }
 ]
