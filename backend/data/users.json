@@ -40,11 +40,58 @@
       "taxRecords": [
         {
           "type": "IRG",
+          "year": 2023,
+          "principal": 10000,
+          "penalties": 0,
+          "paidPrincipal": 10000,
+          "paidPenalties": 0,
+          "total": 10000,
+          "paid": 10000,
+          "remaining": 0
+        },
+        {
+          "type": "TAP",
+          "year": 2023,
+          "principal": 3000,
+          "penalties": 0,
+          "paidPrincipal": 3000,
+          "paidPenalties": 0,
+          "total": 3000,
+          "paid": 3000,
+          "remaining": 0
+        },
+        {
+          "type": "IRG",
+          "year": 2024,
+          "principal": 12000,
+          "penalties": 0,
+          "paidPrincipal": 12000,
+          "paidPenalties": 0,
+          "total": 12000,
+          "paid": 12000,
+          "remaining": 0
+        },
+        {
+          "type": "TAP",
+          "year": 2024,
+          "principal": 4000,
+          "penalties": 0,
+          "paidPrincipal": 4000,
+          "paidPenalties": 0,
+          "total": 4000,
+          "paid": 4000,
+          "remaining": 0
+        },
+        {
+          "type": "IRG",
           "year": 2025,
           "principal": 15000,
           "penalties": 0,
           "paidPrincipal": 15000,
-          "paidPenalties": 0
+          "paidPenalties": 0,
+          "total": 15000,
+          "paid": 15000,
+          "remaining": 0
         },
         {
           "type": "TAP",
@@ -52,7 +99,10 @@
           "principal": 5000,
           "penalties": 0,
           "paidPrincipal": 5000,
-          "paidPenalties": 0
+          "paidPenalties": 0,
+          "total": 5000,
+          "paid": 5000,
+          "remaining": 0
         }
       ],
       "declarations": {
@@ -124,6 +174,15 @@
         "submittedAt": "2026-04-22T23:25:30.051Z",
         "note": null,
         "processedBy": "admin-extrait@dashboard.com"
+      },
+      {
+        "requestId": "REQ-23-26-774",
+        "documentType": "C20",
+        "status": "approved",
+        "submittedAt": "2026-04-23T21:14:03.742Z",
+        "note": null,
+        "year": 2025,
+        "processedBy": "admin-c20@dashboard.com"
       }
     ],
     "notifications": [
@@ -180,6 +239,15 @@
         "read": false,
         "deleted": false,
         "createdAt": "2026-04-22T23:57:02.922541Z"
+      },
+      {
+        "id": "NOTIF-REQ-23-26-774",
+        "type": "approved",
+        "message": "Your request REQ-23-26-774 was approved",
+        "requestId": "REQ-23-26-774",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-23T21:14:41.208723Z"
       }
     ]
   },
@@ -217,11 +285,58 @@
       "taxRecords": [
         {
           "type": "IRG",
+          "year": 2023,
+          "principal": 9000,
+          "penalties": 0,
+          "paidPrincipal": 9000,
+          "paidPenalties": 0,
+          "total": 9000,
+          "paid": 9000,
+          "remaining": 0
+        },
+        {
+          "type": "TAP",
+          "year": 2023,
+          "principal": 3000,
+          "penalties": 0,
+          "paidPrincipal": 3000,
+          "paidPenalties": 0,
+          "total": 3000,
+          "paid": 3000,
+          "remaining": 0
+        },
+        {
+          "type": "IRG",
+          "year": 2024,
+          "principal": 11000,
+          "penalties": 800,
+          "paidPrincipal": 5000,
+          "paidPenalties": 0,
+          "total": 11800,
+          "paid": 5000,
+          "remaining": 6800
+        },
+        {
+          "type": "TAP",
+          "year": 2024,
+          "principal": 3500,
+          "penalties": 0,
+          "paidPrincipal": 3500,
+          "paidPenalties": 0,
+          "total": 3500,
+          "paid": 3500,
+          "remaining": 0
+        },
+        {
+          "type": "IRG",
           "year": 2025,
           "principal": 12000,
           "penalties": 1500,
           "paidPrincipal": 0,
-          "paidPenalties": 0
+          "paidPenalties": 0,
+          "total": 13500,
+          "paid": 0,
+          "remaining": 13500
         },
         {
           "type": "TAP",
@@ -229,7 +344,10 @@
           "principal": 4000,
           "penalties": 500,
           "paidPrincipal": 4000,
-          "paidPenalties": 0
+          "paidPenalties": 0,
+          "total": 4500,
+          "paid": 4000,
+          "remaining": 500
         }
       ],
       "declarations": {
@@ -314,11 +432,36 @@
       "taxRecords": [
         {
           "type": "IRG",
+          "year": 2023,
+          "principal": 5000,
+          "penalties": 0,
+          "paidPrincipal": 5000,
+          "paidPenalties": 0,
+          "total": 5000,
+          "paid": 5000,
+          "remaining": 0
+        },
+        {
+          "type": "IRG",
+          "year": 2024,
+          "principal": 6500,
+          "penalties": 500,
+          "paidPrincipal": 2000,
+          "paidPenalties": 0,
+          "total": 7000,
+          "paid": 2000,
+          "remaining": 5000
+        },
+        {
+          "type": "IRG",
           "year": 2025,
           "principal": 8000,
           "penalties": 800,
           "paidPrincipal": 0,
-          "paidPenalties": 0
+          "paidPenalties": 0,
+          "total": 8800,
+          "paid": 0,
+          "remaining": 8800
         }
       ],
       "declarations": {
@@ -426,6 +569,15 @@
         "read": true,
         "deleted": false,
         "createdAt": "2026-04-22T21:45:02.362610Z"
+      },
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-23-26-774",
+        "type": "new_request",
+        "message": "New C20 request from Brahim Djelid.",
+        "requestId": "REQ-23-26-774",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-23T21:14:03.753709Z"
       }
     ]
   },

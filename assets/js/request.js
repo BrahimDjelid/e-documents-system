@@ -4,6 +4,7 @@
   /* State */
   let currentStep = 1;
   let selectedDoc = null;
+  let selectedYear = null; // C20 only
   let userData = null; // full user object from users.json
 
   /* Doc config */
@@ -83,7 +84,7 @@
     return s.length <= 4 ? s : "****" + s.slice(-4);
   }
 
-  /* C20 validation */
+  /* C20 validation — NIF check only; compliance is NOT a blocker */
   function canRequestC20() {
     if (!userData) {
       showToast("User data not loaded", true);
@@ -91,39 +92,32 @@
     }
 
     const t = userData.taxInfo || {};
-    const e = userData.eligibility || {};
-
-    if (!e.identityVerified) {
-      showToast("Identity not verified", true);
-      return false;
-    }
 
     if (userData.auth.id !== t.taxIdentificationNumber) {
       showToast("NIF mismatch", true);
       return false;
     }
 
+    if (!selectedYear) {
+      showToast("Please select a tax year for C20", true);
+      return false;
+    }
+
     return true;
   }
 
-  /* Compliance computation - never trust stored taxStatus */
-function computeCompliance(user) {
-  const declared = user.taxInfo?.declarations?.submitted === true;
+  /* Compliance computation — informational only, never a decision rule */
+  function computeCompliance(user) {
+    const records = user.taxInfo?.taxRecords || [];
+    if (records.length === 0) return false;
+    return records.every((r) => {
+      const total = (r.principal || 0) + (r.penalties || 0);
+      const paid = (r.paidPrincipal || 0) + (r.paidPenalties || 0);
+      return paid >= total;
+    });
+  }
 
-  const records = user.taxInfo?.taxRecords || [];
-
-  if (!declared || records.length === 0) return false;
-
-  const allPaid = records.every((r) => {
-    const total = (r.principal || 0) + (r.penalties || 0);
-    const paid = (r.paidPrincipal || 0) + (r.paidPenalties || 0);
-    return paid >= total;
-  });
-
-  return allPaid;
-}
-
-  /* Extrait de rôle validation */
+  /* Extrait de rôle validation — no compliance check */
   function canRequestExtrait() {
     if (!userData) {
       showToast("User data not loaded", true);
@@ -131,12 +125,6 @@ function computeCompliance(user) {
     }
 
     const t = userData.taxInfo || {};
-    const e = userData.eligibility || {};
-
-    if (!e.identityVerified) {
-      showToast("Identity not verified", true);
-      return false;
-    }
 
     if (userData.auth.id !== t.taxIdentificationNumber) {
       showToast("NIF mismatch", true);
@@ -209,6 +197,7 @@ function computeCompliance(user) {
     card.classList.add("selected");
     card.setAttribute("aria-pressed", "true");
     selectedDoc = card.getAttribute("data-doc");
+    selectedYear = null; // reset year on card change
     btnContinue.disabled = false;
   }
 
@@ -226,6 +215,18 @@ function computeCompliance(user) {
     docNameEl.textContent = selectedDoc;
     docIconEl.className = "form-doc-icon " + cfg.iconClass;
     docIconEl.innerHTML = `<i class="${cfg.icon}"></i>`;
+
+    // Show/hide the C20 year selector
+    const yearSection = document.getElementById("c20-year-section");
+    if (yearSection) {
+      if (selectedDoc === "C20") {
+        yearSection.style.display = "block";
+        populateYearDropdown();
+      } else {
+        yearSection.style.display = "none";
+        selectedYear = null;
+      }
+    }
 
     if (!userData) return;
 
@@ -249,6 +250,42 @@ function computeCompliance(user) {
     setField("pf-biz-address", t.businessAddress || "-");
   }
 
+  /* Populate C20 year dropdown from taxRecords */
+  function populateYearDropdown() {
+    const select = document.getElementById("c20-year-select");
+    if (!select || !userData) return;
+
+    const records = userData.taxInfo?.taxRecords || [];
+    const years = [...new Set(records.map((r) => r.year))].sort(
+      (a, b) => b - a,
+    );
+
+    select.innerHTML = `<option value="">-- Select a tax year --</option>`;
+    years.forEach((yr) => {
+      const opt = document.createElement("option");
+      opt.value = yr;
+      opt.textContent = yr;
+      select.appendChild(opt);
+    });
+
+    // Restore previously selected year if any
+    if (selectedYear) select.value = selectedYear;
+
+    select.onchange = () => {
+      selectedYear = select.value ? parseInt(select.value, 10) : null;
+      updateSubmitBtn();
+    };
+
+    updateSubmitBtn();
+  }
+
+  /* Enable/disable submit based on declaration + year (C20) */
+  function updateSubmitBtn() {
+    const checked = declarationCheck.checked;
+    const yearOk = selectedDoc !== "C20" || !!selectedYear;
+    btnSubmit.disabled = !(checked && yearOk);
+  }
+
   function setField(id, value) {
     const el = document.getElementById(id);
     if (el) el.value = value || "-";
@@ -256,8 +293,8 @@ function computeCompliance(user) {
 
   /* Declaration checkbox */
   declarationCheck.addEventListener("change", () => {
-    btnSubmit.disabled = !declarationCheck.checked;
     declarationBox.classList.toggle("checked", declarationCheck.checked);
+    updateSubmitBtn();
   });
 
   btnBack.addEventListener("click", () => goToStep(1));
@@ -289,7 +326,7 @@ function computeCompliance(user) {
       documentType: selectedDoc,
       purpose: purpose || null,
 
-      // Always computed - never trust stored taxStatus
+      // Compliance is informational only — sent for display, never used as decision rule
       taxStatus: computeCompliance(userData) ? "À jour" : "Non à jour",
 
       applicant: {
@@ -308,9 +345,10 @@ function computeCompliance(user) {
         commercialRegisterNumber: t.commercialRegisterNumber || null,
       },
 
-      // Only included for Extrait de rôle - undefined is stripped by JSON.stringify
-      taxRecords:
-        selectedDoc === "Extrait de rôle" ? t.taxRecords : undefined,
+      // C20: send selected year; Extrait: send all tax records
+      ...(selectedDoc === "C20"
+        ? { year: selectedYear }
+        : { taxRecords: t.taxRecords }),
     };
 
     try {
@@ -322,7 +360,11 @@ function computeCompliance(user) {
 
     // Populate step 3 confirmation
     document.getElementById("confirm-req-id").textContent = reqId;
-    document.getElementById("confirm-doc-type").textContent = selectedDoc;
+    const docLabel =
+      selectedDoc === "C20" && selectedYear
+        ? `C20 (${selectedYear})`
+        : selectedDoc;
+    document.getElementById("confirm-doc-type").textContent = docLabel;
     document.getElementById("confirm-date").textContent = formatDate(now);
 
     goToStep(3);
@@ -346,6 +388,7 @@ function computeCompliance(user) {
   /* Step 3: Submit another */
   btnAnother.addEventListener("click", () => {
     selectedDoc = null;
+    selectedYear = null;
     docCards.forEach((c) => {
       c.classList.remove("selected");
       c.setAttribute("aria-pressed", "false");
@@ -355,6 +398,8 @@ function computeCompliance(user) {
     declarationBox.classList.remove("checked");
     btnSubmit.disabled = true;
     document.getElementById("purpose-textarea").value = "";
+    const yearSection = document.getElementById("c20-year-section");
+    if (yearSection) yearSection.style.display = "none";
     goToStep(1);
   });
 

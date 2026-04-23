@@ -53,7 +53,7 @@ def compute_compliance(tax_records):
 # 🆕 C20 PDF GENERATOR (ADDED)
 # ----------------------------
 
-def generate_c20(user_obj, request_id):
+def generate_c20(user_obj, request_id, year=None):
     DOCS_DIR = os.path.join(BASE_DIR, "documents")
     os.makedirs(DOCS_DIR, exist_ok=True)
 
@@ -107,7 +107,34 @@ def generate_c20(user_obj, request_id):
         c.line(40, y, width - 40, y)
         y -= 15
 
-    y -= 30
+    # Year-specific tax situation
+    if year:
+        tax_records = user_obj.get("taxInfo", {}).get("taxRecords", [])
+        year_records = [r for r in tax_records if r.get("year") == int(year)]
+
+        y -= 20
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(40, y, f"Situation fiscale pour l'annee : {year}")
+        c.line(40, y - 3, width - 40, y - 3)
+        y -= 20
+
+        if year_records:
+            c.setFont("Helvetica", 9)
+            for r in year_records:
+                total = r.get("principal", 0) + r.get("penalties", 0)
+                paid = r.get("paidPrincipal", 0) + r.get("paidPenalties", 0)
+                remaining = total - paid
+                status_str = "A jour" if remaining <= 0 else f"Reste : {remaining} DA"
+                c.drawString(40, y, f"  {r.get('type','')}: Principal {r.get('principal',0)} DA | "
+                             f"Penalites {r.get('penalties',0)} DA | Paye {paid} DA | {status_str}")
+                y -= 14
+        else:
+            c.setFont("Helvetica-Oblique", 9)
+            c.drawString(40, y, "  Aucun enregistrement fiscal pour cette annee.")
+            y -= 14
+
+    y -= 20
+    c.setFont("Helvetica", 11)
     c.drawString(40, y, "A : ..............................")
     c.drawString(250, y, "Le : ..............................")
     y -= 40
@@ -349,19 +376,17 @@ def submit_request():
         if not user:
             return {"error": "User not found"}, 404
 
-        # VALIDATION
-        if not user["eligibility"]["identityVerified"]:
-            return {"error": "Identity not verified"}, 400
-
+        # VALIDATION — NIF check only; compliance is not a blocker
         if user["taxInfo"]["taxIdentificationNumber"] != user_id:
             return {"error": "NIF mismatch"}, 400
+
+        if data["documentType"] == "C20":
+            if not data.get("year"):
+                return {"error": "Tax year required for C20"}, 400
 
         if data["documentType"] == "Extrait de rôle":
             if not data.get("taxRecords"):
                 return {"error": "Tax records required"}, 400
-
-            if not user["taxInfo"]["declarations"]["submitted"]:
-                return {"error": "Declarations not submitted"}, 400
 
         # CREATE REQUEST
         new_request = {
@@ -371,6 +396,10 @@ def submit_request():
             "submittedAt": data["submittedAt"],
             "note": ""
         }
+
+        # Store year for C20 requests
+        if data["documentType"] == "C20" and data.get("year"):
+            new_request["year"] = data["year"]
 
         user.setdefault("requests", []).append(new_request)
 
@@ -556,7 +585,8 @@ def download_document(request_id):
     if target_request["documentType"] == "C20":
         file_path = os.path.join(DOCS_DIR, f"{request_id}.pdf")
         if not os.path.exists(file_path):
-            file_path = generate_c20(target_user, request_id)
+            year = target_request.get("year")
+            file_path = generate_c20(target_user, request_id, year=year)
 
     elif target_request["documentType"] == "Extrait de rôle":
         file_path = os.path.join(DOCS_DIR, f"{request_id}_extrait.pdf")

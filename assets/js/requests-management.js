@@ -43,7 +43,6 @@ const modalPhone = document.getElementById("modal-phone");
 const modalEmail = document.getElementById("modal-email");
 const modalTaxRegime = document.getElementById("modal-tax-regime");
 const modalCompliance = document.getElementById("modal-compliance-badge");
-const modalRec = document.getElementById("modal-recommendation-badge");
 const modalTaxSection = document.getElementById("modal-tax-records-section");
 const modalTaxTbody = document.getElementById("modal-tax-records-tbody");
 const modalNotes = document.getElementById("modal-notes");
@@ -164,10 +163,6 @@ function renderTable(requests) {
         ? `<span class="compliance-badge compliance-badge--ok"><i class="fa-solid fa-circle-check"></i> À jour</span>`
         : `<span class="compliance-badge compliance-badge--nok"><i class="fa-solid fa-circle-xmark"></i> Non à jour</span>`;
 
-      const recHTML = isCompliant
-        ? `<span class="rec-badge rec-badge--approve"><i class="fa-solid fa-thumbs-up"></i> Approve</span>`
-        : `<span class="rec-badge rec-badge--reject"><i class="fa-solid fa-thumbs-down"></i> Reject</span>`;
-
       const statusHTML = getStatusBadgeHTML(effectStatus);
 
       return `
@@ -178,7 +173,6 @@ function renderTable(requests) {
         </td>
         <td>${formatDate(req.submittedAt)}</td>
         <td>${complianceHTML}</td>
-        <td>${recHTML}</td>
         <td>${statusHTML}</td>
         <td>
           <button class="btn-edit-status" data-id="${req.requestId}">
@@ -250,13 +244,9 @@ function openModal(requestId) {
   if (isCompliant) {
     modalCompliance.className = "compliance-badge compliance-badge--ok";
     modalCompliance.innerHTML = `<i class="fa-solid fa-circle-check"></i> À jour`;
-    modalRec.className = "rec-badge rec-badge--approve";
-    modalRec.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> Recommended: Approve`;
   } else {
     modalCompliance.className = "compliance-badge compliance-badge--nok";
     modalCompliance.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Non à jour`;
-    modalRec.className = "rec-badge rec-badge--reject";
-    modalRec.innerHTML = `<i class="fa-solid fa-thumbs-down"></i> Recommended: Reject`;
   }
 
   // Tax records (Extrait de rôle only)
