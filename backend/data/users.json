@@ -3,7 +3,7 @@
     "auth": {
       "id": "123456789012345",
       "idType": "nif",
-      "password": "brahim1234"
+      "password": "brahimbrahim"
     },
     "profile": {
       "firstName": "Brahim",
@@ -11,16 +11,17 @@
       "dateOfBirth": "2004-06-13",
       "phone": "+213 555 01 23 45",
       "address": "12 Rue Didouche Mourad, Annaba",
-      "email": "brahim.djelid@email.com",
+      "email": "brahim@email.com",
       "nationalId": "123456789",
       "civilStatus": "single",
-      "avatarUrl": null
+      "avatarUrl": null,
+      "avatar": ""
     },
     "role": "user",
     "taxInfo": {
       "nature": "personne_physique",
       "mainActivity": {
-        "activityName": "Commerce de vêtements",
+        "activityName": "Commerce de v\u00eatements",
         "activityCode": "4711",
         "address": "12 Rue Didouche Mourad, Annaba"
       },
@@ -35,7 +36,7 @@
       "commercialRegisterNumber": "RC-23/00-1234567 B 18",
       "taxIdentificationNumber": "123456789012345",
       "establishmentDate": "2022-06-10",
-      "taxRegime": "Régime forfaitaire",
+      "taxRegime": "R\u00e9gime forfaitaire",
       "taxRecords": [
         {
           "type": "IRG",
@@ -54,7 +55,9 @@
           "paidPenalties": 0
         }
       ],
-      "declarations": { "submitted": true }
+      "declarations": {
+        "submitted": true
+      }
     },
     "eligibility": {
       "identityVerified": true,
@@ -71,7 +74,7 @@
       },
       {
         "requestId": "REQ-26-03-002",
-        "documentType": "Extrait de rôle",
+        "documentType": "Extrait de r\u00f4le",
         "status": "approved",
         "submittedAt": "2026-03-18T11:00:00Z",
         "note": ""
@@ -85,10 +88,42 @@
       },
       {
         "requestId": "REQ-26-03-008",
-        "documentType": "Extrait de rôle",
-        "status": "pending",
+        "documentType": "Extrait de r\u00f4le",
+        "status": "approved",
         "submittedAt": "2026-03-26T14:15:00Z",
+        "note": "Accepted",
+        "processedBy": "admin-extrait@dashboard.com"
+      },
+      {
+        "requestId": "REQ-22-26-343",
+        "documentType": "C20",
+        "status": "pending",
+        "submittedAt": "2026-04-22T21:32:25.886Z",
         "note": ""
+      },
+      {
+        "requestId": "REQ-22-26-509",
+        "documentType": "Extrait de r\u00f4le",
+        "status": "rejected",
+        "submittedAt": "2026-04-22T21:35:18.645Z",
+        "note": null,
+        "processedBy": "admin-extrait@dashboard.com"
+      },
+      {
+        "requestId": "REQ-22-26-465",
+        "documentType": "C20",
+        "status": "approved",
+        "submittedAt": "2026-04-22T21:45:02.349Z",
+        "note": "",
+        "processedBy": "admin-c20@dashboard.com"
+      },
+      {
+        "requestId": "REQ-23-26-674",
+        "documentType": "Extrait de r\u00f4le",
+        "status": "rejected",
+        "submittedAt": "2026-04-22T23:25:30.051Z",
+        "note": null,
+        "processedBy": "admin-extrait@dashboard.com"
       }
     ],
     "notifications": [
@@ -97,18 +132,54 @@
         "type": "request_approved",
         "message": "Your C20 request has been approved.",
         "requestId": "REQ-26-03-001",
-        "read": false,
+        "read": true,
         "deleted": false,
         "createdAt": "2026-03-21T10:00:00Z"
       },
       {
         "id": "NOTIF-REQUEST-APPROVED-REQ-26-03-002",
         "type": "request_approved",
-        "message": "Your Extrait de rôle request has been approved.",
+        "message": "Your Extrait de r\u00f4le request has been approved.",
         "requestId": "REQ-26-03-002",
         "read": true,
         "deleted": false,
         "createdAt": "2026-03-19T14:00:00Z"
+      },
+      {
+        "id": "NOTIF-REQUEST_APPROVED-REQ-22-26-465",
+        "type": "request_approved",
+        "message": "Your C20 request has been approved.",
+        "requestId": "REQ-22-26-465",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-22T22:06:18.816426Z"
+      },
+      {
+        "id": "NOTIF-REQ-26-03-008",
+        "type": "approved",
+        "message": "Your request REQ-26-03-008 was approved",
+        "requestId": "REQ-26-03-008",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-22T23:56:31.797688Z"
+      },
+      {
+        "id": "NOTIF-REQ-22-26-509",
+        "type": "rejected",
+        "message": "Your request REQ-22-26-509 was rejected",
+        "requestId": "REQ-22-26-509",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-22T23:56:57.027640Z"
+      },
+      {
+        "id": "NOTIF-REQ-23-26-674",
+        "type": "rejected",
+        "message": "Your request REQ-23-26-674 was rejected",
+        "requestId": "REQ-23-26-674",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-22T23:57:02.922541Z"
       }
     ]
   },
@@ -133,16 +204,16 @@
     "taxInfo": {
       "nature": "personne_physique",
       "mainActivity": {
-        "activityName": "Développement informatique",
+        "activityName": "D\u00e9veloppement informatique",
         "activityCode": "6201",
         "address": "5 Boulevard Zighout Youcef, Alger"
       },
       "secondaryActivities": [],
-      "businessAddress": "Travail à domicile",
+      "businessAddress": "Travail \u00e0 domicile",
       "commercialRegisterNumber": "",
       "taxIdentificationNumber": "987654321098765",
       "establishmentDate": "2020-02-20",
-      "taxRegime": "Régime forfaitaire",
+      "taxRegime": "R\u00e9gime forfaitaire",
       "taxRecords": [
         {
           "type": "IRG",
@@ -161,7 +232,9 @@
           "paidPenalties": 0
         }
       ],
-      "declarations": { "submitted": true }
+      "declarations": {
+        "submitted": true
+      }
     },
     "eligibility": {
       "identityVerified": true,
@@ -172,19 +245,40 @@
       {
         "requestId": "REQ-26-03-003",
         "documentType": "C20",
-        "status": "pending",
+        "status": "rejected",
         "submittedAt": "2026-03-22T10:00:00Z",
-        "note": ""
+        "note": "",
+        "processedBy": "admin-c20@dashboard.com"
       },
       {
         "requestId": "REQ-26-03-004",
-        "documentType": "Extrait de rôle",
-        "status": "pending",
+        "documentType": "Extrait de r\u00f4le",
+        "status": "rejected",
         "submittedAt": "2026-03-23T16:00:00Z",
-        "note": ""
+        "note": null,
+        "processedBy": "admin-extrait@dashboard.com"
       }
     ],
-    "notifications": []
+    "notifications": [
+      {
+        "id": "NOTIF-REQUEST_REJECTED-REQ-26-03-003",
+        "type": "request_rejected",
+        "message": "Your C20 request was rejected.",
+        "requestId": "REQ-26-03-003",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-22T22:06:33.310856Z"
+      },
+      {
+        "id": "NOTIF-REQ-26-03-004",
+        "type": "rejected",
+        "message": "Your request REQ-26-03-004 was rejected",
+        "requestId": "REQ-26-03-004",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-22T23:56:50.055985Z"
+      }
+    ]
   },
   {
     "auth": {
@@ -197,7 +291,7 @@
       "lastName": "Zahra",
       "dateOfBirth": "2001-11-05",
       "phone": "+213 770 88 99 00",
-      "address": "18 Rue des Frères Bouadou, Oran",
+      "address": "18 Rue des Fr\u00e8res Bouadou, Oran",
       "email": "fatima.zahra@email.com",
       "nationalId": "555444333",
       "civilStatus": "single",
@@ -207,7 +301,7 @@
     "taxInfo": {
       "nature": "personne_physique",
       "mainActivity": {
-        "activityName": "Coiffure à domicile",
+        "activityName": "Coiffure \u00e0 domicile",
         "activityCode": "9602",
         "address": "Oran"
       },
@@ -216,7 +310,7 @@
       "commercialRegisterNumber": "",
       "taxIdentificationNumber": "555444333222111",
       "establishmentDate": "2023-01-12",
-      "taxRegime": "Régime forfaitaire",
+      "taxRegime": "R\u00e9gime forfaitaire",
       "taxRecords": [
         {
           "type": "IRG",
@@ -227,7 +321,9 @@
           "paidPenalties": 0
         }
       ],
-      "declarations": { "submitted": false }
+      "declarations": {
+        "submitted": false
+      }
     },
     "eligibility": {
       "identityVerified": true,
@@ -238,9 +334,10 @@
       {
         "requestId": "REQ-26-03-005",
         "documentType": "C20",
-        "status": "pending",
+        "status": "rejected",
         "submittedAt": "2026-03-24T09:45:00Z",
-        "note": ""
+        "note": "",
+        "processedBy": "admin-c20@dashboard.com"
       },
       {
         "requestId": "REQ-26-03-006",
@@ -259,6 +356,15 @@
         "read": false,
         "deleted": false,
         "createdAt": "2026-03-12T10:00:00Z"
+      },
+      {
+        "id": "NOTIF-REQUEST_REJECTED-REQ-26-03-005",
+        "type": "request_rejected",
+        "message": "Your C20 request was rejected.",
+        "requestId": "REQ-26-03-005",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-22T22:06:30.039872Z"
       }
     ]
   },
@@ -282,7 +388,7 @@
         "message": "New C20 request from Amine Haddad.",
         "requestId": "REQ-26-03-003",
         "read": false,
-        "deleted": false,
+        "deleted": true,
         "createdAt": "2026-03-22T10:00:00Z"
       },
       {
@@ -302,27 +408,46 @@
         "read": false,
         "deleted": false,
         "createdAt": "2026-03-25T08:30:00Z"
+      },
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-22-26-343",
+        "type": "new_request",
+        "message": "New C20 request from Brahim Djelid.",
+        "requestId": "REQ-22-26-343",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-22T21:32:25.897105Z"
+      },
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-22-26-465",
+        "type": "new_request",
+        "message": "New C20 request from Brahim Djelid.",
+        "requestId": "REQ-22-26-465",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-22T21:45:02.362610Z"
       }
     ]
   },
   {
     "auth": {
-      "id": "admin-extrait@dashboard.com",
+      "id": "admin-extrait-role@dashboard.com",
       "idType": "email",
       "password": "admin1234"
     },
     "profile": {
       "firstName": "Admin",
-      "lastName": "Extrait",
-      "avatarUrl": null
+      "lastName": "Extrait De Role",
+      "avatarUrl": null,
+      "avatar": ""
     },
     "role": "admin",
-    "service": "Extrait de rôle",
+    "service": "Extrait de r\u00f4le",
     "notifications": [
       {
         "id": "NOTIF-NEW-REQUEST-REQ-26-03-004",
         "type": "new_request",
-        "message": "New Extrait de rôle request from Amine Haddad.",
+        "message": "New Extrait de r\u00f4le request from Amine Haddad.",
         "requestId": "REQ-26-03-004",
         "read": false,
         "deleted": false,
@@ -331,11 +456,29 @@
       {
         "id": "NOTIF-NEW-REQUEST-REQ-26-03-008",
         "type": "new_request",
-        "message": "New Extrait de rôle request from Brahim Djelid.",
+        "message": "New Extrait de r\u00f4le request from Brahim Djelid.",
         "requestId": "REQ-26-03-008",
         "read": false,
         "deleted": false,
         "createdAt": "2026-03-26T14:15:00Z"
+      },
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-22-26-509",
+        "type": "new_request",
+        "message": "New Extrait de r\u00f4le request from Brahim Djelid.",
+        "requestId": "REQ-22-26-509",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-22T21:35:18.655253Z"
+      },
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-23-26-674",
+        "type": "new_request",
+        "message": "New Extrait de r\u00f4le request from Brahim Djelid.",
+        "requestId": "REQ-23-26-674",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-22T23:25:30.058794Z"
       }
     ]
   }

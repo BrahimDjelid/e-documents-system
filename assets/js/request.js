@@ -263,7 +263,8 @@ function computeCompliance(user) {
   btnBack.addEventListener("click", () => goToStep(1));
 
   /* Submit button */
-  btnSubmit.addEventListener("click", () => {
+  btnSubmit.addEventListener("click", (e) => {
+    e.preventDefault();
     if (!declarationCheck.checked) return;
     if (selectedDoc === "C20" && !canRequestC20()) return;
     if (selectedDoc === "Extrait de rôle" && !canRequestExtrait()) return;

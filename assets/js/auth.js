@@ -146,6 +146,7 @@ async function handleLogin() {
     // Uses apiLogin() from api.js
     // api.js must be loaded before auth.js in login.html
     const session = await apiLogin(identifier, password);
+    sessionStorage.setItem("token", session.token);
 
     // Save session
     sessionStorage.setItem("role", session.role);

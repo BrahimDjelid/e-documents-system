@@ -65,8 +65,13 @@
   function applyAvatar(el, initial) {
     if (!el) return;
 
-    if (avatar) {
-      el.innerHTML = `<img src="${avatar}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+    if (avatar && avatar !== "null") {
+      el.innerHTML = `
+      <img src="${avatar}?t=${Date.now()}" 
+           alt="avatar"
+           style="width:100%;height:100%;border-radius:50%;object-fit:cover;"
+           onerror="this.parentElement.textContent='${initial}'" />
+    `;
     } else {
       el.textContent = initial;
     }

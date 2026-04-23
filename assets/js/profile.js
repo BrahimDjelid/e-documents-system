@@ -76,7 +76,7 @@
 
   /* Avatar helpers */
   function showAvatar(src) {
-    avatarImg.src = src;
+    avatarImg.src = src + "?t=" + Date.now();
     avatarImg.style.display = "block";
     avatarInitials.style.display = "none";
     if (avatarRemoveBtn) avatarRemoveBtn.style.display = "flex";
@@ -115,7 +115,7 @@
     document.getElementById("avatar-name").textContent = fullName || "-";
 
     const savedPhoto = localStorage.getItem(`avatar_${user.auth.id}`);
-    if (savedPhoto) {
+    if (savedPhoto && savedPhoto !== "null") {
       showAvatar(savedPhoto);
     } else {
       showInitials(initials);
@@ -359,6 +359,7 @@
       try {
         // apiUploadAvatar(base64, userId) — defined in api.js
         const result = await apiUploadAvatar(base64, userData?.auth?.id);
+        localStorage.setItem(`avatar_${userData.auth.id}`, result.avatarUrl);
         showAvatar(result.avatarUrl);
         showToast("Profile photo updated!");
       } catch (err) {
@@ -379,6 +380,7 @@
       try {
         // apiRemoveAvatar(userId) — defined in api.js
         await apiRemoveAvatar(userId);
+        localStorage.removeItem(`avatar_${userId}`);
         const initials = getInitials(
           userData?.profile?.firstName,
           userData?.profile?.lastName,

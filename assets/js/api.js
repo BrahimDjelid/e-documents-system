@@ -9,7 +9,7 @@
 
 "use strict";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 const API_BASE = "http://127.0.0.1:5000";
 const MOCK_PATH = "../../data/users.json";
 
@@ -592,7 +592,7 @@ function _saveSeenRequests(ids) {
   localStorage.setItem("seen_requests", JSON.stringify(ids));
 }
 
-// MOCK: derive notifications for a USER from their requests 
+// MOCK: derive notifications for a USER from their requests
 function _mockUserNotifications(user) {
   const overrides = _loadNotifOverrides();
   const requests = _applyOverrides(user.requests || []);
@@ -712,7 +712,7 @@ async function apiGetNotifications() {
   return res.json();
 }
 
-// MARK ONE AS READ 
+// MARK ONE AS READ
 /**
  * Mark a single notification as read.
  *
@@ -737,7 +737,7 @@ async function apiMarkNotificationRead(notifId) {
   return res.json();
 }
 
-// MARK ALL AS READ 
+// MARK ALL AS READ
 /**
  * Mark all notifications as read for the current user/admin.
  *
