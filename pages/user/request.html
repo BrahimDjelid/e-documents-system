@@ -179,21 +179,13 @@
                             </div>
                         </div>
 
-
-                        <!-- C20 Year Selection (shown only when C20 is selected) -->
-                        <div class="form-field-group" id="c20-year-section" style="display:none;">
+                        <!-- C20 Year Selector (only shown when C20 is selected) -->
+                        <div class="form-field-group" id="c20-year-group" style="display:none;">
                             <label class="form-field-label" for="c20-year-select">
-                                <i class="fa-regular fa-calendar"
-                                    style="color:var(--primary-blue);margin-right:6px;"></i>
-                                Tax Year
-                                <span style="color:var(--status-rejected);margin-left:2px;">*</span>
+                                Certificate Year
                             </label>
-                            <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:var(--space-sm);">
-                                C20 is issued per tax year. Select the year for which you need this certificate.
-                            </p>
-                            <select class="filter-select" id="c20-year-select" style="width:100%;padding:11px var(--space-md);font-size:0.9rem;border: 1.5px solid var(--input-border);
-    border-radius: var(--radius-md);">
-                                <option value="">-- Select a tax year --</option>
+                            <select class="form-select" id="c20-year-select">
+                                <!-- populated by JS -->
                             </select>
                         </div>
 

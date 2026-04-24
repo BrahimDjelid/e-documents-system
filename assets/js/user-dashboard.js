@@ -1,6 +1,16 @@
 const userId = sessionStorage.getItem("userId");
 const userRole = sessionStorage.getItem("role");
 
+// Compliance is ALWAYS computed from taxRecords — never trust the stored flag
+function computeCompliance(taxRecords) {
+  if (!taxRecords || taxRecords.length === 0) return false;
+  return taxRecords.every((r) => {
+    const total = (r.principal || 0) + (r.penalties || 0);
+    const paid = (r.paidPrincipal || 0) + (r.paidPenalties || 0);
+    return paid >= total;
+  });
+}
+
 // toast
 const toast = document.getElementById("toast");
 const toastMsg = document.getElementById("toast-msg");
@@ -59,6 +69,9 @@ async function initDashboard() {
     const requests = user.requests || [];
     const eligibility = user.eligibility || {};
     const firstName = user.profile?.firstName || "";
+
+    // Override stored taxCompliance with live-computed value from taxRecords
+    eligibility.taxCompliance = computeCompliance(user.taxInfo?.taxRecords);
 
     // Welcome banner
     const welcomeTitle = document.getElementById("welcome-title");

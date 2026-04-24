@@ -100,12 +100,25 @@
     }
   }
 
+  /* Compliance is ALWAYS computed from taxRecords — never trust the stored flag */
+  function computeCompliance(taxRecords) {
+    if (!taxRecords || taxRecords.length === 0) return false;
+    return taxRecords.every((r) => {
+      const total = (r.principal || 0) + (r.penalties || 0);
+      const paid = (r.paidPrincipal || 0) + (r.paidPenalties || 0);
+      return paid >= total;
+    });
+  }
+
   function render(user) {
     if (!user) return;
     userData = user;
     const p = user.profile || {};
     const e = user.eligibility || {};
     const requests = user.requests || [];
+
+    // Override stored taxCompliance with live-computed value from taxRecords
+    e.taxCompliance = computeCompliance(user.taxInfo?.taxRecords);
 
     const fullName = [p.firstName, p.lastName].filter(Boolean).join(" ");
     const initials = getInitials(p.firstName, p.lastName);

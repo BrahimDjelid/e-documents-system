@@ -167,7 +167,10 @@ function renderTable(requests) {
 
       return `
       <tr>
-        <td class="req-id">${req.requestId}</td>
+        <td class="req-id">
+          ${req.requestId}
+          ${req.documentType === "C20" && req.year ? `<div class="req-year">Year: ${req.year}</div>` : ""}
+        </td>
         <td>
           <div class="user-name">${req._fullName}</div>
         </td>
@@ -231,6 +234,9 @@ function openModal(requestId) {
 
   // Header
   modalReqId.textContent = activeRequest.requestId;
+  if (activeRequest.documentType === "C20" && activeRequest.year) {
+    modalReqId.textContent += ` (Year ${activeRequest.year})`;
+  }
   modalUserName.textContent = activeRequest._fullName;
 
   // Applicant info
@@ -381,7 +387,6 @@ async function loadRequests() {
     const params = new URLSearchParams(window.location.search);
     const autoOpen = params.get("id");
     if (autoOpen) setTimeout(() => openModal(autoOpen), 150);
-    
   } catch (err) {
     console.error("[requests-management.js] Error loading data:", err);
     showToast("Could not load requests. Please try again.", true);

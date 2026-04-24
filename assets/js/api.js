@@ -33,19 +33,33 @@ async function _loadMockUsers() {
   return res.json();
 }
 
-// Mock: merge localStorage status/note overrides into request list
+// Mock: merge localStorage status/note overrides into request list,
+// and inject new requests submitted in this session (not yet in users.json)
 function _applyOverrides(requests) {
   try {
     const overrides = JSON.parse(localStorage.getItem("req_overrides") || "{}");
-    return requests.map((req) => {
+
+    // Update existing requests with any saved status/note/year overrides
+    const updated = requests.map((req) => {
       const override = overrides[req.requestId];
       if (!override) return req;
       return {
         ...req,
-        status: override.status,
-        note: override.note || req.note || "",
+        status: override.status ?? req.status,
+        note: override.note ?? req.note ?? "",
+        ...(override.year !== undefined ? { year: override.year } : {}),
       };
     });
+
+    // Inject new requests that don't exist in users.json yet
+    const existingIds = new Set(requests.map((r) => r.requestId));
+    Object.values(overrides).forEach((override) => {
+      if (override._new && !existingIds.has(override.requestId)) {
+        updated.push(override._new);
+      }
+    });
+
+    return updated;
   } catch {
     return requests;
   }
@@ -351,6 +365,30 @@ async function apiChangePassword(currentPassword, newPassword) {
  */
 async function apiSubmitRequest(payload) {
   if (USE_MOCK) {
+    // Persist the new request so the admin side can see it immediately,
+    // including the year field for C20 requests.
+    try {
+      const overrides = JSON.parse(
+        localStorage.getItem("req_overrides") || "{}",
+      );
+      const newRecord = {
+        requestId: payload.requestId,
+        documentType: payload.documentType,
+        status: "pending",
+        submittedAt: payload.submittedAt,
+        note: "",
+        ...(payload.year !== undefined ? { year: payload.year } : {}),
+      };
+      overrides[payload.requestId] = {
+        status: "pending",
+        note: "",
+        ...(payload.year !== undefined ? { year: payload.year } : {}),
+        _new: newRecord,
+      };
+      localStorage.setItem("req_overrides", JSON.stringify(overrides));
+    } catch (err) {
+      console.error("[api.js | MOCK] Could not persist new request:", err);
+    }
     console.log("[api.js | MOCK] POST /api/requests →", payload);
     return { requestId: payload.requestId, status: "pending" };
   }
