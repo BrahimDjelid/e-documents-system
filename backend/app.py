@@ -507,6 +507,11 @@ def save_decision(request_id):
     for user in users:
         for req in user.get("requests", []):
             if req["requestId"] == request_id:
+
+                # Admin service boundary check
+                if req["documentType"] != admin.get("service"):
+                    return {"error": "Forbidden"}, 403
+
                 new_status = data.get("status")
                 doc_type = req.get("documentType", "document")
 
