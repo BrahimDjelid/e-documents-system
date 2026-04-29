@@ -20,51 +20,50 @@
     return document.getElementById(id);
   }
 
-  //  Public init 
+  //  Public init
   async function initNotifications() {
     const btn = dom("notif-btn");
     const dropdown = dom("notif-dropdown");
     const wrapper = dom("notif-wrapper");
 
-    if (!btn || !dropdown) return; // topbar not loaded yet
+    if (!btn || !dropdown) return;
 
-    // Load + render
     await _loadAndRender();
 
-    // Toggle dropdown on bell click
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       _toggleDropdown();
     });
 
-    // Close on outside click
     document.addEventListener("click", (e) => {
       if (_dropdownOpen && wrapper && !wrapper.contains(e.target)) {
         _closeDropdown();
       }
     });
 
-    // Close on Escape
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && _dropdownOpen) _closeDropdown();
     });
 
-    // Mark-all button
     const markAllBtn = dom("notif-mark-all-btn");
     if (markAllBtn) {
       markAllBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
-        await apiMarkAllNotificationsRead();
+        // FIX 2.1: Update local state FIRST, render immediately, then call API
         _notifications = _notifications.map((n) => ({ ...n, read: true }));
         _render();
+        try {
+          await apiMarkAllNotificationsRead();
+        } catch (err) {
+          console.warn("[notifications.js] markAll error:", err);
+        }
       });
     }
 
-    // Check for deep-link: open modal if openRequestId is in sessionStorage
+    // FIX 2.2: Deep-link runs after data is loaded (not on a fragile fixed timer)
     _handleDeepLink();
   }
 
-  // Load & render
   async function _loadAndRender() {
     try {
       _notifications = await apiGetNotifications();
@@ -74,7 +73,6 @@
     }
   }
 
-  // Render
   function _render() {
     _renderBadge();
     _renderList();
@@ -110,7 +108,6 @@
 
     if (visible.length === 0) {
       if (emptyState) emptyState.style.display = "flex";
-      // Remove all item nodes, keep empty state
       Array.from(list.children).forEach((c) => {
         if (c.id !== "notif-empty-state") c.remove();
       });
@@ -119,19 +116,16 @@
 
     if (emptyState) emptyState.style.display = "none";
 
-    // Sort: unread first, then by date desc
     const sorted = [...visible].sort((a, b) => {
       if (!a.read && b.read) return -1;
       if (a.read && !b.read) return 1;
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
 
-    // Remove old item nodes (keep empty-state)
     Array.from(list.children).forEach((c) => {
       if (c.id !== "notif-empty-state") c.remove();
     });
 
-    // Render items
     sorted.forEach((notif) => {
       const item = _buildItem(notif);
       list.appendChild(item);
@@ -173,35 +167,42 @@
       ${!notif.read ? '<span class="notif-unread-dot"></span>' : ""}
     `;
 
-    // Click body → navigate + mark read
     const body = item.querySelector(".notif-item-body");
     body.addEventListener("click", () => _handleNotifClick(notif));
 
-    // Mark-read button
+    // FIX 2.1: Optimistic update — state + render BEFORE API call
     const readBtn = item.querySelector(".notif-read-btn");
     if (readBtn) {
       readBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
-        await apiMarkNotificationRead(notif.id);
         _notifications = _notifications.map((n) =>
           n.id === notif.id ? { ...n, read: true } : n,
         );
         _render();
+        try {
+          await apiMarkNotificationRead(notif.id);
+        } catch (err) {
+          console.warn("[notifications.js] markRead error:", err);
+        }
       });
     }
 
-    // Delete button
     const delBtn = item.querySelector(".notif-delete-btn");
     if (delBtn) {
       delBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
+        // Optimistic delete
+        _notifications = _notifications.map((n) =>
+          n.id === notif.id ? { ...n, deleted: true } : n,
+        );
         item.classList.add("notif-item--removing");
         setTimeout(async () => {
-          await apiDeleteNotification(notif.id);
-          _notifications = _notifications.map((n) =>
-            n.id === notif.id ? { ...n, deleted: true } : n,
-          );
           _render();
+          try {
+            await apiDeleteNotification(notif.id);
+          } catch (err) {
+            console.warn("[notifications.js] delete error:", err);
+          }
         }, 300);
       });
     }
@@ -209,59 +210,77 @@
     return item;
   }
 
-  // Click navigation
+  // FIX 2.1 + 2.2 + 2.3: Reliable click handler — always navigates, first click always works
   async function _handleNotifClick(notif) {
-    // Mark as read first
+    // Optimistic read BEFORE navigation so badge updates immediately
     if (!notif.read) {
-      await apiMarkNotificationRead(notif.id);
       _notifications = _notifications.map((n) =>
         n.id === notif.id ? { ...n, read: true } : n,
       );
       _render();
+      try {
+        await apiMarkNotificationRead(notif.id);
+      } catch (err) {
+        console.warn("[notifications.js] markRead on click error:", err);
+      }
     }
 
     _closeDropdown();
 
     if (!notif.requestId) return;
 
-    // Store requestId for auto-open modal on target page
-    sessionStorage.setItem("openRequestId", notif.requestId);
-
     const currentPath = window.location.pathname;
 
     if (_role === "admin") {
-      const target = "requests-management.html";
       if (currentPath.includes("requests-management")) {
-        // Already there — open modal directly
-        if (typeof openModal === "function") openModal(notif.requestId);
+        // Already on target page — open modal now using polling (no race condition)
+        _openModalWhenReady(notif.requestId);
       } else {
-        window.location.href = target;
+        // FIX 2.3: Always set sessionStorage then navigate — guaranteed to trigger
+        sessionStorage.setItem("openRequestId", notif.requestId);
+        window.location.href = "requests-management.html";
       }
     } else {
-      const target = "documents.html";
       if (currentPath.includes("documents")) {
-        if (typeof openModal === "function") openModal(notif.requestId);
+        _openModalWhenReady(notif.requestId);
       } else {
-        window.location.href = target;
+        sessionStorage.setItem("openRequestId", notif.requestId);
+        window.location.href = "documents.html";
       }
     }
   }
 
-  // Deep-link handler
+  // FIX 2.2: Polls until openModal is available — eliminates the fixed-delay race condition
+  function _openModalWhenReady(requestId, maxWait = 4000) {
+    const interval = 50;
+    let elapsed = 0;
+
+    const poll = setInterval(() => {
+      if (typeof openModal === "function") {
+        clearInterval(poll);
+        openModal(requestId);
+      } else {
+        elapsed += interval;
+        if (elapsed >= maxWait) {
+          clearInterval(poll);
+          console.warn(
+            "[notifications.js] openModal not available after",
+            maxWait,
+            "ms",
+          );
+        }
+      }
+    }, interval);
+  }
+
+  // FIX 2.2: Deep-link handler — called after _loadAndRender(), uses polling not fixed delay
   function _handleDeepLink() {
     const id = sessionStorage.getItem("openRequestId");
     if (!id) return;
     sessionStorage.removeItem("openRequestId");
-
-    // Give the page JS time to load data and wire openModal
-    setTimeout(() => {
-      if (typeof openModal === "function") {
-        openModal(id);
-      }
-    }, 400);
+    _openModalWhenReady(id);
   }
 
-  // Dropdown toggle 
   function _toggleDropdown() {
     if (_dropdownOpen) _closeDropdown();
     else _openDropdown();
@@ -285,7 +304,6 @@
     if (btn) btn.setAttribute("aria-expanded", "false");
   }
 
-  // Helpers
   function _iconForType(type) {
     const map = {
       request_approved: "fa-solid fa-circle-check",
@@ -333,6 +351,5 @@
       .replace(/"/g, "&quot;");
   }
 
-  // Expose
   window.initNotifications = initNotifications;
 })();
