@@ -578,6 +578,10 @@ def download_document(request_id):
     if not target_request:
         return {"error": "Request not found"}, 404
 
+    # Only approved requests can be downloaded
+    if target_request["status"] != "approved":
+        return {"error": "Document not available"}, 403
+
     DOCS_DIR = os.path.join(BASE_DIR, "documents")
 
     if target_request["documentType"] == "C20":
