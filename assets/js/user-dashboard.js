@@ -247,9 +247,17 @@ async function initDashboard() {
         `;
 
         downloadList.querySelectorAll(".download-btn").forEach((btn) => {
+          let _btnDownloading = false; // FIX 3.1: per-button guard
           btn.addEventListener("click", async () => {
+            if (_btnDownloading) return;
             const req = readyItems.find((r) => r.requestId === btn.dataset.id);
             if (!req) return;
+
+            // FIX 3.2: Loading state
+            _btnDownloading = true;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
 
             try {
               await apiDownloadDocument(req.requestId, req.documentType);
@@ -261,6 +269,10 @@ async function initDashboard() {
               } else {
                 showToast("Download failed. Please try again.", true);
               }
+            } finally {
+              btn.innerHTML = originalHTML;
+              btn.disabled = false;
+              _btnDownloading = false;
             }
           });
         });

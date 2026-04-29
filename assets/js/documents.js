@@ -31,6 +31,7 @@ const toastMsg = document.getElementById("toast-msg");
 // State
 let allRequests = [];
 let toastTimer = null;
+let _downloading = false; // FIX 3.1: guard against double-fire
 
 // Helpers
 function formatDate(str) {
@@ -138,8 +139,17 @@ function renderTable(requests) {
 
   tbody.querySelectorAll(".btn-dl").forEach((btn) => {
     btn.addEventListener("click", async () => {
+      // FIX 3.1: Prevent double-fire — guard while a download is in progress
+      if (_downloading) return;
       const req = allRequests.find((r) => r.requestId === btn.dataset.id);
       if (!req) return;
+
+      // FIX 3.2: Visual loading state
+      _downloading = true;
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
+      btn.disabled = true;
 
       try {
         await apiDownloadDocument(req.requestId, req.documentType);
@@ -151,6 +161,10 @@ function renderTable(requests) {
         } else {
           showToast("Download failed. Please try again.", true);
         }
+      } finally {
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+        _downloading = false;
       }
     });
   });
@@ -264,9 +278,18 @@ function closeModal() {
 modalClose.addEventListener("click", closeModal);
 modalCloseBtn.addEventListener("click", closeModal);
 modalDownloadBtn.addEventListener("click", async () => {
-  const reqId = modalReqId.textContent;
+  // FIX 3.1: Prevent double-fire
+  if (_downloading) return;
+  const reqId = modalReqId.textContent.split(" ")[0]; // handle cases where year text is appended
   const req = allRequests.find((r) => r.requestId === reqId);
   if (!req) return;
+
+  // FIX 3.2: Visual loading state
+  _downloading = true;
+  const originalHTML = modalDownloadBtn.innerHTML;
+  modalDownloadBtn.innerHTML =
+    '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
+  modalDownloadBtn.disabled = true;
 
   try {
     await apiDownloadDocument(req.requestId, req.documentType);
@@ -276,6 +299,10 @@ modalDownloadBtn.addEventListener("click", async () => {
     } else {
       showToast("Download failed. Please try again.", true);
     }
+  } finally {
+    modalDownloadBtn.innerHTML = originalHTML;
+    modalDownloadBtn.disabled = false;
+    _downloading = false;
   }
 });
 
