@@ -91,13 +91,8 @@
     }
 
     const t = userData.taxInfo || {};
-    const e = userData.eligibility || {};
 
-    if (!e.identityVerified) {
-      showToast("Identity not verified", true);
-      return false;
-    }
-
+    // PART 4: identityVerified is informational only — not a submission blocker
     if (userData.auth.id !== t.taxIdentificationNumber) {
       showToast("NIF mismatch", true);
       return false;
@@ -127,13 +122,8 @@
     }
 
     const t = userData.taxInfo || {};
-    const e = userData.eligibility || {};
 
-    if (!e.identityVerified) {
-      showToast("Identity not verified", true);
-      return false;
-    }
-
+    // PART 4: identityVerified is informational only — not a submission blocker
     if (userData.auth.id !== t.taxIdentificationNumber) {
       showToast("NIF mismatch", true);
       return false;
