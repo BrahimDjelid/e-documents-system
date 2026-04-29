@@ -507,14 +507,33 @@ def save_decision(request_id):
     for user in users:
         for req in user.get("requests", []):
             if req["requestId"] == request_id:
-                req["status"] = data.get("status")
+                new_status = data.get("status")
+                doc_type = req.get("documentType", "document")
+
+                req["status"] = new_status
                 req["note"] = data.get("note", "")
                 req["processedBy"] = data.get("processedBy")
 
+                # Map status to correct notification type
+                notif_type_map = {
+                    "approved": "request_approved",
+                    "rejected": "request_rejected",
+                    "pending": "new_request"
+                }
+                notif_type = notif_type_map.get(new_status, "new_request")
+
+                # Build human-readable message
+                if new_status == "approved":
+                    message = f"Your {doc_type} request has been approved."
+                elif new_status == "rejected":
+                    message = f"Your {doc_type} request has been rejected."
+                else:
+                    message = f"Your {doc_type} request status was updated to {new_status}."
+
                 user.setdefault("notifications", []).append({
-                    "id": f"NOTIF-{request_id}",
-                    "type": data.get("status"),
-                    "message": f"Your request {request_id} was {data.get('status')}",
+                    "id": f"NOTIF-{notif_type.upper()}-{request_id}",
+                    "type": notif_type,
+                    "message": message,
                     "requestId": request_id,
                     "read": False,
                     "deleted": False,

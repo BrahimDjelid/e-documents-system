@@ -114,8 +114,28 @@
       "taxCompliance": true,
       "addressConfirmed": true
     },
-    "requests": [],
-    "notifications": []
+    "requests": [
+      {
+        "requestId": "REQ-29-26-765",
+        "documentType": "C20",
+        "status": "approved",
+        "submittedAt": "2026-04-29T21:03:54.253Z",
+        "note": null,
+        "year": 2025,
+        "processedBy": "admin-c20@dashboard.com"
+      }
+    ],
+    "notifications": [
+      {
+        "id": "NOTIF-REQUEST_APPROVED-REQ-29-26-765",
+        "type": "request_approved",
+        "message": "Your C20 request has been approved.",
+        "requestId": "REQ-29-26-765",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-29T21:04:06.661853Z"
+      }
+    ]
   },
   {
     "auth": {
@@ -319,7 +339,17 @@
     },
     "role": "admin",
     "service": "C20",
-    "notifications": []
+    "notifications": [
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-29-26-765",
+        "type": "new_request",
+        "message": "New C20 request from Brahim Djelid.",
+        "requestId": "REQ-29-26-765",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-29T21:03:54.260835Z"
+      }
+    ]
   },
   {
     "auth": {
