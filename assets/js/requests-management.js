@@ -234,9 +234,9 @@ function openModal(requestId) {
 
   // Header
   modalReqId.textContent = activeRequest.requestId;
-  if (activeRequest.documentType === "C20" && activeRequest.year) {
-    modalReqId.textContent += ` (Year ${activeRequest.year})`;
-  }
+  // if (activeRequest.documentType === "C20" && activeRequest.year) {
+  //   modalReqId.textContent += ` (Year ${activeRequest.year})`;
+  // }
   modalUserName.textContent = activeRequest._fullName;
 
   // Applicant info
@@ -259,8 +259,19 @@ function openModal(requestId) {
   const yearValue = document.getElementById("modal-year");
 
   if (activeRequest.documentType === "C20" && activeRequest.year) {
+    // C20 → use stored year
     yearInline.style.display = "block";
     yearValue.textContent = activeRequest.year;
+  } else if (
+    activeRequest.documentType === "Extrait de rôle" &&
+    activeRequest._taxRecords?.length
+  ) {
+    const latestYear = Math.max(
+      ...activeRequest._taxRecords.map((r) => r.year),
+    );
+
+    yearInline.style.display = "block";
+    yearValue.textContent = latestYear;
   } else {
     yearInline.style.display = "none";
   }
@@ -404,4 +415,7 @@ async function loadRequests() {
 }
 
 // Init
-loadRequests();
+if (!window.__requestsManagementInitialized) {
+  window.__requestsManagementInitialized = true;
+  loadRequests();
+}

@@ -43,7 +43,10 @@ function getDashboardPath(role) {
 
   if (!isOnCorrectFolder) {
     // Logged in but on wrong role's pages -> go to own dashboard
-    window.location.replace(getDashboardPath(role));
+    const target = getDashboardPath(role);
+    if (!window.location.pathname.includes(target)) {
+      window.location.replace(target);
+    }
     return;
   }
 

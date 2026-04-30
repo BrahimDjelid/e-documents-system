@@ -20,6 +20,14 @@
     return document.getElementById(id);
   }
 
+  function safeNavigate(target) {
+    const current = window.location.pathname;
+
+    if (current.includes(target)) return; // already on page → do nothing
+
+    window.location.href = target;
+  }
+
   //  Public init
   async function initNotifications() {
     const btn = dom("notif-btn");
@@ -238,14 +246,14 @@
       } else {
         // FIX 2.3: Always set sessionStorage then navigate — guaranteed to trigger
         sessionStorage.setItem("openRequestId", notif.requestId);
-        window.location.href = "requests-management.html";
+        safeNavigate("requests-management.html");
       }
     } else {
       if (currentPath.includes("documents")) {
         _openModalWhenReady(notif.requestId);
       } else {
         sessionStorage.setItem("openRequestId", notif.requestId);
-        window.location.href = "documents.html";
+        safeNavigate("documents.html");
       }
     }
   }

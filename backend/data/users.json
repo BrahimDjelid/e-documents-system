@@ -114,8 +114,45 @@
       "taxCompliance": true,
       "addressConfirmed": true
     },
-    "requests": [],
-    "notifications": []
+    "requests": [
+      {
+        "requestId": "REQ-30-26-283",
+        "documentType": "C20",
+        "status": "approved",
+        "submittedAt": "2026-04-30T20:52:33.906Z",
+        "note": null,
+        "year": 2025,
+        "processedBy": "admin-c20@dashboard.com"
+      },
+      {
+        "requestId": "REQ-30-26-992",
+        "documentType": "Extrait de r\u00f4le",
+        "status": "approved",
+        "submittedAt": "2026-04-30T20:55:59.530Z",
+        "note": null,
+        "processedBy": "admin-extrait-role@dashboard.com"
+      }
+    ],
+    "notifications": [
+      {
+        "id": "NOTIF-REQUEST_APPROVED-REQ-30-26-283",
+        "type": "request_approved",
+        "message": "Your C20 request has been approved.",
+        "requestId": "REQ-30-26-283",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-30T20:52:41.893660Z"
+      },
+      {
+        "id": "NOTIF-REQUEST_APPROVED-REQ-30-26-992",
+        "type": "request_approved",
+        "message": "Your Extrait de r\u00f4le request has been approved.",
+        "requestId": "REQ-30-26-992",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-30T21:18:30.056561Z"
+      }
+    ]
   },
   {
     "auth": {
@@ -319,7 +356,17 @@
     },
     "role": "admin",
     "service": "C20",
-    "notifications": []
+    "notifications": [
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-30-26-283",
+        "type": "new_request",
+        "message": "New C20 request from Brahim Djelid.",
+        "requestId": "REQ-30-26-283",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-30T20:52:33.921640Z"
+      }
+    ]
   },
   {
     "auth": {
@@ -335,6 +382,16 @@
     },
     "role": "admin",
     "service": "Extrait de r\u00f4le",
-    "notifications": []
+    "notifications": [
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-30-26-992",
+        "type": "new_request",
+        "message": "New Extrait de r\u00f4le request from Brahim Djelid.",
+        "requestId": "REQ-30-26-992",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-04-30T20:55:59.538214Z"
+      }
+    ]
   }
 ]

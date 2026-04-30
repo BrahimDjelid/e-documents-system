@@ -156,9 +156,12 @@ async function initAdminDashboard() {
 
       // Wire Review buttons → navigate to requests-management with ?id=
       tbody.querySelectorAll(".btn-review").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          window.location.href = `requests-management.html?id=${btn.dataset.id}`;
-        });
+        btn.onclick = () => {
+          const target = `requests-management.html?id=${btn.dataset.id}`;
+          if (!window.location.href.includes(target)) {
+            window.location.href = target;
+          }
+        };
       });
     }
   } catch (err) {
@@ -166,4 +169,7 @@ async function initAdminDashboard() {
   }
 }
 
-initAdminDashboard();
+if (!window.__adminDashboardInitialized) {
+  window.__adminDashboardInitialized = true;
+  initAdminDashboard();
+}

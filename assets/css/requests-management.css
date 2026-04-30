@@ -335,7 +335,7 @@
   background: var(--surface-1);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 560px;
+  max-width: 582px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: var(--shadow-elevated);

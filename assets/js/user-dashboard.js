@@ -316,4 +316,7 @@ function getStatusBadge(status) {
 }
 
 //  Run
-initDashboard();
+if (!window.__userDashboardInitialized) {
+  window.__userDashboardInitialized = true;
+  initDashboard();
+}
