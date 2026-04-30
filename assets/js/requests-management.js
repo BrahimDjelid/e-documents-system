@@ -255,6 +255,16 @@ function openModal(requestId) {
     modalCompliance.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Non à jour`;
   }
 
+  const yearInline = document.getElementById("modal-year-inline");
+  const yearValue = document.getElementById("modal-year");
+
+  if (activeRequest.documentType === "C20" && activeRequest.year) {
+    yearInline.style.display = "block";
+    yearValue.textContent = activeRequest.year;
+  } else {
+    yearInline.style.display = "none";
+  }
+
   // Tax records (Extrait de rôle only)
   if (
     activeRequest.documentType === "Extrait de rôle" &&
