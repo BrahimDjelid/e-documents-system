@@ -114,27 +114,8 @@
       "taxCompliance": true,
       "addressConfirmed": true
     },
-    "requests": [
-      {
-        "requestId": "REQ-30-26-879",
-        "documentType": "Extrait de r\u00f4le",
-        "status": "approved",
-        "submittedAt": "2026-04-30T17:35:26.452Z",
-        "note": null,
-        "processedBy": "admin-extrait-role@dashboard.com"
-      }
-    ],
-    "notifications": [
-      {
-        "id": "NOTIF-REQUEST_APPROVED-REQ-30-26-879",
-        "type": "request_approved",
-        "message": "Your Extrait de r\u00f4le request has been approved.",
-        "requestId": "REQ-30-26-879",
-        "read": true,
-        "deleted": false,
-        "createdAt": "2026-04-30T17:35:31.783495Z"
-      }
-    ]
+    "requests": [],
+    "notifications": []
   },
   {
     "auth": {
@@ -354,16 +335,6 @@
     },
     "role": "admin",
     "service": "Extrait de r\u00f4le",
-    "notifications": [
-      {
-        "id": "NOTIF-NEW-REQUEST-REQ-30-26-879",
-        "type": "new_request",
-        "message": "New Extrait de r\u00f4le request from Brahim Djelid.",
-        "requestId": "REQ-30-26-879",
-        "read": false,
-        "deleted": false,
-        "createdAt": "2026-04-30T17:35:26.463238Z"
-      }
-    ]
+    "notifications": []
   }
 ]

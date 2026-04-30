@@ -158,7 +158,14 @@ async function initDashboard() {
           .map(
             (req) => `
           <tr>
-            <td class="req-id">${req.requestId}</td>
+            <td class="req-id">
+              ${req.requestId}
+              ${
+                req.documentType === "C20" && req.year
+                  ? `<div class="req-year">Year: ${req.year}</div>`
+                  : ""
+              }
+            </td>
             <td><span class="${getDocBadgeClass(req.documentType)}">${req.documentType}</span></td>
             <td class="req-date">${formatDate(req.submittedAt)}</td>
             <td>${getStatusBadge(req.status)}</td>

@@ -3,7 +3,7 @@
 const adminService = sessionStorage.getItem("service") || "";
 const adminId = sessionStorage.getItem("userId") || "";
 
-//  Helpers 
+//  Helpers
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return "Good morning";
@@ -30,7 +30,7 @@ function setText(id, value) {
   if (el) el.textContent = value;
 }
 
-//  Compliance — always recomputed 
+//  Compliance — always recomputed
 function computeCompliance(taxRecords) {
   if (!taxRecords || taxRecords.length === 0) return false;
   return taxRecords.every((r) => {
@@ -45,7 +45,7 @@ async function initAdminDashboard() {
   try {
     const allRequests = await apiGetAdminDashboard();
 
-    //  Welcome banner 
+    //  Welcome banner
     const firstName = sessionStorage.getItem("userFirstName") || "Admin";
     setText("welcome-title", `${getGreeting()}, ${firstName}`);
 
@@ -76,7 +76,7 @@ async function initAdminDashboard() {
       serviceBadge.innerHTML = `<i class="${icon}"></i> ${adminService || "—"}`;
     }
 
-    //  Stats 
+    //  Stats
     setText("stat-total", total);
     setText("stat-pending", pending);
     setText("stat-approved", approved);
@@ -107,7 +107,7 @@ async function initAdminDashboard() {
         : "None rejected",
     );
 
-    //  Pending requests table 
+    //  Pending requests table
     const pendingRequests = allRequests
       .filter((r) => r.status === "pending")
       .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
@@ -133,7 +133,14 @@ async function initAdminDashboard() {
 
           return `
           <tr>
-            <td class="req-id">${req.requestId}</td>
+            <td class="req-id">
+              ${req.requestId}
+              ${
+                req.documentType === "C20" && req.year
+                  ? `<div class="req-year">Year: ${req.year}</div>`
+                  : ""
+              }
+            </td>
             <td><span class="user-name">${req._fullName}</span></td>
             <td class="req-date">${formatDate(req.submittedAt)}</td>
             <td>${compBadge}</td>
