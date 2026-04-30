@@ -763,20 +763,9 @@ def update_admin_profile():
     if not admin or admin["role"] != "admin":
         return {"error": "Forbidden"}, 403
 
-    new_first = data.get("firstName")
-    new_last = data.get("lastName")
     new_email = data.get("email")
-
+    
     old_email = admin["auth"]["id"]
-
-    # ----------------------------
-    # UPDATE NAME
-    # ----------------------------
-    if new_first:
-        admin["profile"]["firstName"] = new_first
-
-    if new_last:
-        admin["profile"]["lastName"] = new_last
 
     # ----------------------------
     # UPDATE EMAIL (LOGIN ID)
@@ -789,7 +778,6 @@ def update_admin_profile():
         if exists:
             return {"error": "Email already in use"}, 400
 
-        # 🔥 CRITICAL: update auth.id
         admin["auth"]["id"] = new_email
 
         # Generate new token
