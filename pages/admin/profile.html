@@ -135,11 +135,19 @@
                                         First Name
                                     </label>
                                     <div class="info-input-wrap">
-                                        <input type="text" class="info-input info-input--editable" id="pf-firstname"
+                                        <input type="text" class="info-input info-input--readonly" id="pf-firstname"
                                             readonly />
+                                        <span class="info-lock-icon" title="Cannot be changed">
+                                            <i class="fa-solid fa-lock"></i>
+                                        </span>
                                     </div>
+                                    <span class="info-hint">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                        Name cannot be changed. Contact system admin if needed.
+                                    </span>
                                 </div>
 
+                                <!-- Last Name -->
                                 <!-- Last Name -->
                                 <div class="info-field">
                                     <label class="info-label" for="pf-lastname">
@@ -147,8 +155,11 @@
                                         Last Name
                                     </label>
                                     <div class="info-input-wrap">
-                                        <input type="text" class="info-input info-input--editable" id="pf-lastname"
+                                        <input type="text" class="info-input info-input--readonly" id="pf-lastname"
                                             readonly />
+                                        <span class="info-lock-icon" title="Cannot be changed">
+                                            <i class="fa-solid fa-lock"></i>
+                                        </span>
                                     </div>
                                 </div>
 

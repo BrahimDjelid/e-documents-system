@@ -73,7 +73,10 @@
   position: relative;
   z-index: 1;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    box-shadow 0.2s;
 }
 
 .btn-edit-profile:hover {
@@ -106,14 +109,28 @@
   animation: apCardIn 0.35s ease both;
 }
 
-.ap-col--left  .ap-card:nth-child(1) { animation-delay: 0.04s; }
-.ap-col--left  .ap-card:nth-child(2) { animation-delay: 0.08s; }
-.ap-col--right .ap-card:nth-child(1) { animation-delay: 0.06s; }
-.ap-col--right .ap-card:nth-child(2) { animation-delay: 0.10s; }
+.ap-col--left .ap-card:nth-child(1) {
+  animation-delay: 0.04s;
+}
+.ap-col--left .ap-card:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.ap-col--right .ap-card:nth-child(1) {
+  animation-delay: 0.06s;
+}
+.ap-col--right .ap-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
 
 @keyframes apCardIn {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .ap-card-title {
@@ -197,7 +214,9 @@
   font-size: 12px;
   cursor: pointer;
   border: 2px solid var(--surface-1);
-  transition: background 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
 }
 
 .avatar-upload-btn:hover {
@@ -221,7 +240,9 @@
   font-size: 11px;
   cursor: pointer;
   border: 2px solid var(--surface-1);
-  transition: background 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
   /* hidden by default — JS sets display:flex when photo exists */
 }
 
@@ -421,6 +442,29 @@
   position: relative;
 }
 
+.info-lock-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-300);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.info-input--readonly {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  padding-right: 36px;
+}
+
+.info-input--readonly:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: var(--input-border);
+}
+
 .info-input {
   width: 100%;
   border-radius: var(--radius-md);
@@ -428,7 +472,10 @@
   font-size: 0.875rem;
   font-family: var(--font-main);
   color: var(--text-primary);
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
   border: 1.5px solid var(--input-border);
 }
 
@@ -485,7 +532,9 @@
   font-family: var(--font-main);
   color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
 }
 
 .btn-cancel-edit:hover {
@@ -507,7 +556,9 @@
   font-family: var(--font-main);
   cursor: pointer;
   box-shadow: var(--shadow-button);
-  transition: background 0.2s, transform 0.15s;
+  transition:
+    background 0.2s,
+    transform 0.15s;
 }
 
 .btn-save-edit:hover {
@@ -548,7 +599,11 @@
   font-size: 13px;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.15s;
 }
 
 .btn-edit-security:hover {
@@ -610,7 +665,10 @@
   font-size: 0.875rem;
   font-family: var(--font-main);
   color: var(--text-primary);
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
 }
 
 .sec-input:focus {
@@ -671,7 +729,9 @@
   font-family: var(--font-main);
   cursor: pointer;
   box-shadow: var(--shadow-button);
-  transition: background 0.2s, transform 0.15s;
+  transition:
+    background 0.2s,
+    transform 0.15s;
   align-self: flex-start;
   margin-top: var(--space-xs);
 }
@@ -713,7 +773,9 @@
   opacity: 0;
   transform: translateY(16px);
   pointer-events: none;
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
   z-index: 1000;
 }
 

@@ -150,10 +150,8 @@
     btnEditProfile.style.display = "none";
     avatarUploadLabel.style.display = "flex";
 
-    document.getElementById("pf-firstname").removeAttribute("readonly");
-    document.getElementById("pf-lastname").removeAttribute("readonly");
     document.getElementById("pf-email").removeAttribute("readonly");
-    document.getElementById("pf-firstname").focus();
+    document.getElementById("pf-email").focus();
   }
 
   function exitEditMode(save) {
@@ -163,13 +161,9 @@
     btnEditProfile.style.display = "";
     avatarUploadLabel.style.display = "none";
 
-    ["pf-firstname", "pf-lastname", "pf-email"].forEach((id) => {
-      document.getElementById(id).setAttribute("readonly", true);
-    });
+    document.getElementById("pf-email").setAttribute("readonly", true);
 
     if (!save) {
-      setField("pf-firstname", originalFirstName);
-      setField("pf-lastname", originalLastName);
       setField("pf-email", originalEmail);
     }
   }
@@ -177,12 +171,10 @@
   btnCancelEdit.addEventListener("click", () => exitEditMode(false));
 
   btnSaveEdit.addEventListener("click", async () => {
-    const firstName = document.getElementById("pf-firstname").value.trim();
-    const lastName = document.getElementById("pf-lastname").value.trim();
     const email = document.getElementById("pf-email").value.trim();
 
-    if (!firstName || !lastName || !email) {
-      showToast("All fields are required.", true);
+    if (!email) {
+      showToast("Email address is required.", true);
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -191,34 +183,21 @@
     }
 
     try {
-      // apiUpdateAdminProfile({ firstName, lastName, email }) — defined in api.js
       const result = await apiUpdateAdminProfile({
-        firstName,
-        lastName,
+        firstName: originalFirstName,
+        lastName: originalLastName,
         email,
       });
 
-      originalFirstName = firstName;
-      originalLastName = lastName;
       originalEmail = email;
 
-      // Refresh displayed name & initials
-      const fullName = [firstName, lastName].filter(Boolean).join(" ");
-      document.getElementById("avatar-name").textContent = fullName;
-      avatarInitials.textContent = getInitials(firstName, lastName);
-
-      // If the backend returned a new token (email changed), refresh sessionStorage
       if (result?.newToken) {
         sessionStorage.setItem("token", result.newToken);
         sessionStorage.setItem("userId", email);
       }
 
-      // Always keep sessionStorage display name in sync
-      sessionStorage.setItem("userFirstName", firstName);
-      sessionStorage.setItem("userLastName", lastName);
-
       exitEditMode(true);
-      showToast("Profile updated successfully!");
+      showToast("Email updated successfully!");
     } catch (err) {
       showToast("Could not save changes. Please try again.", true);
       console.error("[admin-profile.js] Save error:", err);
