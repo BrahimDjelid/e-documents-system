@@ -134,6 +134,10 @@ def generate_extrait_role(user_obj, request_id):
     profile = user_obj.get("profile", {})
     tax = user_obj.get("taxInfo", {})
     records = tax.get("taxRecords", [])
+    
+    if records:
+        latest_year = max(r["year"] for r in records)
+        records = [r for r in records if r["year"] == latest_year]
 
     full_name = f"{profile.get('firstName','')} {profile.get('lastName','')}"
     nif = user_obj["auth"]["id"]
@@ -182,19 +186,20 @@ def generate_extrait_role(user_obj, request_id):
 
     row_h = 25
     columns = [
-        ("Année", 60),
-        ("Principal", 90),
-        ("Pénalités", 90),
-        ("Payé Principal", 100),
-        ("Payé Pénalités", 110),
-        ("Reste dû", 80),
+        ("Type", 45),
+        ("Année", 45),
+        ("Principal", 70),
+        ("Pénalités", 70),
+        ("Payé Principal", 80),
+        ("Payé Pénalités", 85),
+        ("Reste dû", 60),
     ]
 
     num_rows = max(len(records), 1) + 2  # + total row
     table_h = num_rows * row_h
     table_y = table_top - table_h
-    table_x = 40
-    table_w = width - 80
+    table_w = sum(w for _, w in columns)
+    table_x = (width - table_w) / 2
 
     c.setLineWidth(2)
     c.rect(table_x, table_y, table_w, table_h)
@@ -214,7 +219,7 @@ def generate_extrait_role(user_obj, request_id):
         c.line(table_x, y, table_x + table_w, y)
 
     # header row
-    c.setFont("Helvetica-Bold", 9)
+    c.setFont("Helvetica-Bold", 8)
     x = table_x + 5
     y = table_y + table_h - 17
     for title, w in columns:
@@ -222,7 +227,7 @@ def generate_extrait_role(user_obj, request_id):
         x += w
 
     # data
-    c.setFont("Helvetica", 9)
+    c.setFont("Helvetica", 8)
     y -= row_h
 
     totals = [0, 0, 0, 0]
@@ -240,7 +245,15 @@ def generate_extrait_role(user_obj, request_id):
         totals[2] += paid_p
         totals[3] += paid_pen
 
-        values = [r["year"], principal, penalties, paid_p, paid_pen, reste]
+        values = [
+            r.get("type", "-"),
+            r["year"],
+            principal,
+            penalties,
+            paid_p,
+            paid_pen,
+            reste
+        ]
 
         x = table_x + 5
         for i, v in enumerate(values):
@@ -253,7 +266,7 @@ def generate_extrait_role(user_obj, request_id):
     total_reste = (totals[0] + totals[1]) - (totals[2] + totals[3])
 
     c.setFont("Helvetica-Bold", 9)
-    values = ["TOTAL", totals[0], totals[1], totals[2], totals[3], total_reste]
+    values = ["", "TOTAL", totals[0], totals[1], totals[2], totals[3], total_reste]
 
     x = table_x + 5
     for i, v in enumerate(values):

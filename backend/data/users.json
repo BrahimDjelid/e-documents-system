@@ -116,60 +116,23 @@
     },
     "requests": [
       {
-        "requestId": "REQ-29-26-765",
-        "documentType": "C20",
+        "requestId": "REQ-30-26-879",
+        "documentType": "Extrait de r\u00f4le",
         "status": "approved",
-        "submittedAt": "2026-04-29T21:03:54.253Z",
+        "submittedAt": "2026-04-30T17:35:26.452Z",
         "note": null,
-        "year": 2025,
-        "processedBy": "admin-c20@dashboard.com"
-      },
-      {
-        "requestId": "REQ-29-26-951",
-        "documentType": "C20",
-        "status": "rejected",
-        "submittedAt": "2026-04-29T21:47:44.968Z",
-        "note": null,
-        "year": 2024,
-        "processedBy": "admin-c20@dashboard.com"
-      },
-      {
-        "requestId": "REQ-29-26-771",
-        "documentType": "C20",
-        "status": "rejected",
-        "submittedAt": "2026-04-29T21:53:35.794Z",
-        "note": null,
-        "year": 2025,
-        "processedBy": "admin-c20@dashboard.com"
+        "processedBy": "admin-extrait-role@dashboard.com"
       }
     ],
     "notifications": [
       {
-        "id": "NOTIF-REQUEST_APPROVED-REQ-29-26-765",
+        "id": "NOTIF-REQUEST_APPROVED-REQ-30-26-879",
         "type": "request_approved",
-        "message": "Your C20 request has been approved.",
-        "requestId": "REQ-29-26-765",
+        "message": "Your Extrait de r\u00f4le request has been approved.",
+        "requestId": "REQ-30-26-879",
         "read": true,
         "deleted": false,
-        "createdAt": "2026-04-29T21:04:06.661853Z"
-      },
-      {
-        "id": "NOTIF-REQUEST_REJECTED-REQ-29-26-951",
-        "type": "request_rejected",
-        "message": "Your C20 request has been rejected.",
-        "requestId": "REQ-29-26-951",
-        "read": true,
-        "deleted": false,
-        "createdAt": "2026-04-29T21:48:40.264846Z"
-      },
-      {
-        "id": "NOTIF-REQUEST_REJECTED-REQ-29-26-771",
-        "type": "request_rejected",
-        "message": "Your C20 request has been rejected.",
-        "requestId": "REQ-29-26-771",
-        "read": true,
-        "deleted": false,
-        "createdAt": "2026-04-29T21:53:48.925824Z"
+        "createdAt": "2026-04-30T17:35:31.783495Z"
       }
     ]
   },
@@ -375,35 +338,7 @@
     },
     "role": "admin",
     "service": "C20",
-    "notifications": [
-      {
-        "id": "NOTIF-NEW-REQUEST-REQ-29-26-765",
-        "type": "new_request",
-        "message": "New C20 request from Brahim Djelid.",
-        "requestId": "REQ-29-26-765",
-        "read": true,
-        "deleted": false,
-        "createdAt": "2026-04-29T21:03:54.260835Z"
-      },
-      {
-        "id": "NOTIF-NEW-REQUEST-REQ-29-26-951",
-        "type": "new_request",
-        "message": "New C20 request from Brahim Djelid.",
-        "requestId": "REQ-29-26-951",
-        "read": true,
-        "deleted": false,
-        "createdAt": "2026-04-29T21:47:44.990823Z"
-      },
-      {
-        "id": "NOTIF-NEW-REQUEST-REQ-29-26-771",
-        "type": "new_request",
-        "message": "New C20 request from Brahim Djelid.",
-        "requestId": "REQ-29-26-771",
-        "read": true,
-        "deleted": false,
-        "createdAt": "2026-04-29T21:53:35.803634Z"
-      }
-    ]
+    "notifications": []
   },
   {
     "auth": {
@@ -419,6 +354,16 @@
     },
     "role": "admin",
     "service": "Extrait de r\u00f4le",
-    "notifications": []
+    "notifications": [
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-30-26-879",
+        "type": "new_request",
+        "message": "New Extrait de r\u00f4le request from Brahim Djelid.",
+        "requestId": "REQ-30-26-879",
+        "read": false,
+        "deleted": false,
+        "createdAt": "2026-04-30T17:35:26.463238Z"
+      }
+    ]
   }
 ]
