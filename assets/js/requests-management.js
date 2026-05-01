@@ -405,9 +405,17 @@ async function loadRequests() {
     const pageTitle = document.getElementById("page-title");
     if (pageTitle) pageTitle.textContent = "Request Management";
 
+    // Auto-open modal if ?id= param is in the URL.
+    // Consumed and stripped immediately so a stale ?id= can never fire
+    // on the wrong page after a notification-triggered navigation.
     const params = new URLSearchParams(window.location.search);
     const autoOpen = params.get("id");
-    if (autoOpen) setTimeout(() => openModal(autoOpen), 150);
+    if (autoOpen) {
+      // Strip ?id= from the URL now — prevents re-triggering and eliminates
+      // the race-condition flash caused by the 150ms setTimeout.
+      history.replaceState(null, "", window.location.pathname);
+      openModal(autoOpen);
+    }
   } catch (err) {
     console.error("[requests-management.js] Error loading data:", err);
     showToast("Could not load requests. Please try again.", true);

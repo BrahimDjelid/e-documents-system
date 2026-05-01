@@ -131,6 +131,15 @@
         "submittedAt": "2026-04-30T20:55:59.530Z",
         "note": null,
         "processedBy": "admin-extrait-role@dashboard.com"
+      },
+      {
+        "requestId": "REQ-01-26-590",
+        "documentType": "C20",
+        "status": "approved",
+        "submittedAt": "2026-05-01T18:49:40.909Z",
+        "note": null,
+        "year": 2025,
+        "processedBy": "admin-c20@dashboard.com"
       }
     ],
     "notifications": [
@@ -151,6 +160,15 @@
         "read": true,
         "deleted": false,
         "createdAt": "2026-04-30T21:18:30.056561Z"
+      },
+      {
+        "id": "NOTIF-REQUEST_APPROVED-REQ-01-26-590",
+        "type": "request_approved",
+        "message": "Your C20 request has been approved.",
+        "requestId": "REQ-01-26-590",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-05-01T18:49:52.475349Z"
       }
     ]
   },
@@ -365,6 +383,15 @@
         "read": true,
         "deleted": false,
         "createdAt": "2026-04-30T20:52:33.921640Z"
+      },
+      {
+        "id": "NOTIF-NEW-REQUEST-REQ-01-26-590",
+        "type": "new_request",
+        "message": "New C20 request from Brahim Djelid.",
+        "requestId": "REQ-01-26-590",
+        "read": true,
+        "deleted": false,
+        "createdAt": "2026-05-01T18:49:40.919111Z"
       }
     ]
   },

@@ -402,13 +402,16 @@ async function init() {
     // Initial render - show all
     renderTable(allRequests);
 
-    // Auto-open modal if ?id= param is in the URL
-    // This is triggered when navigating from the dashboard Details button
+    // Auto-open modal if ?id= param is in the URL.
+    // Consumed and stripped immediately so a stale ?id= can never fire
+    // on the wrong page after a notification-triggered navigation.
     const params = new URLSearchParams(window.location.search);
     const autoOpen = params.get("id");
     if (autoOpen) {
-      // Small delay so the table renders first and the modal feels natural
-      setTimeout(() => openModal(autoOpen), 150);
+      // Strip ?id= from the URL now — prevents re-triggering if the user
+      // navigates away and back, and eliminates the race-condition flash.
+      history.replaceState(null, "", window.location.pathname);
+      openModal(autoOpen);
     }
   } catch (err) {
     console.error("Documents page error:", err);
