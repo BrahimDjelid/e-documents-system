@@ -61,13 +61,15 @@ def generate_c20(user_obj, request_id):
 
     filename = os.path.join(DOCS_DIR, f"{request_id}.pdf")
 
-    # ✅ CACHE
     if os.path.exists(filename):
         return filename
+
     c = canvas.Canvas(filename, pagesize=A4)
     width, height = A4
 
-    # header left
+    # ----------------------------
+    # HEADER
+    # ----------------------------
     c.setFont("Helvetica-Bold", 10)
     c.drawString(40, height - 40,  "REPUBLIQUE ALGERIENNE")
     c.drawString(40, height - 55,  "DEMOCRATIQUE ET POPULAIRE")
@@ -75,11 +77,12 @@ def generate_c20(user_obj, request_id):
     c.drawString(40, height - 95,  "DIRECTION GENERALE")
     c.drawString(40, height - 110, "DES IMPOTS")
 
-    # header right
     c.setFont("Helvetica", 10)
     c.drawString(width - 160, height - 40, "Serie C  n 20")
 
-    # title
+    # ----------------------------
+    # TITLE
+    # ----------------------------
     c.setFont("Helvetica-Bold", 20)
     c.drawCentredString(width / 2, height - 150, "CERTIFICAT")
     c.line(width / 2 - 80, height - 160, width / 2 + 80, height - 160)
@@ -89,32 +92,133 @@ def generate_c20(user_obj, request_id):
     nif = user_obj["auth"]["id"]
 
     y = height - 220
-    c.setFont("Helvetica", 11)
-    c.drawString(40, y, "Certifie que M.")
-    c.drawString(140, y, full_name)
-    c.line(140, y - 2, 400, y - 2)
 
+    # ----------------------------
+    # TEXT
+    # ----------------------------
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(40, y, "Le responsable du département gestion des impôts, soussigné")
+
+    y -= 22
+
+    c.setFont("Helvetica", 11)
+    text = f"Certifie que M {full_name}"
+    c.drawString(40, y, text)
+
+    text_width = c.stringWidth(text, "Helvetica", 11)
+    c.line(40, y - 3, 40 + text_width, y - 3)
+
+    y -= 35
+
+    # ----------------------------
+    # NIF
+    # ----------------------------
     y -= 40
     c.drawString(40, y, "N.I.F :")
+
     box_x = 100
     for digit in nif:
         c.rect(box_x, y - 10, 12, 12)
         c.drawCentredString(box_x + 6, y - 8, digit)
         box_x += 14
 
+    # ----------------------------
+    # ADDRESS
+    # ----------------------------
     y -= 40
-    c.drawString(40, y, "Demeurant a :")
+    c.drawString(40, y, "Demeurant à :")
+
     y -= 20
     for _ in range(6):
         c.line(40, y, width - 40, y)
         y -= 15
 
-    y -= 30
-    c.drawString(40, y, "A : ..............................")
-    c.drawString(250, y, "Le : ..............................")
-    y -= 40
-    c.drawString(40, y, "Signature:")
+    # ----------------------------
+    # LOCATION + DATE
+    # ----------------------------
+    y -= 20
+    c.drawString(40, y, "Fait à : ..............................")
+    c.drawString(300, y, "Le : ..............................")
 
+    # ----------------------------
+    # SIGNATURE BLOCK
+    # ----------------------------
+    y -= 70
+
+    c.setFont("Helvetica-Bold", 11)
+    c.drawRightString(width - 40, y, "Le Responsable")
+
+    y -= 14
+    c.drawRightString(width - 40, y, "du département")
+
+    y -= 14
+    c.drawRightString(width - 40, y, "gestion des impôts")
+
+    # ----------------------------
+    # SIGNATURE LINE
+    # ----------------------------
+    y -= 45
+
+    line_width = 120
+    line_x_end = width - 40
+    line_x_start = line_x_end - line_width
+
+    c.line(line_x_start, y, line_x_end, y)
+
+    c.setFont("Helvetica", 8)
+    c.drawCentredString((line_x_start + line_x_end) / 2, y - 10, "Signature")
+
+    # ----------------------------
+    # SIGNATURE IMAGE
+    # ----------------------------
+    SIGN_PATH = os.path.join(BASE_DIR, "assets", "signature.png")
+    
+    if os.path.exists(SIGN_PATH):
+        sig_width = 230   # 🔥 strong presence (final recommended max)
+        sig_height = 80   # keep proportion
+
+        # center relative to signature line
+        line_center = (line_x_start + line_x_end) / 2
+
+        sig_x = line_center - (sig_width / 2)
+        sig_y = y - 28   # deeper overlap → more natural
+
+        c.drawImage(
+            SIGN_PATH,
+            sig_x,
+            sig_y,
+            width=sig_width,
+            height=sig_height,
+            mask='auto',
+            preserveAspectRatio=True
+        )
+
+    # ----------------------------
+    # STAMP (REALISTIC OVERLAP)
+    # ----------------------------
+    STAMP_PATH = os.path.join(BASE_DIR, "assets", "stamp.png")
+
+    stamp_size = 85
+    stamp_x = line_x_start - 90
+    stamp_y = y - 40
+
+    if os.path.exists(STAMP_PATH):
+        c.saveState()
+        c.translate(stamp_x + stamp_size/2, stamp_y + stamp_size/2)
+        c.rotate(-8)  # realistic tilt
+        c.drawImage(
+            STAMP_PATH,
+            -stamp_size/2,
+            -stamp_size/2,
+            width=stamp_size,
+            height=stamp_size,
+            mask='auto'
+        )
+        c.restoreState()
+
+    # ----------------------------
+    # SAVE
+    # ----------------------------
     c.save()
     return filename
 
