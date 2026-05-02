@@ -54,8 +54,7 @@ def compute_compliance(tax_records):
 # ----------------------------
 # 🆕 C20 PDF GENERATOR (ADDED)
 # ----------------------------
-
-def generate_c20(user_obj, request_id):
+def generate_c20(user_obj, request_obj, request_id):
     DOCS_DIR = os.path.join(BASE_DIR, "documents")
     os.makedirs(DOCS_DIR, exist_ok=True)
 
@@ -108,37 +107,121 @@ def generate_c20(user_obj, request_id):
     text_width = c.stringWidth(text, "Helvetica", 11)
     c.line(40, y - 3, 40 + text_width, y - 3)
 
-    y -= 35
+    y -= 20   # smaller spacing after name (was 35)
 
     # ----------------------------
-    # NIF
+    # NIF (ALIGNED VERSION)
     # ----------------------------
-    y -= 40
+    y -= 18
+
+    c.setFont("Helvetica", 11)
+
+    # Draw label
     c.drawString(40, y, "N.I.F :")
 
-    box_x = 100
+    # Measure label width to align boxes properly
+    label_width = c.stringWidth("N.I.F :", "Helvetica", 11)
+
+    # Start boxes right after label (with small gap)
+    box_x = 40 + label_width + 8
+
+    # Vertical alignment control
+    box_size = 12
+    baseline_adjust = 3   # 🔥 key value
+
     for digit in nif:
-        c.rect(box_x, y - 10, 12, 12)
-        c.drawCentredString(box_x + 6, y - 8, digit)
-        box_x += 14
+        # Align box to text baseline
+        c.rect(box_x, y - baseline_adjust, box_size, box_size)
+
+        # Center digit inside box
+        c.drawCentredString(
+            box_x + box_size / 2,
+            y - baseline_adjust + 2,
+            digit
+        )
+
+        box_x += box_size + 3
 
     # ----------------------------
-    # ADDRESS
+    # ADDRESS + FINANCIAL DECLARATION
     # ----------------------------
-    y -= 40
-    c.drawString(40, y, "Demeurant à :")
 
-    y -= 20
-    for _ in range(6):
+    # Resolve financial data
+    req_year = request_obj.get("year")
+    financials = user_obj.get("taxInfo", {}).get("financials", [])
+    financial_entry = next(
+        (f for f in financials if f.get("year") == req_year),
+        None
+    )
+
+    def fmt_currency(value):
+        try:
+            return f"{int(value):,}".replace(",", " ")
+        except (TypeError, ValueError):
+            return "N/A"
+
+    business_address = user_obj.get("taxInfo", {}).get("businessAddress", "N/A")
+    year_label = str(req_year) if req_year else "N/A"
+    ca  = fmt_currency(financial_entry.get("chiffreAffaire")) if financial_entry else "N/A"
+    ben = fmt_currency(financial_entry.get("benefice"))       if financial_entry else "N/A"
+
+    # Lines content in order — each tuple is (text, bold)
+    form_lines = [
+        (f"Demeurant à : {business_address}",                               False),
+        ("L'intéressé a déclaré ce qui suit :",                             True),
+        (f"Exercice : {year_label}",                                        False),
+        (f"Chiffre d'affaires : {ca} DA",                                   False),
+        (f"Bénéfice déclaré : {ben} DA",                                    False),
+        ("Ce certificat est délivré pour servir et valoir ce que de droit", False),
+        ("dans les limites permises par la loi.",                            False),
+    ]
+
+    LINE_GAP   = 22   # vertical distance between lines
+    TEXT_LIFT  = 4    # how many pts the text sits above the line
+
+    y -= 30
+    c.setLineWidth(0.5)
+
+    for text, bold in form_lines:
+        # Write text slightly above the line
+        c.setFont("Helvetica-Bold" if bold else "Helvetica", 11)
+        c.drawString(42, y + TEXT_LIFT, text)
+        # Draw the underline
         c.line(40, y, width - 40, y)
-        y -= 15
+        y -= LINE_GAP
+
+    c.setLineWidth(1)   # restore default line width
 
     # ----------------------------
-    # LOCATION + DATE
+    # LOCATION + DATE  (populated from approvedAt)
     # ----------------------------
     y -= 20
-    c.drawString(40, y, "Fait à : ..............................")
-    c.drawString(300, y, "Le : ..............................")
+
+    # Parse approvedAt if available
+    approved_at_raw = request_obj.get("approvedAt")
+    if approved_at_raw:
+        try:
+            dt = datetime.fromisoformat(approved_at_raw.replace("Z", ""))
+            date_str = dt.strftime("%d/%m/%Y")
+            time_str = dt.strftime("%H:%M")
+            fait_a_text  = "Fait à : Bouira"
+            le_text      = f"Le : {date_str} à {time_str}"
+        except Exception:
+            fait_a_text = "Fait à : .............................."
+            le_text     = "Le : .............................."
+    else:
+        fait_a_text = "Fait à : .............................."
+        le_text     = "Le : .............................."
+
+    # Draw "Fait à" on the left
+    c.setFont("Helvetica", 11)
+    c.drawString(40, y, fait_a_text)
+
+    # Draw "Le" on the right with underline (bonus)
+    le_x = 300
+    c.drawString(le_x, y, le_text)
+    le_width = c.stringWidth(le_text, "Helvetica", 11)
+    c.line(le_x, y - 3, le_x + le_width, y - 3)
 
     # ----------------------------
     # SIGNATURE BLOCK
@@ -172,16 +255,15 @@ def generate_c20(user_obj, request_id):
     # SIGNATURE IMAGE
     # ----------------------------
     SIGN_PATH = os.path.join(BASE_DIR, "assets", "signature.png")
-    
-    if os.path.exists(SIGN_PATH):
-        sig_width = 230   # 🔥 strong presence (final recommended max)
-        sig_height = 80   # keep proportion
 
-        # center relative to signature line
+    if os.path.exists(SIGN_PATH):
+        sig_width = 230
+        sig_height = 80
+
         line_center = (line_x_start + line_x_end) / 2
 
         sig_x = line_center - (sig_width / 2)
-        sig_y = y - 28   # deeper overlap → more natural
+        sig_y = y - 28
 
         c.drawImage(
             SIGN_PATH,
@@ -194,7 +276,7 @@ def generate_c20(user_obj, request_id):
         )
 
     # ----------------------------
-    # STAMP (REALISTIC OVERLAP)
+    # STAMP
     # ----------------------------
     STAMP_PATH = os.path.join(BASE_DIR, "assets", "stamp.png")
 
@@ -205,7 +287,7 @@ def generate_c20(user_obj, request_id):
     if os.path.exists(STAMP_PATH):
         c.saveState()
         c.translate(stamp_x + stamp_size/2, stamp_y + stamp_size/2)
-        c.rotate(-8)  # realistic tilt
+        c.rotate(-8)
         c.drawImage(
             STAMP_PATH,
             -stamp_size/2,
@@ -215,7 +297,7 @@ def generate_c20(user_obj, request_id):
             mask='auto'
         )
         c.restoreState()
-
+        
     # ----------------------------
     # SAVE
     # ----------------------------
@@ -635,6 +717,9 @@ def save_decision(request_id):
                 req["status"] = new_status
                 req["note"] = data.get("note", "")
                 req["processedBy"] = data.get("processedBy")
+                
+                if new_status == "approved":
+                    req["approvedAt"] = datetime.utcnow().isoformat() + "Z"
 
                 # Map status to correct notification type
                 notif_type_map = {
@@ -704,7 +789,7 @@ def download_document(request_id):
     if target_request["documentType"] == "C20":
         file_path = os.path.join(DOCS_DIR, f"{request_id}.pdf")
         if not os.path.exists(file_path):
-            file_path = generate_c20(target_user, request_id)
+            file_path = generate_c20(target_user,target_request,  request_id)
 
     elif target_request["documentType"] == "Extrait de rôle":
         file_path = os.path.join(DOCS_DIR, f"{request_id}_extrait.pdf")

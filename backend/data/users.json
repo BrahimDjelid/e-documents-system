@@ -105,6 +105,23 @@
           "remaining": 0
         }
       ],
+      "financials": [
+        {
+          "year": 2023,
+          "chiffreAffaire": 800000,
+          "benefice": 200000
+        },
+        {
+          "year": 2024,
+          "chiffreAffaire": 1000000,
+          "benefice": 280000
+        },
+        {
+          "year": 2025,
+          "chiffreAffaire": 1200000,
+          "benefice": 350000
+        }
+      ],
       "declarations": {
         "submitted": true
       }
@@ -114,28 +131,8 @@
       "taxCompliance": true,
       "addressConfirmed": true
     },
-    "requests": [
-      {
-        "requestId": "REQ-02-26-255",
-        "documentType": "C20",
-        "status": "approved",
-        "submittedAt": "2026-05-02T10:24:44.283Z",
-        "note": null,
-        "year": 2025,
-        "processedBy": "admin-c20@dashboard.com"
-      }
-    ],
-    "notifications": [
-      {
-        "id": "NOTIF-REQUEST_APPROVED-REQ-02-26-255",
-        "type": "request_approved",
-        "message": "Your C20 request has been approved.",
-        "requestId": "REQ-02-26-255",
-        "read": false,
-        "deleted": false,
-        "createdAt": "2026-05-02T10:24:50.185290Z"
-      }
-    ]
+    "requests": [],
+    "notifications": []
   },
   {
     "auth": {
@@ -236,6 +233,23 @@
           "remaining": 500
         }
       ],
+      "financials": [
+        {
+          "year": 2023,
+          "chiffreAffaire": 900000,
+          "benefice": 250000
+        },
+        {
+          "year": 2024,
+          "chiffreAffaire": 1100000,
+          "benefice": 300000
+        },
+        {
+          "year": 2025,
+          "chiffreAffaire": 1300000,
+          "benefice": 350000
+        }
+      ],
       "declarations": {
         "submitted": true
       }
@@ -314,6 +328,23 @@
           "remaining": 8800
         }
       ],
+      "financials": [
+        {
+          "year": 2023,
+          "chiffreAffaire": 400000,
+          "benefice": 120000
+        },
+        {
+          "year": 2024,
+          "chiffreAffaire": 550000,
+          "benefice": 150000
+        },
+        {
+          "year": 2025,
+          "chiffreAffaire": 700000,
+          "benefice": 180000
+        }
+      ],
       "declarations": {
         "submitted": false
       }
@@ -339,17 +370,7 @@
     },
     "role": "admin",
     "service": "C20",
-    "notifications": [
-      {
-        "id": "NOTIF-NEW-REQUEST-REQ-02-26-255",
-        "type": "new_request",
-        "message": "New C20 request from Brahim Djelid.",
-        "requestId": "REQ-02-26-255",
-        "read": false,
-        "deleted": false,
-        "createdAt": "2026-05-02T10:24:44.290626Z"
-      }
-    ]
+    "notifications": []
   },
   {
     "auth": {
