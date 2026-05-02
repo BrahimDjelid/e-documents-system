@@ -1,5 +1,12 @@
 *.md
 !README.md
 .vscode/*
-*.pdf
+
+# Ignore docx
 *.docx
+
+# Ignore images
+uploads/
+
+# Ignore documents
+documents/
