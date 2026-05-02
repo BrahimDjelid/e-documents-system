@@ -52,7 +52,7 @@ def compute_compliance(tax_records):
 
 
 # ----------------------------
-# 🆕 C20 PDF GENERATOR (ADDED)
+# C20 PDF GENERATOR
 # ----------------------------
 def generate_c20(user_obj, request_obj, request_id):
     DOCS_DIR = os.path.join(BASE_DIR, "documents")
@@ -304,13 +304,15 @@ def generate_c20(user_obj, request_obj, request_id):
     c.save()
     return filename
 
+# ----------------------------
+# Extrait de role PDF GENERATOR
+# ----------------------------
 def generate_extrait_role(user_obj, request_id):
     DOCS_DIR = os.path.join(BASE_DIR, "documents")
     os.makedirs(DOCS_DIR, exist_ok=True)
 
     filename = os.path.join(DOCS_DIR, f"{request_id}_extrait.pdf")
 
-    # ✅ CACHE (do not regenerate)
     if os.path.exists(filename):
         return filename
 
@@ -320,7 +322,7 @@ def generate_extrait_role(user_obj, request_id):
     profile = user_obj.get("profile", {})
     tax = user_obj.get("taxInfo", {})
     records = tax.get("taxRecords", [])
-    
+
     if records:
         latest_year = max(r["year"] for r in records)
         records = [r for r in records if r["year"] == latest_year]
@@ -332,22 +334,29 @@ def generate_extrait_role(user_obj, request_id):
 
     top = height - 40
 
+    # =========================
     # HEADER
+    # =========================
     c.setFont("Helvetica-Bold", 10)
+
     c.drawString(40, top, "REPUBLIQUE ALGERIENNE DEMOCRATIQUE ET POPULAIRE")
     c.drawString(40, top - 15, "MINISTERE DES FINANCES")
     c.drawString(40, top - 30, "DIRECTION GENERALE DES IMPOTS")
 
-    c.drawRightString(width - 40, top - 15, "RECETTE DES IMPOTS")
-    c.drawRightString(width - 40, top - 30, "EXTRAIT DES ROLES")
+    c.drawString(40, top - 45, "RECETTE DES IMPOTS: CDI BOUIRA")
+    c.drawRightString(width - 40, top - 45, "EXTRAIT DES ROLES")
 
-    c.line(40, top - 35, width - 40, top - 35)
+    header_bottom = top - 60
+    c.line(40, header_bottom, width - 40, header_bottom)
 
+    # =========================
     # IDENTIFICATION BOX
+    # =========================
     box_x = 40
     box_w = width - 80
     box_h = 85
-    box_y = top - 130
+
+    box_y = header_bottom - 20 - box_h  # 🔥 SAFE spacing (no overlap ever)
 
     c.setLineWidth(2)
     c.rect(box_x, box_y, box_w, box_h)
@@ -366,26 +375,34 @@ def generate_extrait_role(user_obj, request_id):
     y -= 18
     c.drawString(box_x + 12, y, f"Activité: {activity}")
 
+    # =========================
     # TABLE
+    # =========================
     gap = 25
     table_top = box_y - gap
 
     row_h = 25
+    table_x = box_x
+    table_w = box_w
+
+    base_widths = [45, 45, 70, 70, 80, 85, 60]
+    total_base = sum(base_widths)
+    scale = table_w / total_base
+    widths = [w * scale for w in base_widths]
+
     columns = [
-        ("Type", 45),
-        ("Année", 45),
-        ("Principal", 70),
-        ("Pénalités", 70),
-        ("Payé Principal", 80),
-        ("Payé Pénalités", 85),
-        ("Reste dû", 60),
+        ("Type", widths[0]),
+        ("Année", widths[1]),
+        ("Principal", widths[2]),
+        ("Pénalités", widths[3]),
+        ("Payé Principal", widths[4]),
+        ("Payé Pénalités", widths[5]),
+        ("Reste dû", widths[6]),
     ]
 
-    num_rows = max(len(records), 1) + 2  # + total row
+    num_rows = max(len(records), 1) + 2
     table_h = num_rows * row_h
     table_y = table_top - table_h
-    table_w = sum(w for _, w in columns)
-    table_x = (width - table_w) / 2
 
     c.setLineWidth(2)
     c.rect(table_x, table_y, table_w, table_h)
@@ -394,25 +411,30 @@ def generate_extrait_role(user_obj, request_id):
 
     # vertical lines
     x = table_x
-    for _, w in columns:
-        c.line(x, table_y, x, table_y + table_h)
-        x += w
     c.line(x, table_y, x, table_y + table_h)
 
-    # horizontal
+    for i, (_, w) in enumerate(columns):
+        if i == len(columns) - 1:
+            x = table_x + table_w
+        else:
+            x += w
+        c.line(x, table_y, x, table_y + table_h)
+
+    # horizontal lines
     for i in range(num_rows + 1):
-        y = table_y + i * row_h
-        c.line(table_x, y, table_x + table_w, y)
+        y_line = table_y + i * row_h
+        c.line(table_x, y_line, table_x + table_w, y_line)
 
     # header row
     c.setFont("Helvetica-Bold", 8)
-    x = table_x + 5
-    y = table_y + table_h - 17
+    y = table_y + table_h - (row_h / 2) + 3
+    x = table_x
+
     for title, w in columns:
-        c.drawString(x, y, title)
+        c.drawString(x + 3, y, title)
         x += w
 
-    # data
+    # data rows (LEFT aligned)
     c.setFont("Helvetica", 8)
     y -= row_h
 
@@ -441,9 +463,9 @@ def generate_extrait_role(user_obj, request_id):
             reste
         ]
 
-        x = table_x + 5
+        x = table_x
         for i, v in enumerate(values):
-            c.drawString(x, y, str(v))
+            c.drawString(x + 3, y, str(v))  # ✅ LEFT aligned
             x += columns[i][1]
 
         y -= row_h
@@ -451,23 +473,63 @@ def generate_extrait_role(user_obj, request_id):
     # TOTAL ROW
     total_reste = (totals[0] + totals[1]) - (totals[2] + totals[3])
 
-    c.setFont("Helvetica-Bold", 9)
+    c.setFont("Helvetica-Bold", 8)
     values = ["", "TOTAL", totals[0], totals[1], totals[2], totals[3], total_reste]
 
-    x = table_x + 5
+    x = table_x
     for i, v in enumerate(values):
-        c.drawString(x, y, str(v))
+        c.drawString(x + 3, y, str(v))  # ✅ LEFT aligned
         x += columns[i][1]
 
+    # =========================
+    # N.B TEXT
+    # =========================
+    nb_y = table_y - 30
+    c.setFont("Helvetica", 8)
+
+    text_lines = [
+        "N.B: En application des dispositions combinées des articles 291 du Code des Impôts Directes et",
+        "Taxes Assimilées et 184 de la loi de finances pour 2002, la délivrance des extraits de rôles aux",
+        "contribuables est gratuite. Ceux-ci, ne peuvent demander des extraits de roles aux titres",
+        "de 1'IRG, IBS, VF et TAP qu'en ce qui concerne leurs cotisations."
+    ]
+
+    for line in text_lines:
+        c.drawString(40, nb_y, line)
+        nb_y -= 12
+
+    # =========================
     # FOOTER
-    footer_y = table_y - 40
-    c.setFont("Helvetica", 10)
-    c.drawString(40, footer_y, "Certifié exact")
-    c.drawString(40, footer_y - 20, "Le Receveur des Impôts")
+    # =========================
+    footer_y = nb_y - 40
+    
+    c.drawString(40, footer_y, "A CDI BOUIRA,")
+    c.drawString(40, footer_y - 15, f"le {datetime.now().strftime('%d.%m.%Y')}")
+    c.drawString(40, footer_y - 30, "Certifié exact")
+    c.drawString(40, footer_y - 45, "Le Receveur des Impots")
+
+    center_x = width / 2 - 65
+
+    c.drawCentredString(center_x, footer_y, "Etabli par l'Agent:")
+    c.drawCentredString(center_x, footer_y - 15, "M .................................")
+    c.drawCentredString(center_x, footer_y - 30, "Fonction : .........................")
+
+    right_x = width - 250
+    right_lines = [
+        "Références des échéanciers, éventuellement accordés:",
+        "Date de signature de l'engagement: .............................",
+        "Montant du versement initial exige: ............................",
+        "Montant de la mensualité fixée en principal: ..................",
+        "N° et Dte sursis legal de paiement: ............................"
+    ]
+
+    y = footer_y
+    for line in right_lines:
+        c.drawString(right_x, y, line)
+        y -= 15
 
     c.save()
     return filename
-
 # ----------------------------
 # Routes
 # ----------------------------
