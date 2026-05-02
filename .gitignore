@@ -10,3 +10,6 @@ uploads/
 
 # Ignore documents
 documents/
+
+# Ignore signature
+backend/assets/signature.png
