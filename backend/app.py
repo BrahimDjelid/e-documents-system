@@ -509,12 +509,77 @@ def generate_extrait_role(user_obj, request_id, admin_name="Brahim Djelid"):
     c.drawString(40, footer_y - 45, "Le Receveur des Impots")
 
     center_x = width / 2 - 65
+    
+    STAMP_PATH = os.path.join(BASE_DIR, "assets", "stamp.png")
+
+    stamp_size = 90
+
+    # ⬅️ move slightly left
+    stamp_x = center_x - (stamp_size / 2) - 15
+
+    # ⬇️ move slightly down
+    stamp_y = footer_y - 35
+
+    if os.path.exists(STAMP_PATH):
+        c.saveState()
+
+        # rotate around center of stamp
+        c.translate(stamp_x + stamp_size / 2, stamp_y + stamp_size / 2)
+
+        # 🔄 slight rotation
+        c.rotate(-10)
+
+        c.drawImage(
+            STAMP_PATH,
+            -stamp_size / 2,
+            -stamp_size / 2,
+            width=stamp_size,
+            height=stamp_size,
+            mask='auto'
+        )
+
+        c.restoreState()
 
     c.drawCentredString(center_x, footer_y, "Etabli par l'Agent:")
     c.drawCentredString(center_x, footer_y - 15, f"M {admin_name}")
     c.drawCentredString(center_x, footer_y - 30, "Fonction : .........................")
-
+    
     right_x = width - 250
+
+    
+    SIGN_PATH = os.path.join(BASE_DIR, "assets", "signature.png")
+
+    sig_width = 150
+    sig_height = 60
+
+    # Mid space between center block and right block
+    sig_x = center_x + (right_x - center_x) / 2 - (sig_width / 2)
+
+    # Align vertically with name / function area
+    sig_y = footer_y - 40
+
+    if os.path.exists(SIGN_PATH):
+        c.saveState()
+
+        # Move origin to center of signature for rotation
+        c.translate(sig_x + sig_width / 2, sig_y + sig_height / 2)
+
+        # 🔥 slight rotation (natural look)
+        c.rotate(-15)
+
+        # Draw centered
+        c.drawImage(
+            SIGN_PATH,
+            -sig_width / 2,
+            -sig_height / 2,
+            width=sig_width,
+            height=sig_height,
+            mask='auto',
+            preserveAspectRatio=True
+        )
+
+        c.restoreState()
+
     right_lines = [
         "Références des échéanciers, éventuellement accordés:",
         "Date de signature de l'engagement: .............................",
@@ -524,10 +589,40 @@ def generate_extrait_role(user_obj, request_id, admin_name="Brahim Djelid"):
     ]
 
     y = footer_y
+    LINE_PATH = os.path.join(BASE_DIR, "assets", "line2.png")
+
     for line in right_lines:
         c.drawString(right_x, y, line)
-        y -= 15
 
+        if "..." in line and os.path.exists(LINE_PATH):
+
+            prefix = line.split("...")[0]
+            prefix_width = c.stringWidth(prefix, "Helvetica", 11)
+
+            # keep your tuned alignment
+            line_x = right_x + prefix_width - 85
+
+            c.saveState()
+
+            c.translate(line_x, y - 15)
+
+            # slight angle
+            c.rotate(10)
+
+            c.setFillAlpha(1)
+
+            # 📏 bigger + thicker
+            width = 150
+            height = 34
+
+            # draw twice → good density without blur
+            c.drawImage(LINE_PATH, 0, 0, width=width, height=height, mask='auto')
+            c.drawImage(LINE_PATH, 0, 0, width=width, height=height, mask='auto')
+
+            c.restoreState()
+
+        y -= 15
+   
     c.save()
     return filename
 # ----------------------------
