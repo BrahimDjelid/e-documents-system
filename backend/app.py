@@ -307,7 +307,7 @@ def generate_c20(user_obj, request_obj, request_id):
 # ----------------------------
 # Extrait de role PDF GENERATOR
 # ----------------------------
-def generate_extrait_role(user_obj, request_id):
+def generate_extrait_role(user_obj, request_id, admin_name="Brahim Djelid"):
     DOCS_DIR = os.path.join(BASE_DIR, "documents")
     os.makedirs(DOCS_DIR, exist_ok=True)
 
@@ -511,7 +511,7 @@ def generate_extrait_role(user_obj, request_id):
     center_x = width / 2 - 65
 
     c.drawCentredString(center_x, footer_y, "Etabli par l'Agent:")
-    c.drawCentredString(center_x, footer_y - 15, "M .................................")
+    c.drawCentredString(center_x, footer_y - 15, f"M {admin_name}")
     c.drawCentredString(center_x, footer_y - 30, "Fonction : .........................")
 
     right_x = width - 250
@@ -856,7 +856,8 @@ def download_document(request_id):
     elif target_request["documentType"] == "Extrait de rôle":
         file_path = os.path.join(DOCS_DIR, f"{request_id}_extrait.pdf")
         if not os.path.exists(file_path):
-            file_path = generate_extrait_role(target_user, request_id)
+            admin_name = "Brahim Djelid"  # later dynamic
+            file_path = generate_extrait_role(target_user, request_id, admin_name)
 
     return send_file(file_path, as_attachment=True)
 
