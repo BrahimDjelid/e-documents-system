@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 import json
 import os
+import random
 from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -49,6 +50,48 @@ def compute_compliance(tax_records):
         (r["paidPrincipal"] + r["paidPenalties"]) >= (r["principal"] + r["penalties"])
         for r in tax_records
     )
+
+
+def pick_admin_for_service(users, service):
+    """
+    Return one eligible admin for the given service using least-loaded selection
+    (falls back to random if all have equal load). Returns None if no admin exists.
+    Least-loaded = fewest currently-pending requests assigned to them.
+    """
+    eligible = [
+        u for u in users
+        if u.get("role") == "admin" and u.get("service") == service
+    ]
+    if not eligible:
+        return None
+
+    def pending_count(admin):
+        admin_id = admin["auth"]["id"]
+        count = 0
+        for user in users:
+            if user.get("role") != "user":
+                continue
+            for req in user.get("requests", []):
+                if req.get("assignedTo") == admin_id and req.get("status") == "pending":
+                    count += 1
+        return count
+
+    # Sort by pending load, shuffle within tied groups for fairness
+    min_load = min(pending_count(a) for a in eligible)
+    least_loaded = [a for a in eligible if pending_count(a) == min_load]
+    return random.choice(least_loaded)
+
+
+def _request_visible_to_admin(req, admin_id, admin_service):
+    """
+    Return True if the given request should appear in this admin's queue.
+    Priority: assignedTo field -> fallback to service match (backward compat).
+    """
+    assigned = req.get("assignedTo")
+    if assigned:
+        return assigned == admin_id
+    # Legacy requests with no assignedTo: fall back to service matching
+    return req.get("documentType") == admin_service
 
 
 # ----------------------------
@@ -718,13 +761,18 @@ def submit_request():
             if not data.get("taxRecords"):
                 return {"error": "Tax records required"}, 400
 
+        # ASSIGN TO ONE ADMIN (least-loaded, random tie-break)
+        assigned_admin = pick_admin_for_service(users, data["documentType"])
+        assigned_to = assigned_admin["auth"]["id"] if assigned_admin else None
+
         # CREATE REQUEST
         new_request = {
             "requestId": data["requestId"],
             "documentType": data["documentType"],
             "status": "pending",
             "submittedAt": data["submittedAt"],
-            "note": ""
+            "note": "",
+            "assignedTo": assigned_to
         }
 
         # Persist the fiscal year for C20 requests
@@ -733,13 +781,8 @@ def submit_request():
 
         user.setdefault("requests", []).append(new_request)
 
-        # ADMIN NOTIFICATION
-        admin = next(
-            (u for u in users if u["role"] == "admin" and u["service"] == data["documentType"]),
-            None
-        )
-
-        if admin:
+        # NOTIFY ONLY the assigned admin
+        if assigned_admin:
             notif = {
                 "id": f"NOTIF-NEW-REQUEST-{data['requestId']}",
                 "type": "new_request",
@@ -749,8 +792,7 @@ def submit_request():
                 "deleted": False,
                 "createdAt": datetime.utcnow().isoformat() + "Z"
             }
-
-            admin.setdefault("notifications", []).append(notif)
+            assigned_admin.setdefault("notifications", []).append(notif)
 
         save_users(users)
 
@@ -792,7 +834,7 @@ def get_requests():
         tax = user.get("taxInfo", {})
 
         for req in user.get("requests", []):
-            if req["documentType"] != service:
+            if not _request_visible_to_admin(req, user_id, service):
                 continue
 
             result.append({
@@ -833,7 +875,7 @@ def admin_dashboard():
         tax = user.get("taxInfo", {})
 
         for req in user.get("requests", []):
-            if req["documentType"] != service:
+            if not _request_visible_to_admin(req, user_id, service):
                 continue
 
             result.append({
@@ -864,8 +906,8 @@ def save_decision(request_id):
         for req in user.get("requests", []):
             if req["requestId"] == request_id:
 
-                # Admin service boundary check
-                if req["documentType"] != admin.get("service"):
+                # Authorization: admin must be assigned or (legacy) same service
+                if not _request_visible_to_admin(req, user_id, admin.get("service")):
                     return {"error": "Forbidden"}, 403
 
                 new_status = data.get("status")
@@ -1230,6 +1272,63 @@ def delete_notification(notif_id):
             return {"message": "Notification deleted"}
 
     return {"error": "Notification not found"}, 404
+
+# ----------------------------
+# ADMIN — REASSIGN REQUEST
+# Optional endpoint: allows manually moving a request to a different admin.
+# POST /api/requests/<request_id>/reassign
+# Body: { "assignTo": "target-admin@mail.com" }
+# Only a currently assigned admin (or same-service admin for legacy requests)
+# can trigger a reassignment.
+# ----------------------------
+
+@app.route("/api/requests/<request_id>/reassign", methods=["POST"])
+def reassign_request(request_id):
+    user_id = extract_user_id()
+    if not user_id:
+        return {"error": "Unauthorized"}, 401
+
+    data = request.get_json() or {}
+    target_admin_id = data.get("assignTo")
+    if not target_admin_id:
+        return {"error": "assignTo is required"}, 400
+
+    users = load_users()
+    admin = next((u for u in users if u["auth"]["id"] == user_id), None)
+
+    if not admin or admin["role"] != "admin":
+        return {"error": "Forbidden"}, 403
+
+    # Validate target admin exists and shares the same service
+    target_admin = next(
+        (u for u in users if u["auth"]["id"] == target_admin_id and u.get("role") == "admin"),
+        None
+    )
+    if not target_admin:
+        return {"error": "Target admin not found"}, 404
+
+    for user in users:
+        for req in user.get("requests", []):
+            if req["requestId"] != request_id:
+                continue
+
+            # Caller must have visibility over this request
+            if not _request_visible_to_admin(req, user_id, admin.get("service")):
+                return {"error": "Forbidden"}, 403
+
+            # Target admin must handle the same document type
+            if target_admin.get("service") != req["documentType"]:
+                return {"error": "Target admin does not handle this document type"}, 400
+
+            req["assignedTo"] = target_admin_id
+            save_users(users)
+            return {
+                "requestId": request_id,
+                "assignedTo": target_admin_id
+            }
+
+    return {"error": "Request not found"}, 404
+
 
 # ----------------------------
 # RUN
