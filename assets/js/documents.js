@@ -151,11 +151,9 @@ function renderTable(requests) {
       const req = allRequests.find((r) => r.requestId === btn.dataset.id);
       if (!req) return;
 
-      // FIX 3.2: Visual loading state
       _downloading = true;
       const originalHTML = btn.innerHTML;
-      btn.innerHTML =
-        '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing…';
       btn.disabled = true;
 
       try {
@@ -303,11 +301,10 @@ modalDownloadBtn.addEventListener("click", async () => {
   const req = allRequests.find((r) => r.requestId === reqId);
   if (!req) return;
 
-  // FIX 3.2: Visual loading state
   _downloading = true;
   const originalHTML = modalDownloadBtn.innerHTML;
   modalDownloadBtn.innerHTML =
-    '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
+    '<i class="fa-solid fa-spinner fa-spin"></i> Preparing…';
   modalDownloadBtn.disabled = true;
 
   try {

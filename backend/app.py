@@ -3,6 +3,7 @@ from flask_cors import CORS
 import json
 import os
 import random
+import threading
 from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -925,7 +926,7 @@ def save_decision(request_id):
                 req["status"] = new_status
                 req["note"] = data.get("note", "")
                 req["processedBy"] = data.get("processedBy")
-                
+
                 if new_status == "approved":
                     req["approvedAt"] = datetime.utcnow().isoformat() + "Z"
 
@@ -955,7 +956,37 @@ def save_decision(request_id):
                     "createdAt": datetime.utcnow().isoformat() + "Z"
                 })
 
+                # Persist the decision BEFORE starting generation so the
+                # HTTP response returns instantly — never blocked by PDF work.
                 save_users(users)
+
+                # Pre-generate PDF in a background thread (approved only).
+                # deepcopy isolates the snapshots so the thread is safe after
+                # this request context exits.
+                if new_status == "approved":
+                    import copy
+                    user_snapshot = copy.deepcopy(user)
+                    req_snapshot  = copy.deepcopy(req)
+                    admin_snapshot = copy.deepcopy(admin)
+
+                    def _generate_pdf_background(u, r, rid, adm):
+                        try:
+                            if r["documentType"] == "C20":
+                                generate_c20(u, r, rid)
+                            elif r["documentType"] == "Extrait de r\u00f4le":
+                                ap = adm.get("profile", {})
+                                name = f"{ap.get('firstName','')} {ap.get('lastName','')}".strip()
+                                generate_extrait_role(u, rid, name)
+                            print(f"[bg] PDF ready for {rid}")
+                        except Exception as e:
+                            print(f"[bg] PDF generation failed for {rid}: {e}")
+
+                    threading.Thread(
+                        target=_generate_pdf_background,
+                        args=(user_snapshot, req_snapshot, request_id, admin_snapshot),
+                        daemon=True
+                    ).start()
+
                 return {"requestId": request_id, "status": req["status"]}
 
     return {"error": "Request not found"}, 404

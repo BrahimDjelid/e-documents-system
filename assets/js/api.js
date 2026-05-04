@@ -580,11 +580,19 @@ async function apiDownloadDocument(requestId, documentType) {
 
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
+
   const a = document.createElement("a");
   a.href = url;
   a.download = `${documentType}_${requestId}.pdf`;
+
+  // Append to DOM — required for Firefox + Safari to honour the download attribute
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+
+  // Delay revocation — gives the browser time to start reading the blob
+  // before the object URL is released
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
 // NOTIFICATIONS

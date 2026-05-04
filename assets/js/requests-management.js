@@ -305,18 +305,27 @@ function openModal(requestId) {
     modalTaxSection.style.display = "none";
   }
 
-  // Status selector
-  selectedStatus = effectStatus;
-  statusOptions.forEach((opt) => {
-    opt.classList.toggle("selected", opt.dataset.status === effectStatus);
-  });
-
   // Notes
   modalNotes.value = effectNote;
 
   // ── Immutability lock ──────────────────────────────────────────────────────
   const isFinalized =
     effectStatus === "approved" || effectStatus === "rejected";
+
+  // Status selector — for pending requests, force the admin to actively
+  // choose Approved or Rejected. Pre-selecting "pending" would let Save
+  // fire with no real decision, which the backend rejects (400).
+  if (isFinalized) {
+    // Finalized: pre-select current status for display only (buttons are locked)
+    selectedStatus = effectStatus;
+    statusOptions.forEach((opt) => {
+      opt.classList.toggle("selected", opt.dataset.status === effectStatus);
+    });
+  } else {
+    // Pending: clear selection — admin must explicitly pick a new status
+    selectedStatus = null;
+    statusOptions.forEach((opt) => opt.classList.remove("selected"));
+  }
 
   // Lock / unlock status buttons
   statusOptions.forEach((opt) => {
@@ -377,7 +386,13 @@ statusOptions.forEach((opt) => {
 
 // Save changes
 modalSave.addEventListener("click", async () => {
-  if (!activeRequest || !selectedStatus) return;
+  if (!activeRequest) return;
+
+  // Guard: admin must pick Approved or Rejected before saving
+  if (!selectedStatus || selectedStatus === "pending") {
+    showToast("Please select Approved or Rejected before saving.", true);
+    return;
+  }
 
   // Guard: never submit if the decision is already finalized
   const currentStatus = activeRequest.status;

@@ -254,16 +254,16 @@ async function initDashboard() {
         `;
 
         downloadList.querySelectorAll(".download-btn").forEach((btn) => {
-          let _btnDownloading = false; // FIX 3.1: per-button guard
+          let _btnDownloading = false;
           btn.addEventListener("click", async () => {
             if (_btnDownloading) return;
             const req = readyItems.find((r) => r.requestId === btn.dataset.id);
             if (!req) return;
 
-            // FIX 3.2: Loading state
             _btnDownloading = true;
             const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.innerHTML =
+              '<i class="fa-solid fa-spinner fa-spin"></i> Preparing…';
             btn.disabled = true;
 
             try {
