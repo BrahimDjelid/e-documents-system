@@ -910,7 +910,16 @@ def save_decision(request_id):
                 if not _request_visible_to_admin(req, user_id, admin.get("service")):
                     return {"error": "Forbidden"}, 403
 
+                # Immutability: approved/rejected decisions cannot be changed
+                current_status = req.get("status", "pending")
+                if current_status in ("approved", "rejected"):
+                    return {"error": "Decision already finalized"}, 400
+
                 new_status = data.get("status")
+
+                # Only allow transitions from pending
+                if new_status not in ("approved", "rejected"):
+                    return {"error": "Invalid status transition"}, 400
                 doc_type = req.get("documentType", "document")
 
                 req["status"] = new_status

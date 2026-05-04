@@ -314,6 +314,47 @@ function openModal(requestId) {
   // Notes
   modalNotes.value = effectNote;
 
+  // ── Immutability lock ──────────────────────────────────────────────────────
+  const isFinalized =
+    effectStatus === "approved" || effectStatus === "rejected";
+
+  // Lock / unlock status buttons
+  statusOptions.forEach((opt) => {
+    opt.disabled = isFinalized;
+    opt.classList.toggle("status-option--locked", isFinalized);
+  });
+
+  // Lock / unlock notes textarea
+  modalNotes.disabled = isFinalized;
+  modalNotes.classList.toggle("modal-notes-input--locked", isFinalized);
+
+  // Lock / unlock Save button
+  modalSave.disabled = isFinalized;
+  modalSave.classList.toggle("btn-save--locked", isFinalized);
+
+  // Show / hide finalized notice
+  let finalizedNotice = document.getElementById("modal-finalized-notice");
+  if (isFinalized) {
+    if (!finalizedNotice) {
+      finalizedNotice = document.createElement("p");
+      finalizedNotice.id = "modal-finalized-notice";
+      finalizedNotice.className = "modal-finalized-notice";
+      finalizedNotice.innerHTML =
+        '<i class="fa-solid fa-lock"></i> This decision is final and cannot be changed.';
+      // Insert above the status options section
+      const statusSection = document
+        .querySelector('.status-option[data-status="pending"]')
+        ?.closest(".modal-section");
+      if (statusSection) {
+        statusSection.insertAdjacentElement("beforebegin", finalizedNotice);
+      }
+    }
+    finalizedNotice.style.display = "flex";
+  } else {
+    if (finalizedNotice) finalizedNotice.style.display = "none";
+  }
+  // ──────────────────────────────────────────────────────────────────────────
+
   backdrop.classList.add("open");
   document.body.style.overflow = "hidden";
 }
@@ -337,6 +378,13 @@ statusOptions.forEach((opt) => {
 // Save changes
 modalSave.addEventListener("click", async () => {
   if (!activeRequest || !selectedStatus) return;
+
+  // Guard: never submit if the decision is already finalized
+  const currentStatus = activeRequest.status;
+  if (currentStatus === "approved" || currentStatus === "rejected") {
+    showToast("This decision is final and cannot be changed.", true);
+    return;
+  }
 
   const note = modalNotes.value.trim();
 

@@ -659,6 +659,56 @@
 
 .rm-toast-icon { font-size: 16px; }
 
+/* Finalized / immutable request lock styles */
+.status-option--locked {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.modal-notes-input--locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--surface-2);
+}
+
+.btn-save--locked {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: not-allowed;
+  background: var(--gray-300);
+  box-shadow: none;
+}
+
+.modal-finalized-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px var(--space-md);
+  background: rgba(239, 68, 68, 0.07);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--status-rejected);
+  font-family: var(--font-main);
+  margin-bottom: var(--space-xs);
+}
+
+.modal-finalized-notice i {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.dark .modal-finalized-notice {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.dark .modal-notes-input--locked {
+  background: var(--surface-2);
+}
+
 /* Dark mode */
 .dark .rm-card { background: var(--surface-1); border-color: var(--border-light); }
 .dark .rm-table thead tr { background: var(--surface-2); }
