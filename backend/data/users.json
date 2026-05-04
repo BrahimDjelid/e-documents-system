@@ -10,7 +10,7 @@
       "lastName": "Benali",
       "dateOfBirth": "1977-10-24",
       "phone": "+213 555 01 23 45",
-      "address": "Cité 110 Logements, Bouira",
+      "address": "Cit\u00e9 110 Logements, Bouira",
       "email": "yacine@email.com",
       "nationalId": "123456789",
       "civilStatus": "single",
@@ -32,7 +32,7 @@
           "address": "Plateforme e-commerce"
         }
       ],
-      "businessAddress": "Zone d'activité, Bouira",
+      "businessAddress": "Zone d'activit\u00e9, Bouira",
       "commercialRegisterNumber": "RC-23/00-1234567 B 18",
       "taxIdentificationNumber": "123456789012345",
       "establishmentDate": "2022-06-10",
@@ -145,7 +145,7 @@
       "lastName": "Haddad",
       "dateOfBirth": "1995-07-22",
       "phone": "+213 661 44 55 66",
-      "address": "Cité 70 Logements, Bouira",
+      "address": "Cit\u00e9 70 Logements, Bouira",
       "email": "amine.haddad@email.com",
       "nationalId": "987654321",
       "civilStatus": "married",
@@ -273,7 +273,7 @@
       "lastName": "Sait",
       "dateOfBirth": "2001-11-05",
       "phone": "+213 770 88 99 00",
-      "address": "Cité 300 Logements, Bouira",
+      "address": "Cit\u00e9 300 Logements, Bouira",
       "email": "sidali.sait@email.com",
       "nationalId": "555444333",
       "civilStatus": "single",
@@ -400,7 +400,7 @@
       "avatarUrl": null
     },
     "role": "admin",
-    "service": "Extrait de rôle",
+    "service": "Extrait de r\u00f4le",
     "notifications": []
   }
 ]

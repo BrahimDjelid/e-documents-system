@@ -515,10 +515,10 @@ def generate_extrait_role(user_obj, request_id, admin_name="Brahim Djelid"):
     stamp_size = 90
 
     # ⬅️ move slightly left
-    stamp_x = center_x - (stamp_size / 2) - 15
+    stamp_x = center_x - (stamp_size / 2) - 25
 
     # ⬇️ move slightly down
-    stamp_y = footer_y - 35
+    stamp_y = footer_y - 45
 
     if os.path.exists(STAMP_PATH):
         c.saveState()
@@ -951,7 +951,22 @@ def download_document(request_id):
     elif target_request["documentType"] == "Extrait de rôle":
         file_path = os.path.join(DOCS_DIR, f"{request_id}_extrait.pdf")
         if not os.path.exists(file_path):
-            admin_name = "Brahim Djelid"  # later dynamic
+            admin_id = target_request.get("processedBy")
+
+            admin_name = "Agent inconnu"
+
+            if admin_id:
+                admin_user = next(
+                    (u for u in users if u["auth"]["id"] == admin_id and u["role"] == "admin"),
+                    None
+                )
+
+                if admin_user:
+                    profile = admin_user.get("profile", {})
+                    first = profile.get("firstName", "")
+                    last = profile.get("lastName", "")
+                    admin_name = f"{first} {last}".strip()
+
             file_path = generate_extrait_role(target_user, request_id, admin_name)
 
     return send_file(file_path, as_attachment=True)
