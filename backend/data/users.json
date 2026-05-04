@@ -3,15 +3,15 @@
     "auth": {
       "id": "123456789012345",
       "idType": "nif",
-      "password": "brahimbrahim"
+      "password": "yacine1234"
     },
     "profile": {
-      "firstName": "Brahim",
-      "lastName": "Djelid",
-      "dateOfBirth": "2004-06-13",
+      "firstName": "Yacine",
+      "lastName": "Benali",
+      "dateOfBirth": "1977-10-24",
       "phone": "+213 555 01 23 45",
-      "address": "12 Rue Didouche Mourad, Annaba",
-      "email": "brahim@email.com",
+      "address": "Cité 110 Logements, Bouira",
+      "email": "yacine@email.com",
       "nationalId": "123456789",
       "civilStatus": "single",
       "avatarUrl": null,
@@ -23,7 +23,7 @@
       "mainActivity": {
         "activityName": "Commerce de v\u00eatements",
         "activityCode": "4711",
-        "address": "12 Rue Didouche Mourad, Annaba"
+        "address": "Bouira"
       },
       "secondaryActivities": [
         {
@@ -32,7 +32,7 @@
           "address": "Plateforme e-commerce"
         }
       ],
-      "businessAddress": "12 Rue Didouche Mourad, Annaba",
+      "businessAddress": "Zone d'activité, Bouira",
       "commercialRegisterNumber": "RC-23/00-1234567 B 18",
       "taxIdentificationNumber": "123456789012345",
       "establishmentDate": "2022-06-10",
@@ -145,8 +145,8 @@
       "lastName": "Haddad",
       "dateOfBirth": "1995-07-22",
       "phone": "+213 661 44 55 66",
-      "address": "5 Boulevard Zighout Youcef, Alger",
-      "email": "amine.benali@email.com",
+      "address": "Cité 70 Logements, Bouira",
+      "email": "amine.haddad@email.com",
       "nationalId": "987654321",
       "civilStatus": "married",
       "avatarUrl": null
@@ -157,7 +157,7 @@
       "mainActivity": {
         "activityName": "D\u00e9veloppement informatique",
         "activityCode": "6201",
-        "address": "5 Boulevard Zighout Youcef, Alger"
+        "address": "Bouira"
       },
       "secondaryActivities": [],
       "businessAddress": "Travail \u00e0 domicile",
@@ -269,12 +269,12 @@
       "password": "fatima2024"
     },
     "profile": {
-      "firstName": "Fatima",
-      "lastName": "Zahra",
+      "firstName": "Sidali",
+      "lastName": "Sait",
       "dateOfBirth": "2001-11-05",
       "phone": "+213 770 88 99 00",
-      "address": "18 Rue des Fr\u00e8res Bouadou, Oran",
-      "email": "fatima.zahra@email.com",
+      "address": "Cité 300 Logements, Bouira",
+      "email": "sidali.sait@email.com",
       "nationalId": "555444333",
       "civilStatus": "single",
       "avatarUrl": null
@@ -285,7 +285,7 @@
       "mainActivity": {
         "activityName": "Coiffure \u00e0 domicile",
         "activityCode": "9602",
-        "address": "Oran"
+        "address": "Bouira"
       },
       "secondaryActivities": [],
       "businessAddress": "Domicile",
@@ -374,18 +374,33 @@
   },
   {
     "auth": {
-      "id": "admin-extrait-role@dashboard.com",
+      "id": "brahimDj@dashboard.com",
       "idType": "email",
       "password": "admin1234"
     },
     "profile": {
-      "firstName": "Admin",
-      "lastName": "Extrait De Role",
+      "firstName": "Brahim",
+      "lastName": "Djelid",
       "avatarUrl": null,
       "avatar": ""
     },
     "role": "admin",
     "service": "Extrait de r\u00f4le",
+    "notifications": []
+  },
+  {
+    "auth": {
+      "id": "mekid.raouf@dashboard.com",
+      "idType": "email",
+      "password": "admin1234"
+    },
+    "profile": {
+      "firstName": "Mekid",
+      "lastName": "Raouf",
+      "avatarUrl": null
+    },
+    "role": "admin",
+    "service": "Extrait de rôle",
     "notifications": []
   }
 ]
