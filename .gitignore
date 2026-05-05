@@ -12,4 +12,4 @@ uploads/
 documents/
 
 # Ignore signature
-backend/assets/signature.png
+backend/assets/signatures/
