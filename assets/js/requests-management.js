@@ -322,9 +322,10 @@ function openModal(requestId) {
       opt.classList.toggle("selected", opt.dataset.status === effectStatus);
     });
   } else {
-    // Pending: clear selection — admin must explicitly pick a new status
-    selectedStatus = null;
-    statusOptions.forEach((opt) => opt.classList.remove("selected"));
+    selectedStatus = "pending";
+    statusOptions.forEach((opt) => {
+      opt.classList.toggle("selected", opt.dataset.status === "pending");
+    });
   }
 
   // Lock / unlock status buttons
