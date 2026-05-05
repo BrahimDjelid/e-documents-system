@@ -366,6 +366,7 @@
     "profile": {
       "firstName": "Admin",
       "lastName": "C20",
+      "nationalId": "872998336",
       "avatarUrl": null
     },
     "role": "admin",
@@ -381,6 +382,7 @@
     "profile": {
       "firstName": "Brahim",
       "lastName": "Djelid",
+      "nationalId": "840248153",
       "avatarUrl": null,
       "avatar": ""
     },
@@ -397,6 +399,7 @@
     "profile": {
       "firstName": "Mekid",
       "lastName": "Raouf",
+      "nationalId": "766544125",
       "avatarUrl": null
     },
     "role": "admin",
