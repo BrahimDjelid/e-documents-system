@@ -298,9 +298,28 @@ def generate_c20(user_obj, request_obj, request_id):
     # ----------------------------
     # SIGNATURE IMAGE
     # ----------------------------
-    SIGN_PATH = os.path.join(BASE_DIR, "assets", "signature.png")
+    # Get admin who processed the request
+    admin_id = request_obj.get("processedBy")
 
-    if os.path.exists(SIGN_PATH):
+    admin = next(
+        (u for u in load_users() if u["auth"]["id"] == admin_id and u["role"] == "admin"),
+        None
+    )
+
+    SIGN_PATH = None
+
+    if admin:
+        national_id = admin.get("profile", {}).get("nationalId")
+
+        if national_id:
+            SIGN_PATH = os.path.join(
+                BASE_DIR,
+                "assets",
+                "signatures",
+                f"{national_id}.png"
+            )
+
+    if SIGN_PATH and os.path.exists(SIGN_PATH):
         sig_width = 230
         sig_height = 80
 
@@ -351,7 +370,7 @@ def generate_c20(user_obj, request_obj, request_id):
 # ----------------------------
 # Extrait de role PDF GENERATOR
 # ----------------------------
-def generate_extrait_role(user_obj, request_id, admin_name="Brahim Djelid"):
+def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     DOCS_DIR = os.path.join(BASE_DIR, "documents")
     os.makedirs(DOCS_DIR, exist_ok=True)
 
@@ -591,8 +610,27 @@ def generate_extrait_role(user_obj, request_id, admin_name="Brahim Djelid"):
     right_x = width - 250
 
     
-    SIGN_PATH = os.path.join(BASE_DIR, "assets", "signature.png")
+    # Get admin who processed the request
+    admin_id = request_obj.get("processedBy")
 
+    admin = next(
+        (u for u in load_users() if u["auth"]["id"] == admin_id and u["role"] == "admin"),
+        None
+    )
+
+    SIGN_PATH = None
+
+    if admin:
+        national_id = admin.get("profile", {}).get("nationalId")
+
+        if national_id:
+            SIGN_PATH = os.path.join(
+                BASE_DIR,
+                "assets",
+                "signatures",
+                f"{national_id}.png"
+            )
+    
     sig_width = 150
     sig_height = 60
 
@@ -602,7 +640,7 @@ def generate_extrait_role(user_obj, request_id, admin_name="Brahim Djelid"):
     # Align vertically with name / function area
     sig_y = footer_y - 40
 
-    if os.path.exists(SIGN_PATH):
+    if SIGN_PATH and os.path.exists(SIGN_PATH):
         c.saveState()
 
         # Move origin to center of signature for rotation
@@ -633,7 +671,7 @@ def generate_extrait_role(user_obj, request_id, admin_name="Brahim Djelid"):
     ]
 
     y = footer_y
-    LINE_PATH = os.path.join(BASE_DIR, "assets", "line2.png")
+    LINE_PATH = os.path.join(BASE_DIR, "assets", "line.png")
 
     for line in right_lines:
         c.drawString(right_x, y, line)
@@ -976,7 +1014,7 @@ def save_decision(request_id):
                             elif r["documentType"] == "Extrait de r\u00f4le":
                                 ap = adm.get("profile", {})
                                 name = f"{ap.get('firstName','')} {ap.get('lastName','')}".strip()
-                                generate_extrait_role(u, rid, name)
+                                generate_extrait_role(u, r, rid, name)
                             print(f"[bg] PDF ready for {rid}")
                         except Exception as e:
                             print(f"[bg] PDF generation failed for {rid}: {e}")
