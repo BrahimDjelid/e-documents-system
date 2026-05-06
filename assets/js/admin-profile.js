@@ -132,9 +132,12 @@
     originalLastName = lastName;
     originalEmail = userId;
 
-    /* Service information section */
+    /* Service Assignment card */
     const svcService = document.getElementById("svc-service");
     if (svcService) svcService.textContent = service;
+
+    const svcNationalId = document.getElementById("svc-nationalid");
+    if (svcNationalId) svcNationalId.textContent = p.nationalId || "—";
   }
 
   /* Edit mode */
