@@ -275,6 +275,7 @@
     });
     document.querySelectorAll(".sec-toggle-pw").forEach((btn) => {
       btn.querySelector("i").className = "fa-regular fa-eye";
+      btn.disabled = true;
     });
     btnUpdatePw.disabled = true;
     secError.style.display = "none";
@@ -284,6 +285,9 @@
   function unlockSecurityFields() {
     securityEditMode = true;
     [secCurrent, secNew, secConfirm].forEach((f) => (f.disabled = false));
+    document.querySelectorAll(".sec-toggle-pw").forEach((btn) => {
+      btn.disabled = false;
+    });
     btnUpdatePw.disabled = false;
     if (securityEditIcon) securityEditIcon.className = "fa-solid fa-lock";
     secCurrent.focus();
@@ -349,7 +353,9 @@
     });
   });
 
-  /* Init */
+  /* Init — ensure the security section starts fully locked */
+  lockSecurityFields();
+
   loadUser().then((user) => {
     if (user) {
       render(user);

@@ -702,6 +702,12 @@
   color: var(--primary-blue);
 }
 
+.sec-toggle-pw:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .sec-error {
   font-size: 0.78rem;
   color: var(--error);
