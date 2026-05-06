@@ -4,7 +4,7 @@ import json
 import os
 import random
 import threading
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
@@ -243,19 +243,33 @@ def generate_c20(user_obj, request_obj, request_id):
 
     # Parse approvedAt if available
     approved_at_raw = request_obj.get("approvedAt")
+
+    # Algeria timezone (UTC+1)
+    algeria_tz = timezone(timedelta(hours=1))
+
     if approved_at_raw:
         try:
-            dt = datetime.fromisoformat(approved_at_raw.replace("Z", ""))
-            date_str = dt.strftime("%d/%m/%Y")
-            time_str = dt.strftime("%H:%M")
-            fait_a_text  = "Fait à : Bouira"
-            le_text      = f"Le : {date_str} à {time_str}"
+            # Parse stored UTC timestamp
+            dt_utc = datetime.fromisoformat(
+                approved_at_raw.replace("Z", "+00:00")
+            )
+
+            # Convert to Algeria local time
+            dt_local = dt_utc.astimezone(algeria_tz)
+
+            date_str = dt_local.strftime("%d/%m/%Y")
+            time_str = dt_local.strftime("%H:%M")
+
+            fait_a_text = "Fait à : Bouira"
+            le_text = f"Le : {date_str} à {time_str}"
+
         except Exception:
             fait_a_text = "Fait à : .............................."
-            le_text     = "Le : .............................."
+            le_text = "Le : .............................."
+
     else:
         fait_a_text = "Fait à : .............................."
-        le_text     = "Le : .............................."
+        le_text = "Le : .............................."
 
     # Draw "Fait à" on the left
     c.setFont("Helvetica", 11)
@@ -417,9 +431,9 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     # =========================
     box_x = 40
     box_w = width - 80
-    box_h = 85
+    box_h = 95
 
-    box_y = header_bottom - 20 - box_h  # 🔥 SAFE spacing (no overlap ever)
+    box_y = header_bottom - 28 - box_h
 
     c.setLineWidth(2)
     c.rect(box_x, box_y, box_w, box_h)
@@ -428,31 +442,37 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     c.drawString(box_x + 12, box_y + box_h - 18, "IDENTIFICATION DU CONTRIBUABLE")
 
     c.setFont("Helvetica", 10)
-    y = box_y + box_h - 40
-    c.drawString(box_x + 12, y, f"NIF: {nif}")
-    c.drawString(box_x + 250, y, f"Nom: {full_name}")
 
-    y -= 18
+    y = box_y + box_h - 42
+
+    c.drawString(box_x + 12, y, f"NIF: {nif}")
+    c.drawString(box_x + 260, y, f"Nom: {full_name}")
+
+    y -= 22
     c.drawString(box_x + 12, y, f"Adresse: {address}")
 
-    y -= 18
+    y -= 22
     c.drawString(box_x + 12, y, f"Activité: {activity}")
 
     # =========================
     # TABLE
     # =========================
-    gap = 25
+    gap = 32
     table_top = box_y - gap
 
-    row_h = 25
+    # Increased row height for cleaner spacing
+    row_h = 24
+
     table_x = box_x
     table_w = box_w
 
-    base_widths = [45, 45, 70, 70, 80, 85, 60]
+    # Column widths
+    base_widths = [55, 55, 75, 75, 85, 85, 70]
     total_base = sum(base_widths)
     scale = table_w / total_base
     widths = [w * scale for w in base_widths]
 
+    # Main columns
     columns = [
         ("Type", widths[0]),
         ("Année", widths[1]),
@@ -463,43 +483,107 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
         ("Reste dû", widths[6]),
     ]
 
-    num_rows = max(len(records), 1) + 2
+    # 2 header rows + data rows + total row
+    num_rows = max(len(records), 1) + 3
+
     table_h = num_rows * row_h
     table_y = table_top - table_h
 
+    # Outer border
     c.setLineWidth(2)
     c.rect(table_x, table_y, table_w, table_h)
 
     c.setLineWidth(1)
 
-    # vertical lines
+    # -------------------------
+    # Vertical lines
+    # -------------------------
+    x_positions = [table_x]
     x = table_x
-    c.line(x, table_y, x, table_y + table_h)
 
-    for i, (_, w) in enumerate(columns):
-        if i == len(columns) - 1:
-            x = table_x + table_w
+    for _, w in columns:
+        x += w
+        x_positions.append(x)
+
+    # =========================
+    # VERTICAL LINES
+    # =========================
+
+    # Y position where grouped header ends
+    grouped_header_bottom = table_y + table_h - row_h
+
+    for i, xp in enumerate(x_positions):
+
+        # Outer borders
+        if i == 0 or i == len(x_positions) - 1:
+            c.line(xp, table_y, xp, table_y + table_h)
+
+        # Main separators (full height)
+        elif i in [1, 2, 4, 6]:
+            c.line(xp, table_y, xp, table_y + table_h)
+
+        # Inner separators inside grouped headers
+        # stop before top grouped header row
         else:
-            x += w
-        c.line(x, table_y, x, table_y + table_h)
+            c.line(xp, table_y, xp, grouped_header_bottom)
 
-    # horizontal lines
+    # -------------------------
+    # Horizontal lines
+    # -------------------------
     for i in range(num_rows + 1):
         y_line = table_y + i * row_h
         c.line(table_x, y_line, table_x + table_w, y_line)
 
-    # header row
+    # =========================
+    # HEADER ROW 1 (GROUPS)
+    # =========================
     c.setFont("Helvetica-Bold", 8)
-    y = table_y + table_h - (row_h / 2) + 3
+
+    top_header_y = table_y + table_h - (row_h / 2) + 3
+
+    # COTISATIONS ÉMISES
+    emitted_x_start = x_positions[2]
+    emitted_x_end = x_positions[4]
+
+    c.drawCentredString(
+        (emitted_x_start + emitted_x_end) / 2,
+        top_header_y,
+        "COTISATIONS ÉMISES"
+    )
+
+    # VERSEMENT EFFECTUES
+    paid_x_start = x_positions[4]
+    paid_x_end = x_positions[6]
+
+    c.drawCentredString(
+        (paid_x_start + paid_x_end) / 2,
+        top_header_y,
+        "VERSEMENT EFFECTUES"
+    )
+
+    # =========================
+    # HEADER ROW 2 (COLUMNS)
+    # =========================
+    second_header_y = top_header_y - row_h
+
+    c.setFont("Helvetica-Bold", 7.5)
+
     x = table_x
 
     for title, w in columns:
-        c.drawString(x + 3, y, title)
+        c.drawCentredString(
+            x + (w / 2),
+            second_header_y,
+            title
+        )
         x += w
 
-    # data rows (LEFT aligned)
+    # =========================
+    # DATA ROWS
+    # =========================
     c.setFont("Helvetica", 8)
-    y -= row_h
+
+    y = second_header_y - row_h
 
     totals = [0, 0, 0, 0]
 
@@ -527,27 +611,48 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
         ]
 
         x = table_x
+
         for i, v in enumerate(values):
-            c.drawString(x + 3, y, str(v))  # ✅ LEFT aligned
+            c.drawCentredString(
+                x + (columns[i][1] / 2),
+                y,
+                str(v)
+            )
             x += columns[i][1]
 
         y -= row_h
 
+    # =========================
     # TOTAL ROW
+    # =========================
     total_reste = (totals[0] + totals[1]) - (totals[2] + totals[3])
 
     c.setFont("Helvetica-Bold", 8)
-    values = ["", "TOTAL", totals[0], totals[1], totals[2], totals[3], total_reste]
+
+    values = [
+        "",
+        "TOTAL",
+        totals[0],
+        totals[1],
+        totals[2],
+        totals[3],
+        total_reste
+    ]
 
     x = table_x
+
     for i, v in enumerate(values):
-        c.drawString(x + 3, y, str(v))  # ✅ LEFT aligned
+        c.drawCentredString(
+            x + (columns[i][1] / 2),
+            y,
+            str(v)
+        )
         x += columns[i][1]
 
     # =========================
     # N.B TEXT
     # =========================
-    nb_y = table_y - 30
+    nb_y = table_y - 40
     c.setFont("Helvetica", 8)
 
     text_lines = [
@@ -564,10 +669,44 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     # =========================
     # FOOTER
     # =========================
-    footer_y = nb_y - 40
+    footer_y = nb_y - 55
     
+    # =========================
+    # APPROVAL DATE + LOCAL TIME
+    # =========================
+
+    approved_at_raw = request_obj.get("approvedAt")
+
+    # Algeria timezone (UTC+1)
+    algeria_tz = timezone(timedelta(hours=1))
+
+    if approved_at_raw:
+        try:
+            # Parse UTC timestamp
+            dt_utc = datetime.fromisoformat(
+                approved_at_raw.replace("Z", "+00:00")
+            )
+
+            # Convert to Algeria local time
+            dt_local = dt_utc.astimezone(algeria_tz)
+
+            date_text = dt_local.strftime("%d.%m.%Y")
+            time_text = dt_local.strftime("%H:%M")
+
+        except Exception:
+            now_local = datetime.now(algeria_tz)
+
+            date_text = now_local.strftime("%d.%m.%Y")
+            time_text = now_local.strftime("%H:%M")
+
+    else:
+        now_local = datetime.now(algeria_tz)
+
+        date_text = now_local.strftime("%d.%m.%Y")
+        time_text = now_local.strftime("%H:%M")
+
     c.drawString(40, footer_y, "A CDI BOUIRA,")
-    c.drawString(40, footer_y - 15, f"le {datetime.now().strftime('%d.%m.%Y')}")
+    c.drawString(40, footer_y - 15, f"le {date_text} à {time_text}")
     c.drawString(40, footer_y - 30, "Certifié exact")
     c.drawString(40, footer_y - 45, "Le Receveur des Impots")
 
@@ -581,7 +720,7 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     stamp_x = center_x - (stamp_size / 2) - 25
 
     # ⬇️ move slightly down
-    stamp_y = footer_y - 45
+    stamp_y = footer_y - 55
 
     if os.path.exists(STAMP_PATH):
         c.saveState()
@@ -638,7 +777,7 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     sig_x = center_x + (right_x - center_x) / 2 - (sig_width / 2)
 
     # Align vertically with name / function area
-    sig_y = footer_y - 40
+    sig_y = footer_y - 48
 
     if SIGN_PATH and os.path.exists(SIGN_PATH):
         c.saveState()
