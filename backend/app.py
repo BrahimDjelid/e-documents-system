@@ -439,7 +439,11 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     c.rect(box_x, box_y, box_w, box_h)
 
     c.setFont("Helvetica-Bold", 11)
-    c.drawString(box_x + 12, box_y + box_h - 18, "IDENTIFICATION DU CONTRIBUABLE")
+    c.drawString(
+        box_x + 12,
+        box_y + box_h - 18,
+        "IDENTIFICATION DU CONTRIBUABLE"
+    )
 
     c.setFont("Helvetica", 10)
 
@@ -460,8 +464,10 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     gap = 32
     table_top = box_y - gap
 
-    # Increased row height for cleaner spacing
     row_h = 24
+
+    # Optical vertical centering adjustment
+    text_y_adjust = -3
 
     table_x = box_x
     table_w = box_w
@@ -472,7 +478,6 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     scale = table_w / total_base
     widths = [w * scale for w in base_widths]
 
-    # Main columns
     columns = [
         ("Type", widths[0]),
         ("Année", widths[1]),
@@ -495,19 +500,15 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
 
     c.setLineWidth(1)
 
-    # -------------------------
-    # Vertical lines
-    # -------------------------
+    # =========================
+    # VERTICAL LINES
+    # =========================
     x_positions = [table_x]
     x = table_x
 
     for _, w in columns:
         x += w
         x_positions.append(x)
-
-    # =========================
-    # VERTICAL LINES
-    # =========================
 
     # Y position where grouped header ends
     grouped_header_bottom = table_y + table_h - row_h
@@ -522,14 +523,13 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
         elif i in [1, 2, 4, 6]:
             c.line(xp, table_y, xp, table_y + table_h)
 
-        # Inner separators inside grouped headers
-        # stop before top grouped header row
+        # Inner separators stop before grouped header
         else:
             c.line(xp, table_y, xp, grouped_header_bottom)
 
-    # -------------------------
-    # Horizontal lines
-    # -------------------------
+    # =========================
+    # HORIZONTAL LINES
+    # =========================
     for i in range(num_rows + 1):
         y_line = table_y + i * row_h
         c.line(table_x, y_line, table_x + table_w, y_line)
@@ -539,7 +539,9 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     # =========================
     c.setFont("Helvetica-Bold", 8)
 
-    top_header_y = table_y + table_h - (row_h / 2) + 3
+    top_header_y = (
+        table_y + table_h - (row_h / 2)
+    ) + text_y_adjust
 
     # COTISATIONS ÉMISES
     emitted_x_start = x_positions[2]
@@ -564,7 +566,9 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     # =========================
     # HEADER ROW 2 (COLUMNS)
     # =========================
-    second_header_y = top_header_y - row_h
+    second_header_y = (
+        table_y + table_h - (row_h * 1.5)
+    ) + text_y_adjust
 
     c.setFont("Helvetica-Bold", 7.5)
 
@@ -583,7 +587,9 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     # =========================
     c.setFont("Helvetica", 8)
 
-    y = second_header_y - row_h
+    y = (
+        table_y + table_h - (row_h * 2.5)
+    ) + text_y_adjust
 
     totals = [0, 0, 0, 0]
 
@@ -622,10 +628,16 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
 
         y -= row_h
 
+    # Slight optical correction for bold total row
+    y += 1
+
     # =========================
     # TOTAL ROW
     # =========================
-    total_reste = (totals[0] + totals[1]) - (totals[2] + totals[3])
+    total_reste = (
+        (totals[0] + totals[1]) -
+        (totals[2] + totals[3])
+    )
 
     c.setFont("Helvetica-Bold", 8)
 
@@ -653,6 +665,7 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     # N.B TEXT
     # =========================
     nb_y = table_y - 40
+
     c.setFont("Helvetica", 8)
 
     text_lines = [
@@ -670,11 +683,10 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     # FOOTER
     # =========================
     footer_y = nb_y - 55
-    
+
     # =========================
     # APPROVAL DATE + LOCAL TIME
     # =========================
-
     approved_at_raw = request_obj.get("approvedAt")
 
     # Algeria timezone (UTC+1)
@@ -706,29 +718,34 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
         time_text = now_local.strftime("%H:%M")
 
     c.drawString(40, footer_y, "A CDI BOUIRA,")
-    c.drawString(40, footer_y - 15, f"le {date_text} à {time_text}")
+    c.drawString(
+        40,
+        footer_y - 15,
+        f"le {date_text} à {time_text}"
+    )
     c.drawString(40, footer_y - 30, "Certifié exact")
     c.drawString(40, footer_y - 45, "Le Receveur des Impots")
 
     center_x = width / 2 - 65
-    
+
     STAMP_PATH = os.path.join(BASE_DIR, "assets", "stamp.png")
 
     stamp_size = 90
 
-    # ⬅️ move slightly left
+    # Slightly left
     stamp_x = center_x - (stamp_size / 2) - 25
 
-    # ⬇️ move slightly down
+    # Slightly lower
     stamp_y = footer_y - 55
 
     if os.path.exists(STAMP_PATH):
         c.saveState()
 
-        # rotate around center of stamp
-        c.translate(stamp_x + stamp_size / 2, stamp_y + stamp_size / 2)
+        c.translate(
+            stamp_x + stamp_size / 2,
+            stamp_y + stamp_size / 2
+        )
 
-        # 🔄 slight rotation
         c.rotate(-10)
 
         c.drawImage(
@@ -744,16 +761,22 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
 
     c.drawCentredString(center_x, footer_y, "Etabli par l'Agent:")
     c.drawCentredString(center_x, footer_y - 15, f"M {admin_name}")
-    c.drawCentredString(center_x, footer_y - 30, "Fonction : .........................")
-    
+    c.drawCentredString(
+        center_x,
+        footer_y - 30,
+        "Fonction : ........................."
+    )
+
     right_x = width - 250
 
-    
     # Get admin who processed the request
     admin_id = request_obj.get("processedBy")
 
     admin = next(
-        (u for u in load_users() if u["auth"]["id"] == admin_id and u["role"] == "admin"),
+        (
+            u for u in load_users()
+            if u["auth"]["id"] == admin_id and u["role"] == "admin"
+        ),
         None
     )
 
@@ -769,26 +792,29 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
                 "signatures",
                 f"{national_id}.png"
             )
-    
+
     sig_width = 150
     sig_height = 60
 
     # Mid space between center block and right block
-    sig_x = center_x + (right_x - center_x) / 2 - (sig_width / 2)
+    sig_x = (
+        center_x +
+        (right_x - center_x) / 2 -
+        (sig_width / 2)
+    )
 
-    # Align vertically with name / function area
     sig_y = footer_y - 48
 
     if SIGN_PATH and os.path.exists(SIGN_PATH):
         c.saveState()
 
-        # Move origin to center of signature for rotation
-        c.translate(sig_x + sig_width / 2, sig_y + sig_height / 2)
+        c.translate(
+            sig_x + sig_width / 2,
+            sig_y + sig_height / 2
+        )
 
-        # 🔥 slight rotation (natural look)
         c.rotate(-15)
 
-        # Draw centered
         c.drawImage(
             SIGN_PATH,
             -sig_width / 2,
@@ -810,6 +836,7 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     ]
 
     y = footer_y
+
     LINE_PATH = os.path.join(BASE_DIR, "assets", "line.png")
 
     for line in right_lines:
@@ -818,35 +845,52 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
         if "..." in line and os.path.exists(LINE_PATH):
 
             prefix = line.split("...")[0]
-            prefix_width = c.stringWidth(prefix, "Helvetica", 11)
 
-            # keep your tuned alignment
+            prefix_width = c.stringWidth(
+                prefix,
+                "Helvetica",
+                11
+            )
+
             line_x = right_x + prefix_width - 85
 
             c.saveState()
 
             c.translate(line_x, y - 15)
 
-            # slight angle
             c.rotate(10)
 
             c.setFillAlpha(1)
 
-            # 📏 bigger + thicker
             width = 150
             height = 34
 
-            # draw twice → good density without blur
-            c.drawImage(LINE_PATH, 0, 0, width=width, height=height, mask='auto')
-            c.drawImage(LINE_PATH, 0, 0, width=width, height=height, mask='auto')
+            c.drawImage(
+                LINE_PATH,
+                0,
+                0,
+                width=width,
+                height=height,
+                mask='auto'
+            )
+
+            c.drawImage(
+                LINE_PATH,
+                0,
+                0,
+                width=width,
+                height=height,
+                mask='auto'
+            )
 
             c.restoreState()
 
         y -= 15
-   
+
     c.save()
+
     return filename
-# ----------------------------
+#----------------------------
 # Routes
 # ----------------------------
 
