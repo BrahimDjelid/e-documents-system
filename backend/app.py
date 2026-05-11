@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
+import base64
 import json
 import os
 import random
+import sqlite3
 import threading
 from datetime import datetime, timezone, timedelta
 from reportlab.lib.pagesizes import A4
@@ -13,23 +15,312 @@ CORS(app, supports_credentials=True)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USERS_PATH = os.path.join(BASE_DIR, "data/users.json")
+LEGACY_DB_PATH = os.path.join(BASE_DIR, "app.db")
+RUNTIME_DIR = os.environ.get(
+    "EDOCS_RUNTIME_DIR",
+    os.path.join(
+        os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA") or os.path.expanduser("~"),
+        "e-documents-system",
+    ),
+)
+DB_PATH = os.environ.get("EDOCS_DB_PATH", os.path.join(RUNTIME_DIR, "app.db"))
+DOCUMENTS_DIR = os.environ.get("EDOCS_DOCUMENTS_DIR", os.path.join(RUNTIME_DIR, "documents"))
+UPLOADS_DIR = os.environ.get("EDOCS_UPLOADS_DIR", os.path.join(RUNTIME_DIR, "uploads"))
+
+
+# ----------------------------
+# Database
+# ----------------------------
+
+def get_db():
+    db_dir = os.path.dirname(DB_PATH)
+    if db_dir:
+        os.makedirs(db_dir, exist_ok=True)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
+
+
+def _json_dump(value):
+    return json.dumps(value if value is not None else {}, ensure_ascii=False)
+
+
+def _json_load(value, fallback):
+    if value is None or value == "":
+        return fallback
+    return json.loads(value)
+
+
+def _normalize_note(value):
+    return "" if value is None else str(value)
+
+
+def init_db():
+    with get_db() as conn:
+        conn.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                auth_id TEXT PRIMARY KEY,
+                id_type TEXT NOT NULL,
+                password TEXT NOT NULL,
+                role TEXT NOT NULL CHECK (role IN ('user', 'admin')),
+                service TEXT,
+                profile_json TEXT NOT NULL DEFAULT '{}',
+                tax_info_json TEXT NOT NULL DEFAULT '{}',
+                eligibility_json TEXT NOT NULL DEFAULT '{}',
+                sort_order INTEGER NOT NULL DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS requests (
+                request_id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL,
+                document_type TEXT NOT NULL,
+                status TEXT NOT NULL,
+                submitted_at TEXT NOT NULL,
+                note TEXT NOT NULL DEFAULT '',
+                assigned_to TEXT,
+                processed_by TEXT,
+                approved_at TEXT,
+                year INTEGER,
+                sort_order INTEGER NOT NULL DEFAULT 0,
+                FOREIGN KEY (user_id) REFERENCES users(auth_id) ON DELETE CASCADE
+            );
+
+            CREATE TABLE IF NOT EXISTS notifications (
+                id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL,
+                type TEXT NOT NULL,
+                message TEXT NOT NULL,
+                request_id TEXT,
+                read INTEGER NOT NULL DEFAULT 0,
+                deleted INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL,
+                sort_order INTEGER NOT NULL DEFAULT 0,
+                FOREIGN KEY (user_id) REFERENCES users(auth_id) ON DELETE CASCADE
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_requests_user_id ON requests(user_id);
+            CREATE INDEX IF NOT EXISTS idx_requests_assigned_to ON requests(assigned_to);
+            CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+            """
+        )
+
+        user_count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        if user_count == 0 and os.path.exists(LEGACY_DB_PATH) and LEGACY_DB_PATH != DB_PATH:
+            with sqlite3.connect(LEGACY_DB_PATH) as legacy_conn:
+                legacy_conn.row_factory = sqlite3.Row
+                try:
+                    seed_users = _load_users_from_conn(legacy_conn)
+                except sqlite3.DatabaseError:
+                    seed_users = []
+            if seed_users:
+                _replace_users(conn, seed_users)
+        elif user_count == 0 and os.path.exists(USERS_PATH):
+            with open(USERS_PATH, "r", encoding="utf-8") as f:
+                seed_users = json.load(f)
+            _replace_users(conn, seed_users)
+
+
+def _replace_users(conn, users):
+    conn.execute("DELETE FROM notifications")
+    conn.execute("DELETE FROM requests")
+    conn.execute("DELETE FROM users")
+
+    for user_index, user in enumerate(users):
+        auth = user.get("auth", {})
+        auth_id = auth.get("id")
+        if not auth_id:
+            continue
+
+        conn.execute(
+            """
+            INSERT INTO users (
+                auth_id, id_type, password, role, service,
+                profile_json, tax_info_json, eligibility_json, sort_order
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                auth_id,
+                auth.get("idType", "email" if "@" in auth_id else "nif"),
+                auth.get("password", ""),
+                user.get("role", "user"),
+                user.get("service"),
+                _json_dump(user.get("profile", {})),
+                _json_dump(user.get("taxInfo", {})),
+                _json_dump(user.get("eligibility", {})),
+                user_index,
+            ),
+        )
+
+        for request_index, req in enumerate(user.get("requests", [])):
+            request_id = req.get("requestId")
+            if not request_id:
+                continue
+            conn.execute(
+                """
+                INSERT INTO requests (
+                    request_id, user_id, document_type, status, submitted_at,
+                    note, assigned_to, processed_by, approved_at, year, sort_order
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    request_id,
+                    auth_id,
+                    req.get("documentType", ""),
+                    req.get("status", "pending"),
+                    req.get("submittedAt", ""),
+                    _normalize_note(req.get("note")),
+                    req.get("assignedTo"),
+                    req.get("processedBy"),
+                    req.get("approvedAt"),
+                    req.get("year"),
+                    request_index,
+                ),
+            )
+
+        for notif_index, notif in enumerate(user.get("notifications", [])):
+            notif_id = notif.get("id")
+            if not notif_id:
+                continue
+            conn.execute(
+                """
+                INSERT INTO notifications (
+                    id, user_id, type, message, request_id,
+                    read, deleted, created_at, sort_order
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    notif_id,
+                    auth_id,
+                    notif.get("type", ""),
+                    notif.get("message", ""),
+                    notif.get("requestId"),
+                    1 if notif.get("read", False) else 0,
+                    1 if notif.get("deleted", False) else 0,
+                    notif.get("createdAt", datetime.utcnow().isoformat() + "Z"),
+                    notif_index,
+                ),
+            )
+
+
+def _row_to_user(row):
+    return {
+        "auth": {
+            "id": row["auth_id"],
+            "idType": row["id_type"],
+            "password": row["password"],
+        },
+        "profile": _json_load(row["profile_json"], {}),
+        "role": row["role"],
+        **({"service": row["service"]} if row["service"] else {}),
+        **({"taxInfo": _json_load(row["tax_info_json"], {})} if row["role"] == "user" else {}),
+        **({"eligibility": _json_load(row["eligibility_json"], {})} if row["role"] == "user" else {}),
+        "requests": [],
+        "notifications": [],
+    }
+
+
+def _load_users_from_conn(conn):
+    users = [
+        _row_to_user(row)
+        for row in conn.execute("SELECT * FROM users ORDER BY sort_order, auth_id")
+    ]
+    by_id = {user["auth"]["id"]: user for user in users}
+
+    for row in conn.execute("SELECT * FROM requests ORDER BY sort_order, submitted_at"):
+        user = by_id.get(row["user_id"])
+        if not user:
+            continue
+        req = {
+            "requestId": row["request_id"],
+            "documentType": row["document_type"],
+            "status": row["status"],
+            "submittedAt": row["submitted_at"],
+            "note": row["note"] or "",
+        }
+        optional_fields = {
+            "assignedTo": row["assigned_to"],
+            "processedBy": row["processed_by"],
+            "approvedAt": row["approved_at"],
+            "year": row["year"],
+        }
+        req.update({k: v for k, v in optional_fields.items() if v is not None})
+        user["requests"].append(req)
+
+    for row in conn.execute("SELECT * FROM notifications ORDER BY sort_order, created_at"):
+        user = by_id.get(row["user_id"])
+        if not user:
+            continue
+        user["notifications"].append({
+            "id": row["id"],
+            "type": row["type"],
+            "message": row["message"],
+            "requestId": row["request_id"],
+            "read": bool(row["read"]),
+            "deleted": bool(row["deleted"]),
+            "createdAt": row["created_at"],
+        })
+
+    return users
+
+
+def load_users():
+    with get_db() as conn:
+        return _load_users_from_conn(conn)
+
+
+def save_users(data):
+    with get_db() as conn:
+        _replace_users(conn, data)
+        conn.commit()
+
+
+def persist_request_decision(request_id, status, note, processed_by, approved_at, notif_user_id, notification):
+    with get_db() as conn:
+        conn.execute(
+            """
+            UPDATE requests
+            SET status = ?, note = ?, processed_by = ?, approved_at = ?
+            WHERE request_id = ?
+            """,
+            (status, _normalize_note(note), processed_by, approved_at, request_id),
+        )
+
+        next_order = conn.execute(
+            "SELECT COALESCE(MAX(sort_order), -1) + 1 FROM notifications WHERE user_id = ?",
+            (notif_user_id,),
+        ).fetchone()[0]
+
+        conn.execute(
+            """
+            INSERT OR REPLACE INTO notifications (
+                id, user_id, type, message, request_id,
+                read, deleted, created_at, sort_order
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                notification["id"],
+                notif_user_id,
+                notification["type"],
+                notification["message"],
+                notification.get("requestId"),
+                1 if notification.get("read", False) else 0,
+                1 if notification.get("deleted", False) else 0,
+                notification["createdAt"],
+                next_order,
+            ),
+        )
+        conn.commit()
 
 
 # ----------------------------
 # Helpers
 # ----------------------------
-
-def load_users():
-    try:
-        with open(USERS_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except:
-        return []
-
-
-def save_users(data):
-    with open(USERS_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
 
 
 def extract_user_id():
@@ -99,10 +390,9 @@ def _request_visible_to_admin(req, admin_id, admin_service):
 # C20 PDF GENERATOR
 # ----------------------------
 def generate_c20(user_obj, request_obj, request_id):
-    DOCS_DIR = os.path.join(BASE_DIR, "documents")
-    os.makedirs(DOCS_DIR, exist_ok=True)
+    os.makedirs(DOCUMENTS_DIR, exist_ok=True)
 
-    filename = os.path.join(DOCS_DIR, f"{request_id}.pdf")
+    filename = os.path.join(DOCUMENTS_DIR, f"{request_id}.pdf")
 
     if os.path.exists(filename):
         return filename
@@ -385,10 +675,9 @@ def generate_c20(user_obj, request_obj, request_id):
 # Extrait de role PDF GENERATOR
 # ----------------------------
 def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
-    DOCS_DIR = os.path.join(BASE_DIR, "documents")
-    os.makedirs(DOCS_DIR, exist_ok=True)
+    os.makedirs(DOCUMENTS_DIR, exist_ok=True)
 
-    filename = os.path.join(DOCS_DIR, f"{request_id}_extrait.pdf")
+    filename = os.path.join(DOCUMENTS_DIR, f"{request_id}_extrait.pdf")
 
     if os.path.exists(filename):
         return filename
@@ -890,6 +1179,11 @@ def generate_extrait_role(user_obj, request_obj, request_id, admin_name=""):
     c.save()
 
     return filename
+
+
+init_db()
+
+
 #----------------------------
 # Routes
 # ----------------------------
@@ -1116,7 +1410,7 @@ def admin_dashboard():
 @app.route("/api/requests/<request_id>/decision", methods=["POST"])
 def save_decision(request_id):
     user_id = extract_user_id()
-    data = request.get_json()
+    data = request.get_json() or {}
 
     users = load_users()
     admin = next((u for u in users if u["auth"]["id"] == user_id), None)
@@ -1143,13 +1437,16 @@ def save_decision(request_id):
                 if new_status not in ("approved", "rejected"):
                     return {"error": "Invalid status transition"}, 400
                 doc_type = req.get("documentType", "document")
+                note = _normalize_note(data.get("note"))
+                processed_by = data.get("processedBy") or user_id
+                approved_at = datetime.utcnow().isoformat() + "Z" if new_status == "approved" else None
 
                 req["status"] = new_status
-                req["note"] = data.get("note", "")
-                req["processedBy"] = data.get("processedBy")
+                req["note"] = note
+                req["processedBy"] = processed_by
 
                 if new_status == "approved":
-                    req["approvedAt"] = datetime.utcnow().isoformat() + "Z"
+                    req["approvedAt"] = approved_at
 
                 # Map status to correct notification type
                 notif_type_map = {
@@ -1167,7 +1464,7 @@ def save_decision(request_id):
                 else:
                     message = f"Your {doc_type} request status was updated to {new_status}."
 
-                user.setdefault("notifications", []).append({
+                notification = {
                     "id": f"NOTIF-{notif_type.upper()}-{request_id}",
                     "type": notif_type,
                     "message": message,
@@ -1175,11 +1472,22 @@ def save_decision(request_id):
                     "read": False,
                     "deleted": False,
                     "createdAt": datetime.utcnow().isoformat() + "Z"
-                })
+                }
+                user.setdefault("notifications", []).append(notification)
 
-                # Persist the decision BEFORE starting generation so the
-                # HTTP response returns instantly — never blocked by PDF work.
-                save_users(users)
+                # Persist only the changed request and new notification. A
+                # decision should not rewrite every user/request row because
+                # one malformed optional field elsewhere can break the whole
+                # decision transaction.
+                persist_request_decision(
+                    request_id,
+                    new_status,
+                    note,
+                    processed_by,
+                    approved_at,
+                    user["auth"]["id"],
+                    notification,
+                )
 
                 # Pre-generate PDF in a background thread (approved only).
                 # deepcopy isolates the snapshots so the thread is safe after
@@ -1244,15 +1552,13 @@ def download_document(request_id):
     if target_request["status"] != "approved":
         return {"error": "Document not available"}, 403
 
-    DOCS_DIR = os.path.join(BASE_DIR, "documents")
-
     if target_request["documentType"] == "C20":
-        file_path = os.path.join(DOCS_DIR, f"{request_id}.pdf")
+        file_path = os.path.join(DOCUMENTS_DIR, f"{request_id}.pdf")
         if not os.path.exists(file_path):
             file_path = generate_c20(target_user,target_request,  request_id)
 
     elif target_request["documentType"] == "Extrait de rôle":
-        file_path = os.path.join(DOCS_DIR, f"{request_id}_extrait.pdf")
+        file_path = os.path.join(DOCUMENTS_DIR, f"{request_id}_extrait.pdf")
         if not os.path.exists(file_path):
             admin_id = target_request.get("processedBy")
 
@@ -1270,7 +1576,7 @@ def download_document(request_id):
                     last = profile.get("lastName", "")
                     admin_name = f"{first} {last}".strip()
 
-            file_path = generate_extrait_role(target_user, request_id, admin_name)
+            file_path = generate_extrait_role(target_user, target_request, request_id, admin_name)
 
     return send_file(file_path, as_attachment=True)
 
@@ -1302,7 +1608,6 @@ def update_user_profile():
 # ----------------------------
 # UPLOAD AVATAR
 # ----------------------------
-import base64
 
 @app.route("/api/user/avatar", methods=["POST"])
 def upload_avatar():
@@ -1324,16 +1629,15 @@ def upload_avatar():
         return {"error": "Invalid image format"}, 400
 
     # Save file
-    UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    os.makedirs(UPLOADS_DIR, exist_ok=True)
 
     filename = f"{user_id}.png"
-    filepath = os.path.join(UPLOAD_DIR, filename)
+    filepath = os.path.join(UPLOADS_DIR, filename)
 
     with open(filepath, "wb") as f:
         f.write(image_data)
 
-    # 🔥 SAVE PATH IN users.json
+    # Save avatar path in the user profile record.
     users = load_users()
     user = next((u for u in users if u["auth"]["id"] == user_id), None)
 
@@ -1368,7 +1672,7 @@ def delete_avatar():
     avatar_path = user["profile"].get("avatar")
 
     if avatar_path:
-        full_path = os.path.join(BASE_DIR, avatar_path.lstrip("/"))
+        full_path = os.path.join(UPLOADS_DIR, os.path.basename(avatar_path))
         if os.path.exists(full_path):
             os.remove(full_path)
 
@@ -1382,7 +1686,7 @@ def delete_avatar():
 # ----------------------------
 @app.route("/uploads/<filename>")
 def serve_avatar(filename):
-    return send_file(os.path.join(BASE_DIR, "uploads", filename))
+    return send_file(os.path.join(UPLOADS_DIR, filename))
 
 # ----------------------------
 # CHANGE PASSWORD

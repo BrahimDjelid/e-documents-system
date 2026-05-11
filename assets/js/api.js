@@ -521,7 +521,7 @@ async function apiGetAdminDashboard() {
  * Body: {
  *   status:      "approved" | "rejected" | "pending",
  *   processedBy: string,       // admin's userId (auth.id)
- *   note:        string | null
+ *   note:        string
  * }
  * Response: { requestId: string, status: string }
  */
@@ -550,7 +550,7 @@ async function apiSaveDecision(requestId, status, note = "") {
   const res = await fetch(`${API_BASE}/api/requests/${requestId}/decision`, {
     method: "POST",
     headers: _authHeaders(),
-    body: JSON.stringify({ status, processedBy: adminId, note: note || null }),
+    body: JSON.stringify({ status, processedBy: adminId, note: note ?? "" }),
   });
   if (!res.ok) throw new Error("Could not save decision");
   return res.json();
