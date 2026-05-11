@@ -169,7 +169,7 @@ async function initDashboard() {
             <td><span class="${getDocBadgeClass(req.documentType)}">${req.documentType}</span></td>
             <td class="req-date">${formatDate(req.submittedAt)}</td>
             <td>${getStatusBadge(req.status)}</td>
-            <td><button class="action-link" data-id="${req.requestId}">Details</button></td>
+            <td><button type="button" class="action-link" data-id="${req.requestId}">Details</button></td>
           </tr>
         `,
           )
@@ -242,7 +242,7 @@ async function initDashboard() {
                   <span class="download-item-id">${req.requestId}</span>
                   <span class="download-item-type">${req.documentType}</span>
                 </div>
-                <button class="download-btn" data-id="${req.requestId}">
+                <button type="button" class="download-btn" data-id="${req.requestId}">
                   <i class="fa-solid fa-download"></i>
                   Download
                 </button>

@@ -5,6 +5,7 @@
   let currentStep = 1;
   let selectedDoc = null;
   let userData = null; // full user object from users.json
+  let isSubmitting = false;
 
   /* Doc config */
   const DOC_CONFIG = {
@@ -280,7 +281,9 @@
   /* Submit button */
   btnSubmit.addEventListener("click", (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!declarationCheck.checked) return;
+    if (isSubmitting) return;
     if (selectedDoc === "C20" && !canRequestC20()) return;
     if (selectedDoc === "Extrait de rôle" && !canRequestExtrait()) return;
     submitRequest();
@@ -288,6 +291,12 @@
 
   /* Submit request */
   async function submitRequest() {
+    isSubmitting = true;
+    const originalSubmitHTML = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML =
+      '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+
     const purpose = document.getElementById("purpose-textarea").value.trim();
     const reqId = generateRequestId();
     const now = new Date();
@@ -337,6 +346,9 @@
       await apiSubmitRequest(payload);
     } catch (err) {
       showToast("Submission failed. Please try again.", true);
+      btnSubmit.innerHTML = originalSubmitHTML;
+      btnSubmit.disabled = !declarationCheck.checked;
+      isSubmitting = false;
       return;
     }
 
@@ -345,6 +357,7 @@
     document.getElementById("confirm-doc-type").textContent = selectedDoc;
     document.getElementById("confirm-date").textContent = formatDate(now);
 
+    showToast("Request submitted successfully.");
     goToStep(3);
   }
 
@@ -365,6 +378,8 @@
 
   /* Step 3: Submit another */
   btnAnother.addEventListener("click", () => {
+    isSubmitting = false;
+    btnSubmit.innerHTML = 'Submit Request <i class="fa-solid fa-arrow-right"></i>';
     selectedDoc = null;
     docCards.forEach((c) => {
       c.classList.remove("selected");

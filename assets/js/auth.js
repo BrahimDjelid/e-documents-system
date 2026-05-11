@@ -5,6 +5,7 @@ const passwordInput = document.getElementById("password");
 const toggleBtn = document.getElementById("toggle-password");
 const eyeIcon = document.getElementById("eye-icon");
 const loginBtn = document.getElementById("login-btn");
+const loginForm = document.getElementById("loginForm");
 const identifierError = document.getElementById("identifier-error");
 const passwordError = document.getElementById("password-error");
 const generalError = document.getElementById("general-error");
@@ -128,6 +129,8 @@ passwordInput.addEventListener("blur", function () {
 
 // Submit
 async function handleLogin() {
+  if (loginBtn.disabled) return;
+
   const identifier = identifierInput.value.trim();
   const password = passwordInput.value;
 
@@ -176,6 +179,13 @@ async function handleLogin() {
 }
 
 // Events
+if (loginForm) {
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    handleLogin();
+  });
+}
+
 toggleBtn.addEventListener("click", function () {
   const isHidden = passwordInput.type === "password";
   passwordInput.type = isHidden ? "text" : "password";
@@ -184,7 +194,10 @@ toggleBtn.addEventListener("click", function () {
 });
 
 document.addEventListener("keydown", function (e) {
-  if (e.key === "Enter") handleLogin();
+  if (e.key === "Enter") {
+    e.preventDefault();
+    handleLogin();
+  }
 });
 
 loginBtn.addEventListener("click", handleLogin);

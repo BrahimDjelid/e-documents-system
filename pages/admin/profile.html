@@ -26,7 +26,7 @@
                         <h2 class="ap-banner-title">Admin Profile</h2>
                         <p class="ap-banner-sub">Manage your account information and security settings</p>
                     </div>
-                    <button class="btn-edit-profile" id="btn-edit-profile">
+                    <button type="button" class="btn-edit-profile" id="btn-edit-profile">
                         <i class="fa-solid fa-pen"></i>
                         Edit Profile
                     </button>
@@ -53,7 +53,7 @@
                                     <input type="file" id="avatar-upload-input" accept="image/*" hidden />
                                 </label>
                                 <!-- Remove button — shown only when a photo is set (via JS) -->
-                                <button class="avatar-remove-btn" id="avatar-remove-btn" title="Remove photo"
+                                <button type="button" class="avatar-remove-btn" id="avatar-remove-btn" title="Remove photo"
                                     type="button" style="display:none;">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
@@ -126,8 +126,8 @@
                                     <p class="ap-card-sub">Update your name and login email</p>
                                 </div>
                                 <div class="edit-actions" id="edit-actions" style="display:none;">
-                                    <button class="btn-cancel-edit" id="btn-cancel-edit">Cancel</button>
-                                    <button class="btn-save-edit" id="btn-save-edit">
+                                    <button type="button" class="btn-cancel-edit" id="btn-cancel-edit">Cancel</button>
+                                    <button type="button" class="btn-save-edit" id="btn-save-edit">
                                         <i class="fa-solid fa-check"></i>
                                         Save Changes
                                     </button>
@@ -201,7 +201,7 @@
                                         <p class="ap-card-sub">Change your account password</p>
                                     </div>
                                 </div>
-                                <button class="btn-edit-security" id="btn-edit-security" title="Edit password">
+                                <button type="button" class="btn-edit-security" id="btn-edit-security" title="Edit password">
                                     <i class="fa-solid fa-pen" id="security-edit-icon"></i>
                                 </button>
                             </div>
@@ -247,7 +247,7 @@
 
                                 <span class="sec-error" id="sec-error" style="display:none;"></span>
 
-                                <button class="btn-update-pw" id="btn-update-pw" disabled>
+                                <button type="button" class="btn-update-pw" id="btn-update-pw" disabled>
                                     <i class="fa-solid fa-key"></i>
                                     Update Password
                                 </button>

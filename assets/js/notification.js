@@ -163,12 +163,12 @@
       <div class="notif-item-actions">
         ${
           !notif.read
-            ? `<button class="notif-action-btn notif-read-btn" data-id="${notif.id}" title="Mark as read">
+            ? `<button type="button" class="notif-action-btn notif-read-btn" data-id="${notif.id}" title="Mark as read">
           <i class="fa-solid fa-check"></i>
         </button>`
             : ""
         }
-        <button class="notif-action-btn notif-delete-btn" data-id="${notif.id}" title="Delete">
+        <button type="button" class="notif-action-btn notif-delete-btn" data-id="${notif.id}" title="Delete">
           <i class="fa-regular fa-trash-can"></i>
         </button>
       </div>

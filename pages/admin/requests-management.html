@@ -57,7 +57,7 @@
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
                         <input type="text" id="search-input" class="search-input"
                             placeholder="Search by Request ID or user name..." autocomplete="off" />
-                        <button class="search-clear" id="search-clear" style="display:none;">
+                        <button type="button" class="search-clear" id="search-clear" style="display:none;">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
@@ -118,7 +118,7 @@
                     <h3 class="modal-title" id="modal-req-id">-</h3>
                     <p class="modal-user-name" id="modal-user-name">-</p>
                 </div>
-                <button class="modal-close" id="modal-close" aria-label="Close">
+                <button type="button" class="modal-close" id="modal-close" aria-label="Close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -209,15 +209,15 @@
                         <i class="fa-solid fa-circle-half-stroke"></i> New Status
                     </div>
                     <div class="status-options">
-                        <button class="status-option" data-status="pending" id="status-opt-pending">
+                        <button type="button" class="status-option" data-status="pending" id="status-opt-pending">
                             <i class="fa-regular fa-clock"></i>
                             Pending
                         </button>
-                        <button class="status-option" data-status="approved" id="status-opt-approved">
+                        <button type="button" class="status-option" data-status="approved" id="status-opt-approved">
                             <i class="fa-solid fa-circle-check"></i>
                             Approved
                         </button>
-                        <button class="status-option" data-status="rejected" id="status-opt-rejected">
+                        <button type="button" class="status-option" data-status="rejected" id="status-opt-rejected">
                             <i class="fa-solid fa-circle-xmark"></i>
                             Rejected
                         </button>
@@ -238,8 +238,8 @@
 
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button class="btn-cancel" id="modal-cancel">Cancel</button>
-                <button class="btn-save" id="modal-save">
+                <button type="button" class="btn-cancel" id="modal-cancel">Cancel</button>
+                <button type="button" class="btn-save" id="modal-save">
                     <i class="fa-solid fa-check"></i>
                     Save Changes
                 </button>

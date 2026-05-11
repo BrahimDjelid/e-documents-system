@@ -123,13 +123,13 @@ function renderTable(requests) {
             ${
               isApproved
                 ? `
-              <button class="btn-dl" data-id="${req.requestId}">
+              <button type="button" class="btn-dl" data-id="${req.requestId}">
                 <i class="fa-solid fa-download"></i> Download
               </button>
             `
                 : ""
             }
-            <button class="btn-view" data-id="${req.requestId}">
+            <button type="button" class="btn-view" data-id="${req.requestId}">
               <i class="fa-regular fa-eye"></i> View
             </button>
           </div>

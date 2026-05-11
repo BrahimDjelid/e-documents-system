@@ -41,6 +41,11 @@
   const pageTitleEl = document.getElementById("page-title");
   if (pageTitleEl && pageTitle) pageTitleEl.textContent = pageTitle;
 
+  // Keep mounted shared components from accidentally submitting any page form.
+  document.querySelectorAll("button:not([type])").forEach((button) => {
+    button.type = "button";
+  });
+
   // Set active sidebar link
   document.querySelectorAll(".sidebar-link").forEach(function (link) {
     if (link.dataset.page === currentPage) {

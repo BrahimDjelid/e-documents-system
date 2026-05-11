@@ -145,7 +145,7 @@ async function initAdminDashboard() {
             <td class="req-date">${formatDate(req.submittedAt)}</td>
             <td>${compBadge}</td>
             <td>
-              <button class="btn-review" data-id="${req.requestId}">
+              <button type="button" class="btn-review" data-id="${req.requestId}">
                 <i class="fa-solid fa-pen-to-square"></i> Review
               </button>
             </td>

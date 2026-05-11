@@ -26,7 +26,7 @@
                         <h2 class="profile-banner-title">My Profile</h2>
                         <p class="profile-banner-sub">Manage your personal information and account settings</p>
                     </div>
-                    <button class="btn-edit-profile" id="btn-edit-profile">
+                    <button type="button" class="btn-edit-profile" id="btn-edit-profile">
                         <i class="fa-solid fa-pen"></i>
                         Edit Profile
                     </button>
@@ -53,7 +53,7 @@
                                     <input type="file" id="avatar-upload-input" accept="image/*" hidden />
                                 </label>
                                 <!-- Remove button — shown only when a photo is set (via JS) -->
-                                <button class="avatar-remove-btn" id="avatar-remove-btn" title="Remove photo"
+                                <button type="button" class="avatar-remove-btn" id="avatar-remove-btn" title="Remove photo"
                                     type="button" style="display:none;">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
@@ -136,7 +136,7 @@
                                     <h4 class="card-section-title">Security &amp; Password</h4>
                                     <p class="card-section-sub">Update your password</p>
                                 </div>
-                                <button class="btn-edit-security" id="btn-edit-security" title="Edit password">
+                                <button type="button" class="btn-edit-security" id="btn-edit-security" title="Edit password">
                                     <i class="fa-solid fa-pen" id="security-edit-icon"></i>
                                 </button>
                             </div>
@@ -176,7 +176,7 @@
                                     </div>
                                     <span class="sec-error" id="sec-error" style="display:none;"></span>
                                 </div>
-                                <button class="btn-update-pw" id="btn-update-pw" disabled>
+                                <button type="button" class="btn-update-pw" id="btn-update-pw" disabled>
                                     Update Password
                                 </button>
                             </div>
@@ -192,8 +192,8 @@
                             <div class="info-card-header">
                                 <h4 class="card-section-title">Personal Information</h4>
                                 <div class="edit-actions" id="edit-actions" style="display:none;">
-                                    <button class="btn-cancel-edit" id="btn-cancel-edit">Cancel</button>
-                                    <button class="btn-save-edit" id="btn-save-edit">
+                                    <button type="button" class="btn-cancel-edit" id="btn-cancel-edit">Cancel</button>
+                                    <button type="button" class="btn-save-edit" id="btn-save-edit">
                                         <i class="fa-solid fa-check"></i>
                                         Save Changes
                                     </button>

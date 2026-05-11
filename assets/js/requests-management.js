@@ -178,7 +178,7 @@ function renderTable(requests) {
         <td>${complianceHTML}</td>
         <td>${statusHTML}</td>
         <td>
-          <button class="btn-edit-status" data-id="${req.requestId}">
+          <button type="button" class="btn-edit-status" data-id="${req.requestId}">
             <i class="fa-solid fa-pen-to-square"></i> Edit Status
           </button>
         </td>
