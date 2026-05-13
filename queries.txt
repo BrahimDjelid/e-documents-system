@@ -1,0 +1,389 @@
+-- ============================================================
+-- e-documents-system account queries
+-- Database:
+--   C:\Users\User\AppData\Local\e-documents-system\app.db
+--
+-- Use these in DB Browser for SQLite > Execute SQL, or in sqlite3.
+-- The app stores passwords as plain text right now.
+-- ============================================================
+
+
+-- ============================================================
+-- Create User Account
+-- Important:
+-- - auth_id must match tax_info_json.taxIdentificationNumber.
+-- - taxRecords must exist for "Extrait de rôle" requests.
+-- - financials are used by the C20 document generator.
+-- - eligibility is shown as user/account status data.
+-- ============================================================
+
+INSERT INTO users (
+  auth_id,
+  id_type,
+  password,
+  role,
+  service,
+  profile_json,
+  tax_info_json,
+  eligibility_json,
+  sort_order
+)
+VALUES (
+  '222333444555666',
+  'nif',
+  'user12345',
+  'user',
+  NULL,
+  '{
+    "firstName": "Mohamed",
+    "lastName": "Ali",
+    "dateOfBirth": "1998-04-12",
+    "phone": "+213 555 11 22 33",
+    "address": "Bouira",
+    "email": "mohamed.ali@email.com",
+    "nationalId": "222333444",
+    "civilStatus": "single",
+    "avatarUrl": null,
+    "avatar": ""
+  }',
+  '{
+    "nature": "personne_physique",
+    "mainActivity": {
+      "activityName": "Commerce",
+      "activityCode": "4711",
+      "address": "Bouira"
+    },
+    "secondaryActivities": [
+      {
+        "activityName": "Vente en ligne",
+        "activityCode": "4791",
+        "address": "Bouira"
+      }
+    ],
+    "businessAddress": "Bouira",
+    "commercialRegisterNumber": "RC-24/00-4567891 B 21",
+    "taxIdentificationNumber": "222333444555666",
+    "establishmentDate": "2024-01-01",
+    "taxRegime": "Régime forfaitaire",
+    "taxRecords": [
+      {
+        "type": "IRG",
+        "year": 2024,
+        "principal": 12000,
+        "penalties": 0,
+        "paidPrincipal": 12000,
+        "paidPenalties": 0,
+        "total": 12000,
+        "paid": 12000,
+        "remaining": 0
+      },
+      {
+        "type": "TAP",
+        "year": 2024,
+        "principal": 4000,
+        "penalties": 0,
+        "paidPrincipal": 4000,
+        "paidPenalties": 0,
+        "total": 4000,
+        "paid": 4000,
+        "remaining": 0
+      },
+      {
+        "type": "IRG",
+        "year": 2025,
+        "principal": 15000,
+        "penalties": 0,
+        "paidPrincipal": 15000,
+        "paidPenalties": 0,
+        "total": 15000,
+        "paid": 15000,
+        "remaining": 0
+      },
+      {
+        "type": "TAP",
+        "year": 2025,
+        "principal": 5000,
+        "penalties": 0,
+        "paidPrincipal": 5000,
+        "paidPenalties": 0,
+        "total": 5000,
+        "paid": 5000,
+        "remaining": 0
+      }
+    ],
+    "financials": [
+      {
+        "year": 2024,
+        "chiffreAffaire": 950000,
+        "benefice": 250000
+      },
+      {
+        "year": 2025,
+        "chiffreAffaire": 1250000,
+        "benefice": 340000
+      }
+    ],
+    "declarations": {
+      "submitted": true
+    }
+  }',
+  '{
+    "identityVerified": true,
+    "taxCompliance": true,
+    "addressConfirmed": true
+  }',
+  (SELECT COALESCE(MAX(sort_order), -1) + 1 FROM users)
+);
+
+
+-- ============================================================
+-- Create Admin Account
+-- Important:
+-- - service controls which requests the admin can manage.
+-- - service must be exactly one of:
+--     C20
+--     Extrait de rôle
+-- ============================================================
+
+INSERT INTO users (
+  auth_id,
+  id_type,
+  password,
+  role,
+  service,
+  profile_json,
+  tax_info_json,
+  eligibility_json,
+  sort_order
+)
+VALUES (
+  'admin-test@dashboard.com',
+  'email',
+  'admin1234',
+  'admin',
+  'C20',
+  '{
+    "firstName": "Test",
+    "lastName": "Admin",
+    "nationalId": "998877665",
+    "avatarUrl": null,
+    "avatar": ""
+  }',
+  '{}',
+  '{}',
+  (SELECT COALESCE(MAX(sort_order), -1) + 1 FROM users)
+);
+
+
+-- ============================================================
+-- Update User Account
+-- Requires SQLite JSON functions. DB Browser for SQLite normally supports them.
+-- ============================================================
+
+-- Update login password.
+UPDATE users
+SET password = 'newUserPassword123'
+WHERE auth_id = '222333444555666'
+  AND role = 'user';
+
+-- Update profile fields.
+UPDATE users
+SET profile_json = json_set(
+  profile_json,
+  '$.phone', '+213 555 99 88 77',
+  '$.address', 'Nouvelle adresse, Bouira',
+  '$.email', 'mohamed.new@email.com',
+  '$.civilStatus', 'married'
+)
+WHERE auth_id = '222333444555666'
+  AND role = 'user';
+
+-- Update the user's main tax activity.
+UPDATE users
+SET tax_info_json = json_set(
+  tax_info_json,
+  '$.mainActivity.activityName', 'Commerce général',
+  '$.mainActivity.activityCode', '4719',
+  '$.mainActivity.address', 'Bouira',
+  '$.businessAddress', 'Centre ville, Bouira',
+  '$.commercialRegisterNumber', 'RC-25/00-9999999 B 21',
+  '$.declarations.submitted', json('true')
+)
+WHERE auth_id = '222333444555666'
+  AND role = 'user';
+
+-- Replace all tax records and financials.
+-- Use this when you want to correct or add tax years.
+UPDATE users
+SET tax_info_json = json_set(
+  tax_info_json,
+  '$.taxRecords',
+  json('[
+    {
+      "type": "IRG",
+      "year": 2024,
+      "principal": 12000,
+      "penalties": 0,
+      "paidPrincipal": 12000,
+      "paidPenalties": 0,
+      "total": 12000,
+      "paid": 12000,
+      "remaining": 0
+    },
+    {
+      "type": "TAP",
+      "year": 2024,
+      "principal": 4000,
+      "penalties": 0,
+      "paidPrincipal": 4000,
+      "paidPenalties": 0,
+      "total": 4000,
+      "paid": 4000,
+      "remaining": 0
+    },
+    {
+      "type": "IRG",
+      "year": 2025,
+      "principal": 15000,
+      "penalties": 500,
+      "paidPrincipal": 10000,
+      "paidPenalties": 0,
+      "total": 15500,
+      "paid": 10000,
+      "remaining": 5500
+    },
+    {
+      "type": "TAP",
+      "year": 2025,
+      "principal": 5000,
+      "penalties": 0,
+      "paidPrincipal": 5000,
+      "paidPenalties": 0,
+      "total": 5000,
+      "paid": 5000,
+      "remaining": 0
+    }
+  ]'),
+  '$.financials',
+  json('[
+    {
+      "year": 2024,
+      "chiffreAffaire": 950000,
+      "benefice": 250000
+    },
+    {
+      "year": 2025,
+      "chiffreAffaire": 1250000,
+      "benefice": 340000
+    }
+  ]')
+)
+WHERE auth_id = '222333444555666'
+  AND role = 'user';
+
+-- Update eligibility status.
+UPDATE users
+SET eligibility_json = json_set(
+  eligibility_json,
+  '$.identityVerified', json('true'),
+  '$.taxCompliance', json('false'),
+  '$.addressConfirmed', json('true')
+)
+WHERE auth_id = '222333444555666'
+  AND role = 'user';
+
+
+-- ============================================================
+-- Update Admin Account
+-- ============================================================
+
+-- Update admin service.
+UPDATE users
+SET service = 'Extrait de rôle'
+WHERE auth_id = 'admin-test@dashboard.com'
+  AND role = 'admin';
+
+-- Update admin profile fields.
+UPDATE users
+SET profile_json = json_set(
+  profile_json,
+  '$.firstName', 'Updated',
+  '$.lastName', 'Admin',
+  '$.nationalId', '112233445'
+)
+WHERE auth_id = 'admin-test@dashboard.com'
+  AND role = 'admin';
+
+-- Update admin password.
+UPDATE users
+SET password = 'newAdminPassword123'
+WHERE auth_id = 'admin-test@dashboard.com'
+  AND role = 'admin';
+
+
+-- ============================================================
+-- Delete Accounts
+-- If foreign keys are enabled, deleting a user also deletes their requests
+-- and notifications. The explicit deletes below also work if foreign keys
+-- are not enabled in your SQLite tool.
+-- ============================================================
+
+BEGIN TRANSACTION;
+
+DELETE FROM notifications
+WHERE user_id = '222333444555666';
+
+DELETE FROM requests
+WHERE user_id = '222333444555666';
+
+DELETE FROM users
+WHERE auth_id = '222333444555666'
+  AND role = 'user';
+
+COMMIT;
+
+
+BEGIN TRANSACTION;
+
+DELETE FROM notifications
+WHERE user_id = 'admin-test@dashboard.com';
+
+-- Keep existing citizen requests, but remove assignment to this admin.
+UPDATE requests
+SET assigned_to = NULL
+WHERE assigned_to = 'admin-test@dashboard.com';
+
+DELETE FROM users
+WHERE auth_id = 'admin-test@dashboard.com'
+  AND role = 'admin';
+
+COMMIT;
+
+
+-- ============================================================
+-- Check Accounts
+-- ============================================================
+
+SELECT
+  auth_id,
+  id_type,
+  password,
+  role,
+  service,
+  json_extract(profile_json, '$.firstName') AS first_name,
+  json_extract(profile_json, '$.lastName') AS last_name
+FROM users
+ORDER BY sort_order;
+
+
+-- Check one user's tax data.
+SELECT
+  auth_id,
+  json_extract(tax_info_json, '$.taxIdentificationNumber') AS tax_id,
+  json_extract(tax_info_json, '$.mainActivity.activityName') AS activity,
+  json_extract(tax_info_json, '$.declarations.submitted') AS declarations_submitted,
+  json_array_length(json_extract(tax_info_json, '$.taxRecords')) AS tax_record_count,
+  json_array_length(json_extract(tax_info_json, '$.financials')) AS financial_year_count
+FROM users
+WHERE auth_id = '222333444555666'
+  AND role = 'user';

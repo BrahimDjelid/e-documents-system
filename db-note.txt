@@ -1,0 +1,43 @@
+IMPORTANT — DATABASE USED BY THE PROJECT
+
+The backend does NOT use the app.db file inside the backend project folder anymore.
+
+The real active database used by Flask is:
+
+C:\Users\User\AppData\Local\e-documents-system\app.db
+
+Reason:
+In app.py, the backend dynamically creates and uses a runtime database inside AppData using:
+
+DB_PATH = os.environ.get(
+"EDOCS_DB_PATH",
+os.path.join(RUNTIME_DIR, "app.db")
+)
+
+This means:
+
+* the project app.db is only a legacy/seed database
+* users.json is only used on first initialization
+* after first startup, the runtime DB becomes the permanent database
+
+So:
+
+* all INSERT / DELETE / UPDATE queries must be executed on:
+  C:\Users\User\AppData\Local\e-documents-system\app.db
+
+Otherwise:
+
+* login will fail
+* new accounts will not appear
+* modifications will not affect the website
+
+How to open the correct DB:
+
+Terminal:
+sqlite3 "C:\Users\User\AppData\Local\e-documents-system\app.db"
+
+Or open this exact file in DB Browser for SQLite.
+
+Important:
+Never edit the old backend-project app.db expecting website changes.
+The application no longer reads from it after initialization.
