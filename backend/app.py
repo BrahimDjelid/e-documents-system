@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
+from werkzeug.security import check_password_hash, generate_password_hash
 import base64
 import json
 import os
@@ -54,6 +55,54 @@ def _json_load(value, fallback):
 
 def _normalize_note(value):
     return "" if value is None else str(value)
+
+
+def is_password_hashed(stored_password):
+    if not isinstance(stored_password, str):
+        return False
+    # Werkzeug hashes include the method before the first "$". Supporting
+    # plain-text fallback during this migration keeps existing accounts usable.
+    return stored_password.startswith(("scrypt:", "pbkdf2:"))
+
+
+def verify_password(stored_password, candidate_password):
+    if not stored_password or candidate_password is None:
+        return False, False
+
+    if is_password_hashed(stored_password):
+        try:
+            return check_password_hash(stored_password, candidate_password), False
+        except (ValueError, TypeError):
+            # A malformed value that looks like a hash should not crash login.
+            return False, False
+
+    # Temporary migration path: legacy rows and manual SQL inserts may still
+    # contain plain text. After a successful match, login upgrades the row so
+    # this fallback can be removed once all active accounts have migrated.
+    return stored_password == candidate_password, stored_password == candidate_password
+
+
+def update_stored_password(auth_id, new_password):
+    password_hash = (
+        new_password
+        if is_password_hashed(new_password)
+        else generate_password_hash(new_password)
+    )
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE users SET password = ? WHERE auth_id = ?",
+            (password_hash, auth_id),
+        )
+        conn.commit()
+    return password_hash
+
+
+def password_for_storage(password):
+    if password is None:
+        password = ""
+    if is_password_hashed(password):
+        return password
+    return generate_password_hash(str(password))
 
 
 def init_db():
@@ -144,7 +193,7 @@ def _replace_users(conn, users):
             (
                 auth_id,
                 auth.get("idType", "email" if "@" in auth_id else "nif"),
-                auth.get("password", ""),
+                password_for_storage(auth.get("password", "")),
                 user.get("role", "user"),
                 user.get("service"),
                 _json_dump(user.get("profile", {})),
@@ -1211,13 +1260,26 @@ def login():
 
     users = load_users()
 
-    user = next(
-        (u for u in users if u["auth"]["id"] == user_id and u["auth"]["password"] == password),
-        None
-    )
+    user = None
+    should_upgrade_password = False
+    for candidate in users:
+        if candidate["auth"]["id"] != user_id:
+            continue
+
+        password_ok, needs_upgrade = verify_password(
+            candidate["auth"].get("password"),
+            password,
+        )
+        if password_ok:
+            user = candidate
+            should_upgrade_password = needs_upgrade
+            break
 
     if not user:
         return {"error": "Incorrect credentials"}, 401
+
+    if should_upgrade_password:
+        user["auth"]["password"] = update_stored_password(user_id, password)
 
     return {
         "token": f"token-{user_id}",
@@ -1707,11 +1769,13 @@ def change_password():
     if not user:
         return {"error": "User not found"}, 404
 
-    if user["auth"]["password"] != current:
+    password_ok, _ = verify_password(user["auth"].get("password"), current)
+    if not password_ok:
         return {"error": "Incorrect password"}, 400
 
-    user["auth"]["password"] = new
-    save_users(users)
+    # Store changed passwords hashed immediately. This covers both users and
+    # admins because the same endpoint is used by both role profile pages.
+    user["auth"]["password"] = update_stored_password(user_id, new)
 
     return {"success": True}
 
