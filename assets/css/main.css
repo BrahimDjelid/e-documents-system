@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
   -webkit-box-sizing: border-box;
@@ -219,6 +219,193 @@ body {
   transition:
     background 0.3s,
     color 0.3s;
+}
+
+html[lang="ar"] body {
+  font-family: "Noto Sans Arabic", var(--font-main);
+}
+
+html[dir="rtl"] {
+  text-align: start;
+}
+
+html[dir="rtl"] .auth-actions {
+  right: auto;
+  left: var(--space-md);
+}
+
+html[dir="rtl"] .language-switcher-select {
+  padding: 0 12px 0 32px;
+}
+
+html[dir="rtl"] .sidebar-link:hover {
+  padding-left: var(--space-sm);
+  padding-right: 14px;
+}
+
+html[dir="rtl"] .sidebar-link.active::before {
+  left: auto;
+  right: 0;
+  border-radius: var(--radius-full) 0 0 var(--radius-full);
+}
+
+html[dir="rtl"] .sidebar-arrow,
+html[dir="rtl"] .fa-arrow-right {
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] .topbar-right,
+html[dir="rtl"] .welcome-actions,
+html[dir="rtl"] .dash-card-header,
+html[dir="rtl"] .docs-banner,
+html[dir="rtl"] .profile-banner,
+html[dir="rtl"] .ap-banner,
+html[dir="rtl"] .service-banner,
+html[dir="rtl"] .filter-bar,
+html[dir="rtl"] .modal-header,
+html[dir="rtl"] .modal-footer,
+html[dir="rtl"] .req-card-footer,
+html[dir="rtl"] .confirm-actions,
+html[dir="rtl"] .security-header,
+html[dir="rtl"] .ap-card-header,
+html[dir="rtl"] .service-card-header,
+html[dir="rtl"] .tax-card-header,
+html[dir="rtl"] .tax-activity-top,
+html[dir="rtl"] .notif-dropdown-header,
+html[dir="rtl"] .notif-header-left,
+html[dir="rtl"] .notif-item,
+html[dir="rtl"] .notif-item-actions,
+html[dir="rtl"] .quick-action-card,
+html[dir="rtl"] .download-item,
+html[dir="rtl"] .eligibility-item,
+html[dir="rtl"] .summary-item,
+html[dir="rtl"] .service-field,
+html[dir="rtl"] .modal-field,
+html[dir="rtl"] .modal-info-item,
+html[dir="rtl"] .status-options,
+html[dir="rtl"] .actions-cell {
+  direction: rtl;
+}
+
+html[dir="rtl"] .input-icon,
+html[dir="rtl"] .search-icon {
+  left: auto;
+  right: 14px;
+}
+
+html[dir="rtl"] .input-wrapper input,
+html[dir="rtl"] .search-input {
+  padding-left: 14px;
+  padding-right: 42px;
+  text-align: start;
+}
+
+html[dir="rtl"] .toggle-password,
+html[dir="rtl"] .search-clear,
+html[dir="rtl"] .sec-toggle-pw {
+  right: auto;
+  left: 14px;
+}
+
+html[dir="rtl"] .sec-input {
+  padding-left: 36px;
+  padding-right: 12px;
+  text-align: start;
+}
+
+html[dir="rtl"] .profile-toast,
+html[dir="rtl"] .ap-toast,
+html[dir="rtl"] .rm-toast,
+html[dir="rtl"] .toast,
+html[dir="rtl"] .req-toast {
+  right: auto;
+  left: var(--space-xl);
+}
+
+html[dir="rtl"] .notif-dropdown {
+  right: auto;
+  left: 0;
+  transform-origin: top left;
+}
+
+html[dir="rtl"] .notif-unread-dot {
+  left: auto;
+  right: 10px;
+}
+
+html[dir="rtl"] .notif-item--unread .notif-item-body {
+  padding-left: 0;
+  padding-right: 22px;
+}
+
+html[dir="rtl"] .avatar-upload-btn {
+  right: auto;
+  left: 0;
+}
+
+html[dir="rtl"] .avatar-remove-btn {
+  left: auto;
+  right: 0;
+}
+
+html[dir="rtl"] .tax-activity-card--main,
+html[dir="rtl"] .tax-activity-card--secondary {
+  border-left: 0;
+  border-right: 3px solid var(--primary-blue);
+}
+
+html[dir="rtl"] .tax-activity-card--secondary {
+  border-right-color: var(--teal-accent);
+}
+
+html[dir="rtl"] .docs-table,
+html[dir="rtl"] .admin-table,
+html[dir="rtl"] .rm-table,
+html[dir="rtl"] .tax-records-table {
+  direction: rtl;
+}
+
+html[dir="rtl"] th,
+html[dir="rtl"] td {
+  text-align: start;
+}
+
+html[dir="rtl"] .req-id,
+html[dir="rtl"] .modal-title,
+html[dir="rtl"] .confirm-id-value,
+html[dir="rtl"] .tax-field-value--mono,
+html[dir="rtl"] input[type="email"],
+html[dir="rtl"] input[type="tel"],
+html[dir="rtl"] #identifier,
+html[dir="rtl"] #pf-email,
+html[dir="rtl"] #pf-phone,
+html[dir="rtl"] #pf-nationalid,
+html[dir="rtl"] #modal-nif,
+html[dir="rtl"] #modal-email,
+html[dir="rtl"] #modal-phone,
+html[dir="rtl"] #modal-req-id,
+html[dir="rtl"] #confirm-req-id,
+html[dir="rtl"] #tax-rc,
+html[dir="rtl"] #tax-main-code,
+html[dir="rtl"] .tax-activity-code {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+html[dir="rtl"] .req-year,
+html[dir="rtl"] .modal-year-value,
+html[dir="rtl"] .stat-value,
+html[dir="rtl"] .service-stat-value,
+html[dir="rtl"] .auth-stat-value,
+html[dir="rtl"] .eligibility-score {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+}
+
+html[dir="rtl"] .fa-chevron-right,
+html[dir="rtl"] .fa-arrow-right {
+  transform: scaleX(-1);
 }
 
 .error-message {

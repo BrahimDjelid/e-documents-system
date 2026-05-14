@@ -8,6 +8,7 @@ window.I18N_EN = {
     label: "Language",
     english: "English",
     french: "Français",
+    arabic: "العربية",
   },
   common: {
     dashboard: "Dashboard",

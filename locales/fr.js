@@ -8,6 +8,7 @@ window.I18N_FR = {
     label: "Langue",
     english: "English",
     french: "Français",
+    arabic: "العربية",
   },
   common: {
     dashboard: "Tableau de bord",

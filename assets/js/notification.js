@@ -348,7 +348,8 @@
     if (diffH < 24) return tr("notifications.hoursAgo", { count: diffH });
     if (diffD < 7) return tr("notifications.daysAgo", { count: diffD });
 
-    return date.toLocaleDateString(window.i18n?.getLanguage() === "fr" ? "fr-FR" : "en-GB", {
+    const localeMap = { ar: "ar-DZ", fr: "fr-FR", en: "en-GB" };
+    return date.toLocaleDateString(localeMap[window.i18n?.getLanguage()] || "en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",

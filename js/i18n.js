@@ -3,10 +3,16 @@
 
   const STORAGE_KEY = "language";
   const DEFAULT_LANGUAGE = "en";
-  const SUPPORTED_LANGUAGES = ["en", "fr"];
+  const SUPPORTED_LANGUAGES = ["en", "fr", "ar"];
+  const RTL_LANGUAGES = ["ar"];
 
   function getCatalog(lang) {
-    return lang === "fr" ? window.I18N_FR : window.I18N_EN;
+    const catalogs = {
+      en: window.I18N_EN,
+      fr: window.I18N_FR,
+      ar: window.I18N_AR,
+    };
+    return catalogs[lang] || window.I18N_EN;
   }
 
   function getSavedLanguage() {
@@ -40,6 +46,17 @@
     el.textContent = String(value).replace(/\\n/g, "\n");
   }
 
+  function renderLanguageOptions(select) {
+    if (!select) return;
+    select.innerHTML = `
+        <option value="en">${t("language.english")}</option>
+        <option value="fr">${t("language.french")}</option>
+        <option value="ar">${t("language.arabic")}</option>
+      `;
+    select.value = currentLanguage;
+    select.setAttribute("aria-label", t("language.label"));
+  }
+
   function applyTranslations(root) {
     const scope = root || document;
 
@@ -59,8 +76,15 @@
       el.setAttribute("aria-label", t(el.dataset.i18nAriaLabel));
     });
 
+    const isRtl = RTL_LANGUAGES.includes(currentLanguage);
     document.documentElement.lang = currentLanguage;
+    document.documentElement.dir = isRtl ? "rtl" : "ltr";
+    document.documentElement.classList.toggle("rtl", isRtl);
     document.title = t(document.body?.dataset.i18nTitle || "login.pageTitle");
+
+    document.querySelectorAll("[data-language-switcher] select").forEach((select) => {
+      renderLanguageOptions(select);
+    });
   }
 
   function setLanguage(lang) {
@@ -76,7 +100,7 @@
     scope.querySelectorAll("[data-language-switcher]").forEach((mount) => {
       if (mount.dataset.languageSwitcherReady === "true") {
         const select = mount.querySelector("select");
-        if (select) select.value = currentLanguage;
+        renderLanguageOptions(select);
         return;
       }
 
@@ -91,12 +115,7 @@
       const select = document.createElement("select");
       select.className = "language-switcher-select";
       select.id = label.getAttribute("for");
-      select.setAttribute("aria-label", t("language.label"));
-      select.innerHTML = `
-        <option value="en">${t("language.english")}</option>
-        <option value="fr">${t("language.french")}</option>
-      `;
-      select.value = currentLanguage;
+      renderLanguageOptions(select);
       select.addEventListener("change", () => setLanguage(select.value));
       mount.appendChild(select);
     });
