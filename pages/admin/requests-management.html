@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../assets/css/requests-management.css" />
 </head>
 
-<body data-page="requests-management" data-title="Request Management">
+<body data-page="requests-management" data-title="Request Management" data-i18n-title="pageTitle.requestsManagement">
     <div class="dashboard-page">
 
         <div id="sidebar-mount"></div>
@@ -28,25 +28,25 @@
                         </div>
                         <div>
                             <h2 class="service-title" id="service-title">-</h2>
-                            <p class="service-sub">You are managing requests for this document type only</p>
+                            <p class="service-sub" data-i18n="admin.serviceSub">You are managing requests for this document type only</p>
                         </div>
                     </div>
                     <div class="service-stats">
                         <div class="service-stat">
                             <span class="service-stat-value" id="stat-total">-</span>
-                            <span class="service-stat-label">Total</span>
+                            <span class="service-stat-label" data-i18n="admin.total">Total</span>
                         </div>
                         <div class="service-stat">
                             <span class="service-stat-value stat-pending" id="stat-pending">-</span>
-                            <span class="service-stat-label">Pending</span>
+                            <span class="service-stat-label" data-i18n="dashboard.pending">Pending</span>
                         </div>
                         <div class="service-stat">
                             <span class="service-stat-value stat-approved" id="stat-approved">-</span>
-                            <span class="service-stat-label">Approved</span>
+                            <span class="service-stat-label" data-i18n="dashboard.approved">Approved</span>
                         </div>
                         <div class="service-stat">
                             <span class="service-stat-value stat-rejected" id="stat-rejected">-</span>
-                            <span class="service-stat-label">Rejected</span>
+                            <span class="service-stat-label" data-i18n="dashboard.rejected">Rejected</span>
                         </div>
                     </div>
                 </div>
@@ -56,16 +56,16 @@
                     <div class="search-wrapper">
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
                         <input type="text" id="search-input" class="search-input"
-                            placeholder="Search by Request ID or user name..." autocomplete="off" />
+                            placeholder="Search by Request ID or user name..." data-i18n-placeholder="requests.searchRequests" autocomplete="off" />
                         <button type="button" class="search-clear" id="search-clear" style="display:none;">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
                     <select class="filter-select" id="filter-status">
-                        <option value="">All Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="" data-i18n="requests.allStatuses">All Statuses</option>
+                        <option value="pending" data-i18n="status.pending">Pending</option>
+                        <option value="approved" data-i18n="status.approved">Approved</option>
+                        <option value="rejected" data-i18n="status.rejected">Rejected</option>
                     </select>
                     <span class="results-count" id="results-count"></span>
                 </div>
@@ -75,26 +75,26 @@
 
                     <div class="empty-state" id="empty-no-data" style="display:none;">
                         <i class="fa-regular fa-folder-open"></i>
-                        <p>No requests found</p>
-                        <span>No requests have been submitted for your document type yet.</span>
+                        <p data-i18n="admin.noRequestsFound">No requests found</p>
+                        <span data-i18n="admin.noRequestsText">No requests have been submitted for your document type yet.</span>
                     </div>
 
                     <div class="empty-state" id="empty-no-results" style="display:none;">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <p>No results found</p>
-                        <span>Try adjusting your search or filter.</span>
+                        <p data-i18n="requests.noResultsFound">No results found</p>
+                        <span data-i18n="admin.noResultsText">Try adjusting your search or filter.</span>
                     </div>
 
                     <div class="table-wrapper" id="table-wrapper">
                         <table class="rm-table">
                             <thead>
                                 <tr>
-                                    <th>Request ID</th>
-                                    <th>User</th>
-                                    <th>Submitted</th>
-                                    <th>Compliance</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th data-i18n="requests.requestId">Request ID</th>
+                                    <th data-i18n="requests.user">User</th>
+                                    <th data-i18n="requests.submittedDate">Submitted</th>
+                                    <th data-i18n="requests.compliance">Compliance</th>
+                                    <th data-i18n="common.status">Status</th>
+                                    <th data-i18n="requests.actions">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="rm-tbody">
@@ -118,7 +118,7 @@
                     <h3 class="modal-title" id="modal-req-id">-</h3>
                     <p class="modal-user-name" id="modal-user-name">-</p>
                 </div>
-                <button type="button" class="modal-close" id="modal-close" aria-label="Close">
+                <button type="button" class="modal-close" id="modal-close" aria-label="Close" data-i18n-aria-label="common.close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -129,7 +129,7 @@
                 <!-- Applicant info -->
                 <div class="modal-section">
                     <div class="modal-section-label">
-                        <i class="fa-regular fa-user"></i> Applicant
+                        <i class="fa-regular fa-user"></i> <span data-i18n="requests.applicant">Applicant</span>
                     </div>
                     <div class="modal-info-grid">
                         <div class="modal-info-item">
@@ -137,19 +137,19 @@
                             <span class="modal-info-val" id="modal-nif">-</span>
                         </div>
                         <div class="modal-info-item">
-                            <span class="modal-info-key">Date of Birth</span>
+                            <span class="modal-info-key" data-i18n="requestPage.dateOfBirth">Date of Birth</span>
                             <span class="modal-info-val" id="modal-dob">-</span>
                         </div>
                         <div class="modal-info-item">
-                            <span class="modal-info-key">Phone</span>
+                            <span class="modal-info-key" data-i18n="requestPage.phoneNumber">Phone</span>
                             <span class="modal-info-val" id="modal-phone">-</span>
                         </div>
                         <div class="modal-info-item">
-                            <span class="modal-info-key">Email</span>
+                            <span class="modal-info-key" data-i18n="requestPage.email">Email</span>
                             <span class="modal-info-val" id="modal-email">-</span>
                         </div>
                         <div class="modal-info-item modal-info-item--full">
-                            <span class="modal-info-key">Tax Regime</span>
+                            <span class="modal-info-key" data-i18n="requestPage.taxRegime">Tax Regime</span>
                             <span class="modal-info-val" id="modal-tax-regime">-</span>
                         </div>
                     </div>
@@ -160,12 +160,12 @@
 
                     <div class="compliance-header-row">
                         <div class="modal-section-label">
-                            <i class="fa-solid fa-scale-balanced"></i> Tax Compliance
+                            <i class="fa-solid fa-scale-balanced"></i> <span data-i18n="requests.taxCompliance">Tax Compliance</span>
                         </div>
 
                         <div class="modal-year-label">
                             <i class="fa-solid fa-calendar-days"></i>
-                            <span>Year</span>
+                            <span data-i18n="requests.year">Year</span>
                         </div>
                     </div>
 
@@ -182,18 +182,18 @@
                 <!-- Tax records - only for Extrait de rôle -->
                 <div class="modal-section" id="modal-tax-records-section" style="display:none;">
                     <div class="modal-section-label">
-                        <i class="fa-solid fa-table-list"></i> Tax Records
+                        <i class="fa-solid fa-table-list"></i> <span data-i18n="requests.taxRecords">Tax Records</span>
                     </div>
                     <div class="table-wrapper">
                         <table class="tax-records-table">
                             <thead>
                                 <tr>
-                                    <th>Type</th>
-                                    <th>Year</th>
-                                    <th>Principal</th>
-                                    <th>Penalties</th>
-                                    <th>Paid</th>
-                                    <th>Remaining</th>
+                                    <th data-i18n="requests.type">Type</th>
+                                    <th data-i18n="requests.year">Year</th>
+                                    <th data-i18n="requests.principal">Principal</th>
+                                    <th data-i18n="requests.penalties">Penalties</th>
+                                    <th data-i18n="requests.paid">Paid</th>
+                                    <th data-i18n="requests.remaining">Remaining</th>
                                 </tr>
                             </thead>
                             <tbody id="modal-tax-records-tbody">
@@ -206,20 +206,20 @@
                 <!-- Status selector -->
                 <div class="modal-section">
                     <div class="modal-section-label">
-                        <i class="fa-solid fa-circle-half-stroke"></i> New Status
+                        <i class="fa-solid fa-circle-half-stroke"></i> <span data-i18n="requests.newStatus">New Status</span>
                     </div>
                     <div class="status-options">
                         <button type="button" class="status-option" data-status="pending" id="status-opt-pending">
                             <i class="fa-regular fa-clock"></i>
-                            Pending
+                            <span data-i18n="status.pending">Pending</span>
                         </button>
                         <button type="button" class="status-option" data-status="approved" id="status-opt-approved">
                             <i class="fa-solid fa-circle-check"></i>
-                            Approved
+                            <span data-i18n="status.approved">Approved</span>
                         </button>
                         <button type="button" class="status-option" data-status="rejected" id="status-opt-rejected">
                             <i class="fa-solid fa-circle-xmark"></i>
-                            Rejected
+                            <span data-i18n="status.rejected">Rejected</span>
                         </button>
                     </div>
                 </div>
@@ -227,21 +227,21 @@
                 <!-- Admin notes -->
                 <div class="modal-section">
                     <div class="modal-section-label">
-                        <i class="fa-regular fa-note-sticky"></i> Admin Notes
-                        <span class="optional-tag">(optional)</span>
+                        <i class="fa-regular fa-note-sticky"></i> <span data-i18n="requests.adminNotes">Admin Notes</span>
+                        <span class="optional-tag" data-i18n="requests.optional">(optional)</span>
                     </div>
                     <textarea class="modal-notes-input" id="modal-notes"
-                        placeholder="Add a note visible to the citizen..." rows="3"></textarea>
+                        placeholder="Add a note visible to the citizen..." data-i18n-placeholder="requests.addCitizenNote" rows="3"></textarea>
                 </div>
 
             </div>
 
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button type="button" class="btn-cancel" id="modal-cancel">Cancel</button>
+                <button type="button" class="btn-cancel" id="modal-cancel" data-i18n="common.cancel">Cancel</button>
                 <button type="button" class="btn-save" id="modal-save">
                     <i class="fa-solid fa-check"></i>
-                    Save Changes
+                    <span data-i18n="profilePage.saveChanges">Save Changes</span>
                 </button>
             </div>
 
@@ -254,6 +254,9 @@
         <span id="rm-toast-msg"></span>
     </div>
 
+    <script src="../../locales/en.js"></script>
+    <script src="../../locales/fr.js"></script>
+    <script src="../../js/i18n.js"></script>
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/router.js"></script>
     <script src="../../assets/js/components.js"></script>

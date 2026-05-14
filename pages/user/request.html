@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../assets/css/request.css" />
 </head>
 
-<body data-page="request" data-title="Request Documents">
+<body data-page="request" data-title="Request Documents" data-i18n-title="pageTitle.request">
     <div class="dashboard-page">
 
         <div id="sidebar-mount"></div>
@@ -27,7 +27,7 @@
                             <span class="step-number">1</span>
                             <i class="fa-solid fa-check step-check"></i>
                         </div>
-                        <span class="step-label">Choose Document</span>
+                        <span class="step-label" data-i18n="requestPage.chooseDocument">Choose Document</span>
                     </div>
                     <div class="step-line" id="step-line-1"></div>
                     <div class="step-item" id="step-item-2">
@@ -35,7 +35,7 @@
                             <span class="step-number">2</span>
                             <i class="fa-solid fa-check step-check"></i>
                         </div>
-                        <span class="step-label">Fill Request Form</span>
+                        <span class="step-label" data-i18n="requestPage.fillRequestForm">Fill Request Form</span>
                     </div>
                     <div class="step-line" id="step-line-2"></div>
                     <div class="step-item" id="step-item-3">
@@ -43,7 +43,7 @@
                             <span class="step-number">3</span>
                             <i class="fa-solid fa-check step-check"></i>
                         </div>
-                        <span class="step-label">Confirmed</span>
+                        <span class="step-label" data-i18n="requestPage.confirmed">Confirmed</span>
                     </div>
                 </div>
 
@@ -51,8 +51,8 @@
                 <div class="step-panel active" id="panel-step-1">
                     <div class="req-card">
                         <div class="req-card-header">
-                            <h2 class="req-card-title">Select Document Type</h2>
-                            <p class="req-card-sub">Choose the official document you need to request</p>
+                            <h2 class="req-card-title" data-i18n="requestPage.selectDocumentType">Select Document Type</h2>
+                            <p class="req-card-sub" data-i18n="requestPage.selectDocumentSubtitle">Choose the official document you need to request</p>
                         </div>
 
                         <div class="doc-cards-grid" id="doc-cards-grid">
@@ -64,17 +64,17 @@
                                     <i class="fa-regular fa-file-lines"></i>
                                 </div>
                                 <div class="doc-card-body">
-                                    <h3 class="doc-card-name">Certificate C20</h3>
-                                    <p class="doc-card-desc">Official tax clearance and civil status certificate.
+                                    <h3 class="doc-card-name" data-i18n="document.c20">Certificate C20</h3>
+                                    <p class="doc-card-desc" data-i18n="requestPage.c20Description">Official tax clearance and civil status certificate.
                                         Required for administrative procedures.</p>
                                     <span class="doc-delivery-badge doc-delivery-badge--digital">
                                         <i class="fa-solid fa-download"></i>
-                                        Instant Download
+                                        <span data-i18n="requestPage.digitalDelivery">Instant Download</span>
                                     </span>
                                     <ul class="doc-card-bullets">
-                                        <li>Digitally signed &amp; sealed</li>
-                                        <li>Valid for 3 months</li>
-                                        <li>Download as PDF</li>
+                                        <li data-i18n="requestPage.signedSealed">Digitally signed &amp; sealed</li>
+                                        <li data-i18n="requestPage.validThreeMonths">Valid for 3 months</li>
+                                        <li data-i18n="requestPage.downloadPdf">Download as PDF</li>
                                     </ul>
                                 </div>
                             </div>
@@ -87,17 +87,17 @@
                                     <i class="fa-solid fa-receipt"></i>
                                 </div>
                                 <div class="doc-card-body">
-                                    <h3 class="doc-card-name">Tax Roll Extract</h3>
-                                    <p class="doc-card-desc">Official tax roll extract confirming your fiscal situation
+                                    <h3 class="doc-card-name" data-i18n="document.taxRollExtract">Tax Roll Extract</h3>
+                                    <p class="doc-card-desc" data-i18n="requestPage.taxRollDescription">Official tax roll extract confirming your fiscal situation
                                         and registered tax obligations.</p>
                                     <span class="doc-delivery-badge doc-delivery-badge--digital">
                                         <i class="fa-solid fa-download"></i>
-                                        Instant Download
+                                        <span data-i18n="requestPage.digitalDelivery">Instant Download</span>
                                     </span>
                                     <ul class="doc-card-bullets">
-                                        <li>Digitally signed &amp; sealed</li>
-                                        <li>Valid for 6 months</li>
-                                        <li>Download as PDF</li>
+                                        <li data-i18n="requestPage.signedSealed">Digitally signed &amp; sealed</li>
+                                        <li data-i18n="requestPage.validSixMonths">Valid for 6 months</li>
+                                        <li data-i18n="requestPage.downloadPdf">Download as PDF</li>
                                     </ul>
                                 </div>
                             </div>
@@ -107,7 +107,7 @@
                         <div class="req-card-footer">
                             <div></div>
                             <button type="button" class="btn-continue" id="btn-step1-continue" disabled>
-                                Continue
+                                <span data-i18n="requestPage.continue">Continue</span>
                                 <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
@@ -124,8 +124,8 @@
                                 <i class="fa-regular fa-file-lines"></i>
                             </div>
                             <div>
-                                <h2 class="form-doc-title">Request Form – <span id="form-doc-name">–</span></h2>
-                                <p class="form-doc-sub">Pre-filled from your profile. Review and submit.</p>
+                                <h2 class="form-doc-title"><span data-i18n="requestPage.formTitle">Request Form</span> - <span id="form-doc-name">-</span></h2>
+                                <p class="form-doc-sub" data-i18n="requestPage.formSubtitle">Pre-filled from your profile. Review and submit.</p>
                             </div>
                         </div>
 
@@ -133,27 +133,27 @@
                         <div class="profile-section">
                             <div class="profile-section-label">
                                 <i class="fa-solid fa-lock"></i>
-                                Profile Information (Auto-filled)
+                                <span data-i18n="requestPage.profileAutoFilled">Profile Information (Auto-filled)</span>
                             </div>
                             <div class="profile-grid">
                                 <div class="profile-field">
-                                    <label class="profile-field-label">Full Name</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.fullName">Full Name</label>
                                     <input type="text" class="profile-input" id="pf-fullname" readonly />
                                 </div>
                                 <div class="profile-field">
-                                    <label class="profile-field-label">National ID</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.nationalId">National ID</label>
                                     <input type="text" class="profile-input" id="pf-nationalid" readonly />
                                 </div>
                                 <div class="profile-field">
-                                    <label class="profile-field-label">Date of Birth</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.dateOfBirth">Date of Birth</label>
                                     <input type="text" class="profile-input" id="pf-dob" readonly value="–" />
                                 </div>
                                 <div class="profile-field">
-                                    <label class="profile-field-label">Phone Number</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.phoneNumber">Phone Number</label>
                                     <input type="text" class="profile-input" id="pf-phone" readonly />
                                 </div>
                                 <div class="profile-field profile-field--full">
-                                    <label class="profile-field-label">Email</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.email">Email</label>
                                     <input type="text" class="profile-input" id="pf-email" readonly />
                                 </div>
                             </div>
@@ -161,19 +161,19 @@
                             <!-- Tax / Business Info -->
                             <div class="profile-section-label" style="margin-top: var(--space-lg);">
                                 <i class="fa-solid fa-building-columns"></i>
-                                Business Information (Auto-filled)
+                                <span data-i18n="requestPage.businessAutoFilled">Business Information (Auto-filled)</span>
                             </div>
                             <div class="profile-grid">
                                 <div class="profile-field">
-                                    <label class="profile-field-label">Main Activity</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.mainActivity">Main Activity</label>
                                     <input type="text" class="profile-input" id="pf-main-activity" readonly />
                                 </div>
                                 <div class="profile-field">
-                                    <label class="profile-field-label">Tax Regime</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.taxRegime">Tax Regime</label>
                                     <input type="text" class="profile-input" id="pf-tax-regime" readonly />
                                 </div>
                                 <div class="profile-field profile-field--full">
-                                    <label class="profile-field-label">Business Address</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.businessAddress">Business Address</label>
                                     <input type="text" class="profile-input" id="pf-biz-address" readonly />
                                 </div>
                             </div>
@@ -182,7 +182,7 @@
                         <!-- C20 Year Selector (only shown when C20 is selected) -->
                         <div class="form-field-group" id="c20-year-group" style="display:none;">
                             <label class="form-field-label" for="c20-year-select">
-                                Certificate Year
+                                <span data-i18n="requestPage.fiscalYear">Certificate Year</span>
                             </label>
                             <select class="form-select" id="c20-year-select">
                                 <!-- populated by JS -->
@@ -192,11 +192,11 @@
                         <!-- Purpose / Notes -->
                         <div class="form-field-group">
                             <label class="form-field-label" for="purpose-textarea">
-                                Purpose / Notes
-                                <span class="optional-tag">(optional)</span>
+                                <span data-i18n="requestPage.purpose">Purpose / Notes</span>
+                                <span class="optional-tag" data-i18n="requests.optional">(optional)</span>
                             </label>
                             <textarea class="form-textarea" id="purpose-textarea"
-                                placeholder="Describe the purpose of this document request..." rows="4"></textarea>
+                                placeholder="Describe the purpose of this document request..." data-i18n-placeholder="requestPage.purposePlaceholder" rows="4"></textarea>
                         </div>
 
                         <!-- Declaration checkbox -->
@@ -207,8 +207,7 @@
                                     <i class="fa-solid fa-check"></i>
                                 </span>
                                 <span class="declaration-text">
-                                    I hereby declare that the information provided is accurate and complete. I
-                                    understand that false declarations may result in legal consequences.
+                                    <span data-i18n="requestPage.declaration">I hereby declare that the information provided is accurate and complete. I understand that false declarations may result in legal consequences.</span>
                                 </span>
                             </label>
                         </div>
@@ -217,10 +216,10 @@
                         <div class="req-card-footer">
                             <button type="button" class="btn-back" id="btn-step2-back">
                                 <i class="fa-solid fa-arrow-left"></i>
-                                Back
+                                <span data-i18n="requestPage.back">Back</span>
                             </button>
                             <button type="button" class="btn-submit" id="btn-step2-submit" disabled>
-                                Submit Request
+                                <span data-i18n="requestPage.submitRequest">Submit Request</span>
                                 <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
@@ -238,24 +237,24 @@
                             </div>
                         </div>
 
-                        <h2 class="confirm-title">Request Submitted!</h2>
-                        <p class="confirm-sub">Your document request has been received and is now being processed.</p>
+                        <h2 class="confirm-title" data-i18n="requestPage.requestSubmittedTitle">Request Submitted!</h2>
+                        <p class="confirm-sub" data-i18n="requestPage.requestSubmittedText">Your document request has been received and is now being processed.</p>
 
                         <div class="confirm-id-badge">
-                            <span class="confirm-id-label">Request ID</span>
+                            <span class="confirm-id-label" data-i18n="requests.requestId">Request ID</span>
                             <span class="confirm-id-value" id="confirm-req-id">–</span>
-                            <button type="button" class="confirm-copy-btn" id="confirm-copy-btn" title="Copy ID">
+                            <button type="button" class="confirm-copy-btn" id="confirm-copy-btn" title="Copy ID" data-i18n-title="requestPage.copyId">
                                 <i class="fa-regular fa-copy"></i>
                             </button>
                         </div>
 
                         <div class="confirm-summary">
                             <div class="confirm-summary-row">
-                                <span class="confirm-summary-key">Document Type</span>
+                                <span class="confirm-summary-key" data-i18n="requestPage.documentType">Document Type</span>
                                 <span class="confirm-summary-val" id="confirm-doc-type">–</span>
                             </div>
                             <div class="confirm-summary-row">
-                                <span class="confirm-summary-key">Submission Date</span>
+                                <span class="confirm-summary-key" data-i18n="documentsPage.submissionDate">Submission Date</span>
                                 <span class="confirm-summary-val" id="confirm-date">–</span>
                             </div>
                         </div>
@@ -263,11 +262,11 @@
                         <div class="confirm-actions">
                             <a href="documents.html" class="btn-go-docs">
                                 <i class="fa-regular fa-folder-open"></i>
-                                Go to My Documents
+                                <span data-i18n="requestPage.goToDocuments">Go to My Documents</span>
                             </a>
                             <button type="button" class="btn-another" id="btn-another">
                                 <i class="fa-solid fa-plus"></i>
-                                Submit Another Request
+                                <span data-i18n="requestPage.submitAnother">Submit Another Request</span>
                             </button>
                         </div>
 
@@ -284,6 +283,9 @@
         <span class="req-toast-msg" id="req-toast-msg"></span>
     </div>
 
+    <script src="../../locales/en.js"></script>
+    <script src="../../locales/fr.js"></script>
+    <script src="../../js/i18n.js"></script>
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/router.js"></script>
     <script src="../../assets/js/components.js"></script>

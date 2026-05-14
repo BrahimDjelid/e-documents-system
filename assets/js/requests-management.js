@@ -59,6 +59,10 @@ const toastMsg = document.getElementById("rm-toast-msg");
 let toastTimer = null;
 
 // Helpers
+function tr(key, params) {
+  return typeof t === "function" ? t(key, params) : key;
+}
+
 function formatDate(str) {
   if (!str) return "-";
   return new Date(str).toLocaleDateString("en-GB", {
@@ -89,10 +93,10 @@ function showToast(msg, isError = false) {
 
 function getDocumentLabel(type) {
   const map = {
-    C20: "Certificate C20",
-    "Extrait de rôle": "Tax Roll Extract",
+    C20: tr("document.c20"),
+    "Extrait de rôle": tr("document.taxRollExtract"),
   };
-  return map[type] || type || "All Requests";
+  return map[type] || type || tr("requests.allRequests");
 }
 
 function getTaxRegimeLabel(regime) {
@@ -165,11 +169,14 @@ function renderTable(requests) {
   if (requests.length === 0) {
     tableWrapper.style.display = "none";
     emptyNoResults.style.display = "flex";
-    resultsCount.textContent = "No results";
+    resultsCount.textContent = tr("requests.noResults");
     return;
   }
 
-  resultsCount.textContent = `Showing ${requests.length} of ${allRequests.length}`;
+  resultsCount.textContent = tr("requests.showingCount", {
+    count: requests.length,
+    total: allRequests.length,
+  });
 
   tbody.innerHTML = requests
     .map((req) => {
@@ -177,8 +184,8 @@ function renderTable(requests) {
       const effectStatus = getEffectiveStatus(req);
 
       const complianceHTML = isCompliant
-        ? `<span class="compliance-badge compliance-badge--ok"><i class="fa-solid fa-circle-check"></i> Up to date</span>`
-        : `<span class="compliance-badge compliance-badge--nok"><i class="fa-solid fa-circle-xmark"></i> Not up to date</span>`;
+        ? `<span class="compliance-badge compliance-badge--ok"><i class="fa-solid fa-circle-check"></i> ${tr("status.upToDate")}</span>`
+        : `<span class="compliance-badge compliance-badge--nok"><i class="fa-solid fa-circle-xmark"></i> ${tr("status.notUpToDate")}</span>`;
 
       const statusHTML = getStatusBadgeHTML(effectStatus);
 
@@ -196,7 +203,7 @@ function renderTable(requests) {
         <td>${statusHTML}</td>
         <td>
           <button type="button" class="btn-edit-status" data-id="${req.requestId}">
-            <i class="fa-solid fa-pen-to-square"></i> Edit Status
+            <i class="fa-solid fa-pen-to-square"></i> ${tr("requests.editStatus")}
           </button>
         </td>
       </tr>
@@ -212,9 +219,9 @@ function renderTable(requests) {
 
 function getStatusBadgeHTML(status) {
   const map = {
-    approved: { cls: "status-badge--approved", label: "Approved" },
-    pending: { cls: "status-badge--pending", label: "Pending" },
-    rejected: { cls: "status-badge--rejected", label: "Rejected" },
+    approved: { cls: "status-badge--approved", label: tr("status.approved") },
+    pending: { cls: "status-badge--pending", label: tr("status.pending") },
+    rejected: { cls: "status-badge--rejected", label: tr("status.rejected") },
   };
   const s = map[status] || { cls: "", label: status };
   return `<span class="status-badge ${s.cls}"><i class="fa-solid fa-circle"></i> ${s.label}</span>`;
@@ -266,10 +273,10 @@ function openModal(requestId) {
   // Compliance
   if (isCompliant) {
     modalCompliance.className = "compliance-badge compliance-badge--ok";
-    modalCompliance.innerHTML = `<i class="fa-solid fa-circle-check"></i> Up to date`;
+    modalCompliance.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${tr("status.upToDate")}`;
   } else {
     modalCompliance.className = "compliance-badge compliance-badge--nok";
-    modalCompliance.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Not up to date`;
+    modalCompliance.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${tr("status.notUpToDate")}`;
   }
 
   const yearInline = document.getElementById("modal-year-inline");
@@ -366,8 +373,6 @@ function openModal(requestId) {
       finalizedNotice = document.createElement("p");
       finalizedNotice.id = "modal-finalized-notice";
       finalizedNotice.className = "modal-finalized-notice";
-      finalizedNotice.innerHTML =
-        '<i class="fa-solid fa-lock"></i> This decision is final and cannot be changed.';
       // Insert above the status options section
       const statusSection = document
         .querySelector('.status-option[data-status="pending"]')
@@ -376,6 +381,8 @@ function openModal(requestId) {
         statusSection.insertAdjacentElement("beforebegin", finalizedNotice);
       }
     }
+    finalizedNotice.innerHTML =
+      `<i class="fa-solid fa-lock"></i> ${tr("requests.finalDecisionNotice")}`;
     finalizedNotice.style.display = "flex";
   } else {
     if (finalizedNotice) finalizedNotice.style.display = "none";
@@ -408,14 +415,14 @@ modalSave.addEventListener("click", async () => {
 
   // Guard: admin must pick Approved or Rejected before saving
   if (!selectedStatus || selectedStatus === "pending") {
-    showToast("Please select Approved or Rejected before saving.", true);
+    showToast(tr("toast.selectDecision"), true);
     return;
   }
 
   // Guard: never submit if the decision is already finalized
   const currentStatus = activeRequest.status;
   if (currentStatus === "approved" || currentStatus === "rejected") {
-    showToast("This decision is final and cannot be changed.", true);
+    showToast(tr("toast.decisionFinal"), true);
     return;
   }
 
@@ -424,7 +431,7 @@ modalSave.addEventListener("click", async () => {
   try {
     await apiSaveDecision(activeRequest.requestId, selectedStatus, note);
   } catch (err) {
-    showToast("Could not save decision. Please try again.", true);
+    showToast(tr("toast.saveDecisionFailed"), true);
     return;
   }
 
@@ -437,11 +444,11 @@ modalSave.addEventListener("click", async () => {
   applyFilters();
 
   const labels = {
-    approved: "Request approved",
-    rejected: "Request rejected",
-    pending: "Request set to pending",
+    approved: tr("toast.approvedSaved"),
+    rejected: tr("toast.rejectedSaved"),
+    pending: tr("status.pending"),
   };
-  showToast(labels[selectedStatus] || "Status updated");
+  showToast(labels[selectedStatus] || tr("toast.statusUpdated"));
 });
 
 // Close events
@@ -484,7 +491,7 @@ async function loadRequests() {
 
     // Set topbar title
     const pageTitle = document.getElementById("page-title");
-    if (pageTitle) pageTitle.textContent = "Request Management";
+    if (pageTitle) pageTitle.textContent = tr("pageTitle.requestsManagement");
 
     // Auto-open modal if ?id= param is in the URL.
     // Consumed and stripped immediately so a stale ?id= can never fire
@@ -499,7 +506,7 @@ async function loadRequests() {
     }
   } catch (err) {
     console.error("[requests-management.js] Error loading data:", err);
-    showToast("Could not load requests. Please try again.", true);
+    showToast(tr("toast.loadRequestsFailed"), true);
   }
 }
 
@@ -507,4 +514,9 @@ async function loadRequests() {
 if (!window.__requestsManagementInitialized) {
   window.__requestsManagementInitialized = true;
   loadRequests();
+  document.addEventListener("i18n:change", () => {
+    setupBanner();
+    applyFilters();
+    if (activeRequest) openModal(activeRequest.requestId);
+  });
 }

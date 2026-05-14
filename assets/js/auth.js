@@ -10,6 +10,10 @@ const identifierError = document.getElementById("identifier-error");
 const passwordError = document.getElementById("password-error");
 const generalError = document.getElementById("general-error");
 
+function tr(key, params) {
+  return typeof t === "function" ? t(key, params) : key;
+}
+
 // Helpers
 function showError(field, errorEl, message) {
   errorEl.innerHTML = message;
@@ -50,7 +54,7 @@ function setLoading(state) {
 
 // Returns error message string, or null if valid
 function validateIdentifier(value) {
-  if (!value) return "This field is required.";
+  if (!value) return tr("validation.fieldRequired");
 
   const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   const isNif = /^\d{15}$/.test(value);
@@ -61,16 +65,16 @@ function validateIdentifier(value) {
   if (looksLikeNif) {
     const len = value.length;
     if (len < 15)
-      return `NIF is too short &mdash; ${len} of 15 digits entered.`;
-    if (len > 15) return "NIF is too long &mdash; maximum 15 digits.";
+      return tr("validation.nifTooShort", { count: len });
+    if (len > 15) return tr("validation.nifTooLong");
   }
 
-  return "Enter a valid NIF (15 digits) or admin email address.";
+  return tr("validation.invalidIdentifier");
 }
 
 function validatePassword(value) {
-  if (!value) return "Password is required.";
-  if (value.length < 8) return "Password must be at least 8 characters.";
+  if (!value) return tr("validation.passwordRequired");
+  if (value.length < 8) return tr("validation.passwordMinLength");
   return null;
 }
 
@@ -170,9 +174,9 @@ async function handleLogin() {
     // apiLogin() throws "Incorrect credentials" on wrong login
     // and any other error means a connection problem
     if (err.message === "Incorrect credentials") {
-      showGeneralError("Incorrect NIF / email or password.", "error");
+      showGeneralError(tr("auth.incorrectCredentials"), "error");
     } else {
-      showGeneralError("Could not connect. Please try again.", "warning");
+      showGeneralError(tr("auth.connectionError"), "warning");
       console.error("Login error:", err);
     }
   }

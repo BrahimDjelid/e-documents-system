@@ -30,10 +30,15 @@ const toastMsg = document.getElementById("toast-msg");
 
 // State
 let allRequests = [];
+let activeRequestId = null;
 let toastTimer = null;
 let _downloading = false; // FIX 3.1: guard against double-fire
 
 // Helpers
+function tr(key, params) {
+  return typeof t === "function" ? t(key, params) : key;
+}
+
 function formatDate(str) {
   if (!str) return "-";
   return new Date(str).toLocaleDateString("en-GB", {
@@ -51,17 +56,17 @@ function getDocBadgeClass(type) {
 
 function getDocumentLabel(type) {
   const map = {
-    C20: "Certificate C20",
-    "Extrait de rôle": "Tax Roll Extract",
+    C20: tr("document.c20"),
+    "Extrait de rôle": tr("document.taxRollExtract"),
   };
   return map[type] || type || "-";
 }
 
 function getStatusBadgeHTML(status) {
   const map = {
-    approved: { cls: "status-badge--approved", label: "Approved" },
-    pending: { cls: "status-badge--pending", label: "Pending" },
-    rejected: { cls: "status-badge--rejected", label: "Rejected" },
+    approved: { cls: "status-badge--approved", label: tr("status.approved") },
+    pending: { cls: "status-badge--pending", label: tr("status.pending") },
+    rejected: { cls: "status-badge--rejected", label: tr("status.rejected") },
   };
   const s = map[status] || { cls: "", label: status };
   return `<span class="status-badge ${s.cls}">
@@ -104,11 +109,14 @@ function renderTable(requests) {
   if (requests.length === 0) {
     tableWrapper.style.display = "none";
     emptyNoResults.style.display = "flex";
-    resultsCount.textContent = "No results";
+    resultsCount.textContent = tr("requests.noResults");
     return;
   }
 
-  resultsCount.textContent = `Showing ${requests.length} of ${allRequests.length}`;
+  resultsCount.textContent = tr("requests.showingCount", {
+    count: requests.length,
+    total: allRequests.length,
+  });
 
   tbody.innerHTML = requests
     .map((req) => {
@@ -119,7 +127,7 @@ function renderTable(requests) {
           ${req.requestId}
           ${
             req.documentType === "C20" && req.year
-              ? `<div class="req-year">Year: ${req.year}</div>`
+              ? `<div class="req-year">${tr("requests.year")}: ${req.year}</div>`
               : ""
           }
         </td>
@@ -132,13 +140,13 @@ function renderTable(requests) {
               isApproved
                 ? `
               <button type="button" class="btn-dl" data-id="${req.requestId}">
-                <i class="fa-solid fa-download"></i> Download
+                <i class="fa-solid fa-download"></i> ${tr("requests.download")}
               </button>
             `
                 : ""
             }
             <button type="button" class="btn-view" data-id="${req.requestId}">
-              <i class="fa-regular fa-eye"></i> View
+              <i class="fa-regular fa-eye"></i> ${tr("requests.view")}
             </button>
           </div>
         </td>
@@ -161,7 +169,7 @@ function renderTable(requests) {
 
       _downloading = true;
       const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing…';
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${tr("requests.preparing")}`;
       btn.disabled = true;
 
       try {
@@ -169,10 +177,10 @@ function renderTable(requests) {
       } catch (err) {
         if (err.message === "MOCK") {
           showToast(
-            "Download will be available once the backend is connected.",
+            tr("requests.backendDownloadPending"),
           );
         } else {
-          showToast("Download failed. Please try again.", true);
+          showToast(tr("toast.downloadFailed"), true);
         }
       } finally {
         btn.innerHTML = originalHTML;
@@ -228,8 +236,8 @@ function setTimeline(status) {
     conn1.classList.add("done");
     step2.classList.add("active");
     // step3 stays waiting (default)
-    label3.textContent = "Completed";
-    desc3.textContent = "Awaiting completion";
+    label3.textContent = tr("documentsPage.completed");
+    desc3.textContent = tr("documentsPage.awaitingCompletion");
     icon3.innerHTML = `<i class="fa-solid fa-flag-checkered"></i>`;
   } else if (status === "approved") {
     step1.classList.add("done");
@@ -237,8 +245,8 @@ function setTimeline(status) {
     step2.classList.add("done");
     conn2.classList.add("done");
     step3.classList.add("done");
-    label3.textContent = "Approved";
-    desc3.textContent = "Document ready";
+    label3.textContent = tr("status.approved");
+    desc3.textContent = tr("documentsPage.documentReady");
     icon3.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
   } else if (status === "rejected") {
     step1.classList.add("done");
@@ -246,8 +254,8 @@ function setTimeline(status) {
     step2.classList.add("done");
     conn2.classList.add("rejected");
     step3.classList.add("rejected");
-    label3.textContent = "Rejected";
-    desc3.textContent = "See note below";
+    label3.textContent = tr("status.rejected");
+    desc3.textContent = tr("documentsPage.seeNoteBelow");
     icon3.innerHTML = `<i class="fa-solid fa-circle-xmark"></i>`;
   }
 }
@@ -255,6 +263,7 @@ function setTimeline(status) {
 function openModal(requestId) {
   const req = allRequests.find((r) => r.requestId === requestId);
   if (!req) return;
+  activeRequestId = requestId;
 
   modalReqId.textContent = req.requestId;
   modalDocBadge.textContent = getDocumentLabel(req.documentType);
@@ -299,6 +308,7 @@ function openModal(requestId) {
 function closeModal() {
   backdrop.classList.remove("open");
   document.body.style.overflow = "";
+  activeRequestId = null;
 }
 
 modalClose.addEventListener("click", closeModal);
@@ -313,16 +323,16 @@ modalDownloadBtn.addEventListener("click", async () => {
   _downloading = true;
   const originalHTML = modalDownloadBtn.innerHTML;
   modalDownloadBtn.innerHTML =
-    '<i class="fa-solid fa-spinner fa-spin"></i> Preparing…';
+    `<i class="fa-solid fa-spinner fa-spin"></i> ${tr("requests.preparing")}`;
   modalDownloadBtn.disabled = true;
 
   try {
     await apiDownloadDocument(req.requestId, req.documentType);
   } catch (err) {
     if (err.message === "MOCK") {
-      showToast("Download will be available once the backend is connected.");
+      showToast(tr("requests.backendDownloadPending"));
     } else {
-      showToast("Download failed. Please try again.", true);
+      showToast(tr("toast.downloadFailed"), true);
     }
   } finally {
     modalDownloadBtn.innerHTML = originalHTML;
@@ -383,26 +393,26 @@ async function init() {
     setHTML(
       "stat-total-sub",
       total > 0
-        ? `<i class="fa-solid fa-layer-group"></i> ${total} submitted`
-        : "No requests yet",
+        ? `<i class="fa-solid fa-layer-group"></i> ${total} ${tr("requests.submitted")}`
+        : tr("requests.noRequestsYet"),
     );
     setHTML(
       "stat-approved-sub",
       approved > 0
-        ? `<i class="fa-solid fa-arrow-trend-up"></i> ${approved} completed`
-        : "None yet",
+        ? `<i class="fa-solid fa-arrow-trend-up"></i> ${approved} ${tr("requests.completed")}`
+        : tr("requests.noneYet"),
     );
     setHTML(
       "stat-pending-sub",
       pending > 0
-        ? `<i class="fa-regular fa-clock"></i> Awaiting review`
-        : "None pending",
+        ? `<i class="fa-regular fa-clock"></i> ${tr("requests.awaitingReview")}`
+        : tr("requests.nonePending"),
     );
     setHTML(
       "stat-rejected-sub",
       rejected > 0
-        ? `<i class="fa-solid fa-arrow-trend-down"></i> ${rejected} unsuccessful`
-        : "None rejected",
+        ? `<i class="fa-solid fa-arrow-trend-down"></i> ${rejected} ${tr("requests.unsuccessful")}`
+        : tr("requests.noneRejected"),
     );
 
     // Initial render - show all
@@ -425,3 +435,7 @@ async function init() {
 }
 
 init();
+document.addEventListener("i18n:change", () => {
+  applyFilters();
+  if (activeRequestId) openModal(activeRequestId);
+});

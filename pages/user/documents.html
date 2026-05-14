@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../assets/css/documents.css" />
 </head>
 
-<body data-page="documents" data-title="My Documents">
+<body data-page="documents" data-title="My Documents" data-i18n-title="pageTitle.documents">
     <div class="dashboard-page">
 
         <div id="sidebar-mount"></div>
@@ -23,12 +23,12 @@
                 <!-- Banner -->
                 <section class="docs-banner">
                     <div class="docs-banner-text">
-                        <h2 class="docs-banner-title">My Documents</h2>
-                        <p class="docs-banner-sub">View and manage all your requested documents</p>
+                        <h2 class="docs-banner-title" data-i18n="documentsPage.title">My Documents</h2>
+                        <p class="docs-banner-sub" data-i18n="documentsPage.subtitle">View and manage all your requested documents</p>
                     </div>
                     <div class="docs-banner-badge" id="docs-total-badge">
                         <i class="fa-regular fa-folder-open"></i>
-                        <span id="docs-total-count">-</span> Documents
+                        <span id="docs-total-count">-</span> <span data-i18n="documentsPage.documentsCount">Documents</span>
                     </div>
                 </section>
 
@@ -36,7 +36,7 @@
                 <section class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Total Requests</span>
+                            <span class="stat-label" data-i18n="dashboard.totalRequests">Total Requests</span>
                             <span class="stat-value" id="stat-total">-</span>
                             <span class="stat-sub" id="stat-total-sub"></span>
                         </div>
@@ -46,7 +46,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Approved</span>
+                            <span class="stat-label" data-i18n="dashboard.approved">Approved</span>
                             <span class="stat-value" id="stat-approved">-</span>
                             <span class="stat-sub stat-sub--green" id="stat-approved-sub"></span>
                         </div>
@@ -56,7 +56,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Pending</span>
+                            <span class="stat-label" data-i18n="dashboard.pending">Pending</span>
                             <span class="stat-value" id="stat-pending">-</span>
                             <span class="stat-sub stat-sub--yellow" id="stat-pending-sub"></span>
                         </div>
@@ -66,7 +66,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Rejected</span>
+                            <span class="stat-label" data-i18n="dashboard.rejected">Rejected</span>
                             <span class="stat-value" id="stat-rejected">-</span>
                             <span class="stat-sub stat-sub--red" id="stat-rejected-sub"></span>
                         </div>
@@ -81,6 +81,7 @@
                     <div class="search-wrapper">
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
                         <input type="text" id="search-input" class="search-input" placeholder="Search by ID or type..."
+                            data-i18n-placeholder="requests.searchDocuments"
                             autocomplete="off" />
                         <button type="button" class="search-clear" id="search-clear" style="display:none;">
                             <i class="fa-solid fa-xmark"></i>
@@ -88,17 +89,17 @@
                     </div>
 
                     <select class="filter-select" id="filter-type">
-                        <option value="">All Types</option>
+                        <option value="" data-i18n="requests.allTypes">All Types</option>
                         <option value="C20">C20</option>
-                        <option value="Extrait de rôle">Tax Roll Extract</option>
+                        <option value="Extrait de rôle" data-i18n="document.taxRollExtract">Tax Roll Extract</option>
                         <!-- <option value="Déclaration d'existence">Déclaration d'existence</option> -->
                     </select>
 
                     <select class="filter-select" id="filter-status">
-                        <option value="">All Statuses</option>
-                        <option value="approved">Approved</option>
-                        <option value="pending">Pending</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="" data-i18n="requests.allStatuses">All Statuses</option>
+                        <option value="approved" data-i18n="status.approved">Approved</option>
+                        <option value="pending" data-i18n="status.pending">Pending</option>
+                        <option value="rejected" data-i18n="status.rejected">Rejected</option>
                     </select>
 
                     <span class="results-count" id="results-count"></span>
@@ -110,15 +111,15 @@
                     <!-- Empty state - no requests at all -->
                     <div class="empty-state" id="empty-no-data" style="display:none;">
                         <i class="fa-regular fa-folder-open"></i>
-                        <p>No documents yet</p>
-                        <span>Your submitted requests will appear here.</span>
+                        <p data-i18n="documentsPage.noDocumentsTitle">No documents yet</p>
+                        <span data-i18n="documentsPage.noDocumentsText">Your submitted requests will appear here.</span>
                     </div>
 
                     <!-- Empty state - filters return nothing -->
                     <div class="empty-state" id="empty-no-results" style="display:none;">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <p>No results found</p>
-                        <span>Try adjusting your search or filter criteria.</span>
+                        <p data-i18n="requests.noResultsFound">No results found</p>
+                        <span data-i18n="documentsPage.noResultsText">Try adjusting your search or filter criteria.</span>
                     </div>
 
                     <!-- Table -->
@@ -126,11 +127,11 @@
                         <table class="docs-table">
                             <thead>
                                 <tr>
-                                    <th>Request ID</th>
-                                    <th>Type</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th data-i18n="requests.requestId">Request ID</th>
+                                    <th data-i18n="requests.type">Type</th>
+                                    <th data-i18n="requests.date">Date</th>
+                                    <th data-i18n="common.status">Status</th>
+                                    <th data-i18n="requests.actions">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="docs-tbody">
@@ -153,7 +154,7 @@
                     <h3 class="modal-title" id="modal-req-id">-</h3>
                     <span class="modal-doc-type" id="modal-doc-badge"></span>
                 </div>
-                <button type="button" class="modal-close" id="modal-close" aria-label="Close">
+                <button type="button" class="modal-close" id="modal-close" aria-label="Close" data-i18n-aria-label="common.close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -168,8 +169,8 @@
                             <i class="fa-solid fa-circle-check"></i>
                         </div>
                         <div class="timeline-info">
-                            <span class="timeline-label">Submitted</span>
-                            <span class="timeline-desc">Request received</span>
+                            <span class="timeline-label" data-i18n="documentsPage.submitted">Submitted</span>
+                            <span class="timeline-desc" data-i18n="documentsPage.requestReceived">Request received</span>
                         </div>
                     </div>
                     <div class="timeline-connector" id="tl-conn-1"></div>
@@ -178,8 +179,8 @@
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </div>
                         <div class="timeline-info">
-                            <span class="timeline-label">Under Review</span>
-                            <span class="timeline-desc">Being processed</span>
+                            <span class="timeline-label" data-i18n="documentsPage.underReview">Under Review</span>
+                            <span class="timeline-desc" data-i18n="documentsPage.beingProcessed">Being processed</span>
                         </div>
                     </div>
                     <div class="timeline-connector" id="tl-conn-2"></div>
@@ -188,8 +189,8 @@
                             <i class="fa-solid fa-flag-checkered"></i>
                         </div>
                         <div class="timeline-info">
-                            <span class="timeline-label" id="tl-step-3-label">Completed</span>
-                            <span class="timeline-desc" id="tl-step-3-desc">Awaiting completion</span>
+                            <span class="timeline-label" id="tl-step-3-label" data-i18n="documentsPage.completed">Completed</span>
+                            <span class="timeline-desc" id="tl-step-3-desc" data-i18n="documentsPage.awaitingCompletion">Awaiting completion</span>
                         </div>
                     </div>
                 </div>
@@ -199,7 +200,7 @@
                 <div class="modal-field">
                     <span class="modal-field-label">
                         <i class="fa-solid fa-circle-half-stroke"></i>
-                        Status
+                        <span data-i18n="common.status">Status</span>
                     </span>
                     <span id="modal-status-badge"></span>
                 </div>
@@ -207,7 +208,7 @@
                 <div class="modal-field">
                     <span class="modal-field-label">
                         <i class="fa-regular fa-calendar"></i>
-                        Submitted Date
+                        <span data-i18n="documentsPage.submissionDate">Submitted Date</span>
                     </span>
                     <span class="modal-field-value" id="modal-date">-</span>
                 </div>
@@ -215,7 +216,7 @@
                 <div class="modal-field">
                     <span class="modal-field-label">
                         <i class="fa-solid fa-calendar-days"></i>
-                        Year
+                        <span data-i18n="requests.year">Year</span>
                     </span>
                     <span class="modal-field-value" id="modal-year">-</span>
                 </div>
@@ -224,7 +225,7 @@
                 <div class="modal-field modal-note-field" id="modal-note-wrapper" style="display:none;">
                     <span class="modal-field-label">
                         <i class="fa-regular fa-note-sticky"></i>
-                        Note
+                        <span data-i18n="documentsPage.adminNote">Note</span>
                     </span>
                     <p class="modal-note-text" id="modal-note">-</p>
                 </div>
@@ -236,11 +237,11 @@
                 <div class="modal-download-wrapper" id="modal-download-wrapper" style="display:none;">
                     <button type="button" class="btn-download" id="modal-download-btn">
                         <i class="fa-solid fa-download"></i>
-                        Download Document
+                        <span data-i18n="requests.download">Download Document</span>
                     </button>
                 </div>
                 <button type="button" class="btn-close-modal" id="modal-close-btn">
-                    Close
+                    <span data-i18n="documentsPage.close">Close</span>
                 </button>
             </div>
 
@@ -253,6 +254,9 @@
         <span class="toast-msg" id="toast-msg"></span>
     </div>
 
+    <script src="../../locales/en.js"></script>
+    <script src="../../locales/fr.js"></script>
+    <script src="../../js/i18n.js"></script>
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/router.js"></script>
     <script src="../../assets/js/components.js"></script>

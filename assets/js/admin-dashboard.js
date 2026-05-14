@@ -4,11 +4,15 @@ const adminService = sessionStorage.getItem("service") || "";
 const adminId = sessionStorage.getItem("userId") || "";
 
 //  Helpers
+function tr(key, params) {
+  return typeof t === "function" ? t(key, params) : key;
+}
+
 function getGreeting() {
   const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
-  return "Good evening";
+  if (h < 12) return tr("dashboard.goodMorning");
+  if (h < 18) return tr("dashboard.goodAfternoon");
+  return tr("dashboard.goodEvening");
 }
 
 function formatDate(str) {
@@ -32,8 +36,8 @@ function setText(id, value) {
 
 function getDocumentLabel(type) {
   const map = {
-    C20: "Certificate C20",
-    "Extrait de rôle": "Tax Roll Extract",
+    C20: tr("document.c20"),
+    "Extrait de rôle": tr("document.taxRollExtract"),
   };
   return map[type] || type || "—";
 }
@@ -65,13 +69,13 @@ async function initAdminDashboard() {
     if (pending > 0) {
       setText(
         "welcome-sub",
-        `You have ${pending} pending request${pending > 1 ? "s" : ""} awaiting your review.`,
+        tr("dashboard.adminPendingSub", {
+          count: pending,
+          plural: pending > 1 ? "s" : "",
+        }),
       );
     } else {
-      setText(
-        "welcome-sub",
-        "All requests are up to date. No pending reviews.",
-      );
+      setText("welcome-sub", tr("dashboard.adminNoPendingSub"));
     }
 
     // Service badge
@@ -93,26 +97,26 @@ async function initAdminDashboard() {
     setHTML(
       "stat-total-sub",
       total > 0
-        ? `<i class="fa-solid fa-layer-group"></i> ${total} received`
-        : "No requests yet",
+        ? `<i class="fa-solid fa-layer-group"></i> ${total} ${tr("requests.received")}`
+        : tr("requests.noRequestsYet"),
     );
     setHTML(
       "stat-pending-sub",
       pending > 0
-        ? `<i class="fa-regular fa-clock"></i> Awaiting review`
-        : "None pending",
+        ? `<i class="fa-regular fa-clock"></i> ${tr("requests.awaitingReview")}`
+        : tr("requests.nonePending"),
     );
     setHTML(
       "stat-approved-sub",
       approved > 0
-        ? `<i class="fa-solid fa-arrow-trend-up"></i> ${approved} processed`
-        : "None yet",
+        ? `<i class="fa-solid fa-arrow-trend-up"></i> ${approved} ${tr("requests.processed")}`
+        : tr("requests.noneYet"),
     );
     setHTML(
       "stat-rejected-sub",
       rejected > 0
-        ? `<i class="fa-solid fa-arrow-trend-down"></i> ${rejected} declined`
-        : "None rejected",
+        ? `<i class="fa-solid fa-arrow-trend-down"></i> ${rejected} ${tr("requests.declined")}`
+        : tr("requests.noneRejected"),
     );
 
     //  Pending requests table
@@ -136,8 +140,8 @@ async function initAdminDashboard() {
         .map((req) => {
           const isCompliant = computeCompliance(req._taxRecords);
           const compBadge = isCompliant
-            ? `<span class="compliance-badge compliance-badge--ok"><i class="fa-solid fa-circle-check"></i> Up to date</span>`
-            : `<span class="compliance-badge compliance-badge--nok"><i class="fa-solid fa-circle-xmark"></i> Not up to date</span>`;
+            ? `<span class="compliance-badge compliance-badge--ok"><i class="fa-solid fa-circle-check"></i> ${tr("status.upToDate")}</span>`
+            : `<span class="compliance-badge compliance-badge--nok"><i class="fa-solid fa-circle-xmark"></i> ${tr("status.notUpToDate")}</span>`;
 
           return `
           <tr>
@@ -145,7 +149,7 @@ async function initAdminDashboard() {
               ${req.requestId}
               ${
                 req.documentType === "C20" && req.year
-                  ? `<div class="req-year">Year: ${req.year}</div>`
+                  ? `<div class="req-year">${tr("requests.year")}: ${req.year}</div>`
                   : ""
               }
             </td>
@@ -154,7 +158,7 @@ async function initAdminDashboard() {
             <td>${compBadge}</td>
             <td>
               <button type="button" class="btn-review" data-id="${req.requestId}">
-                <i class="fa-solid fa-pen-to-square"></i> Review
+                <i class="fa-solid fa-pen-to-square"></i> ${tr("requests.review")}
               </button>
             </td>
           </tr>
@@ -180,4 +184,5 @@ async function initAdminDashboard() {
 if (!window.__adminDashboardInitialized) {
   window.__adminDashboardInitialized = true;
   initAdminDashboard();
+  document.addEventListener("i18n:change", initAdminDashboard);
 }

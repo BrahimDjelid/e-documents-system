@@ -20,8 +20,8 @@
   };
 
   const DOC_LABELS = {
-    C20: "Certificate C20",
-    "Extrait de rôle": "Tax Roll Extract",
+    C20: "document.c20",
+    "Extrait de rôle": "document.taxRollExtract",
   };
 
   /* DOM refs */
@@ -45,6 +45,10 @@
   );
 
   /* Helpers */
+  function tr(key, params) {
+    return typeof t === "function" ? t(key, params) : key;
+  }
+
   function showToast(msg, isError = false) {
     const toast = document.getElementById("req-toast");
     const msgEl = document.getElementById("req-toast-msg");
@@ -58,6 +62,10 @@
       : "var(--status-approved)";
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 3000);
+  }
+
+  function getDocumentLabel(type) {
+    return DOC_LABELS[type] ? tr(DOC_LABELS[type]) : type || "-";
   }
 
   function generateRequestId() {
@@ -92,7 +100,7 @@
   /* C20 validation */
   function canRequestC20() {
     if (!userData) {
-      showToast("User data not loaded", true);
+      showToast(tr("toast.userDataNotLoaded"), true);
       return false;
     }
 
@@ -100,7 +108,7 @@
 
     // PART 4: identityVerified is informational only — not a submission blocker
     if (userData.auth.id !== t.taxIdentificationNumber) {
-      showToast("NIF mismatch", true);
+      showToast(tr("toast.nifMismatch"), true);
       return false;
     }
 
@@ -123,7 +131,7 @@
   /* Extrait de rôle validation */
   function canRequestExtrait() {
     if (!userData) {
-      showToast("User data not loaded", true);
+      showToast(tr("toast.userDataNotLoaded"), true);
       return false;
     }
 
@@ -131,12 +139,12 @@
 
     // PART 4: identityVerified is informational only — not a submission blocker
     if (userData.auth.id !== t.taxIdentificationNumber) {
-      showToast("NIF mismatch", true);
+      showToast(tr("toast.nifMismatch"), true);
       return false;
     }
 
     if (!t.taxRecords || t.taxRecords.length === 0) {
-      showToast("No tax records available", true);
+      showToast(tr("toast.noTaxRecords"), true);
       return false;
     }
 
@@ -215,7 +223,7 @@
     const cfg = DOC_CONFIG[selectedDoc] || DOC_CONFIG["C20"];
     const docNameEl = document.getElementById("form-doc-name");
     const docIconEl = document.getElementById("form-doc-icon");
-    docNameEl.textContent = DOC_LABELS[selectedDoc] || selectedDoc;
+    docNameEl.textContent = getDocumentLabel(selectedDoc);
     docIconEl.className = "form-doc-icon " + cfg.iconClass;
     docIconEl.innerHTML = `<i class="${cfg.icon}"></i>`;
 
@@ -309,7 +317,7 @@
     const originalSubmitHTML = btnSubmit.innerHTML;
     btnSubmit.disabled = true;
     btnSubmit.innerHTML =
-      '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+      `<i class="fa-solid fa-spinner fa-spin"></i> ${tr("requestPage.submitting")}`;
 
     const purpose = document.getElementById("purpose-textarea").value.trim();
     const reqId = generateRequestId();
@@ -359,7 +367,7 @@
     try {
       await apiSubmitRequest(payload);
     } catch (err) {
-      showToast("Submission failed. Please try again.", true);
+      showToast(tr("toast.submissionFailed"), true);
       btnSubmit.innerHTML = originalSubmitHTML;
       btnSubmit.disabled = !declarationCheck.checked;
       isSubmitting = false;
@@ -369,10 +377,10 @@
     // Populate step 3 confirmation
     document.getElementById("confirm-req-id").textContent = reqId;
     document.getElementById("confirm-doc-type").textContent =
-      DOC_LABELS[selectedDoc] || selectedDoc;
+      getDocumentLabel(selectedDoc);
     document.getElementById("confirm-date").textContent = formatDate(now);
 
-    showToast("Request submitted successfully.");
+    showToast(tr("toast.requestSubmitted"));
     goToStep(3);
   }
 
@@ -382,19 +390,19 @@
     navigator.clipboard
       .writeText(id)
       .then(() => {
-        showToast("Request ID copied to clipboard!");
+        showToast(tr("toast.requestIdCopied"));
         confirmCopyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
         setTimeout(() => {
           confirmCopyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
         }, 2000);
       })
-      .catch(() => showToast("Could not copy - please copy manually.", true));
+      .catch(() => showToast(tr("toast.copyFailed"), true));
   });
 
   /* Step 3: Submit another */
   btnAnother.addEventListener("click", () => {
     isSubmitting = false;
-    btnSubmit.innerHTML = 'Submit Request <i class="fa-solid fa-arrow-right"></i>';
+    btnSubmit.innerHTML = `${tr("requestPage.submitRequest")} <i class="fa-solid fa-arrow-right"></i>`;
     selectedDoc = null;
     docCards.forEach((c) => {
       c.classList.remove("selected");

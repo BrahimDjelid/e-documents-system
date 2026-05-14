@@ -34,6 +34,10 @@
   const btnEditSecurity = document.getElementById("btn-edit-security");
   const securityEditIcon = document.getElementById("security-edit-icon");
 
+  function tr(key, params) {
+    return typeof t === "function" ? t(key, params) : key;
+  }
+
   /* Toast */
   let toastTimer = null;
 
@@ -67,8 +71,8 @@
 
   function getDocumentLabel(type) {
     const map = {
-      C20: "Certificate C20",
-      "Extrait de rôle": "Tax Roll Extract",
+      C20: tr("document.c20"),
+      "Extrait de rôle": tr("document.taxRollExtract"),
     };
     return map[type] || type || "—";
   }
@@ -185,11 +189,11 @@
     const email = document.getElementById("pf-email").value.trim();
 
     if (!email) {
-      showToast("Email address is required.", true);
+      showToast(tr("toast.emailRequired"), true);
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showToast("Please enter a valid email address.", true);
+      showToast(tr("toast.validEmailRequired"), true);
       return;
     }
 
@@ -208,9 +212,9 @@
       }
 
       exitEditMode(true);
-      showToast("Email updated successfully!");
+      showToast(tr("toast.emailUpdated"));
     } catch (err) {
-      showToast("Could not save changes. Please try again.", true);
+      showToast(tr("toast.saveChangesFailed"), true);
       console.error("[admin-profile.js] Save error:", err);
     }
   });
@@ -221,11 +225,11 @@
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      showToast("Please select a valid image file.", true);
+      showToast(tr("toast.validImageRequired"), true);
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      showToast("Image must be under 2MB.", true);
+      showToast(tr("toast.imageTooLarge"), true);
       return;
     }
 
@@ -238,9 +242,9 @@
         const result = await apiUploadAvatar(base64, userData?.auth?.id);
         localStorage.setItem(`avatar_${userData.auth.id}`, result.avatarUrl);
         showAvatar(result.avatarUrl);
-        showToast("Profile photo updated!");
+        showToast(tr("toast.photoUpdated"));
       } catch (err) {
-        showToast("Could not save photo. Please try again.", true);
+        showToast(tr("toast.photoSaveFailed"), true);
         console.error("[admin-profile.js] Avatar upload error:", err);
       }
     };
@@ -263,9 +267,9 @@
           userData?.profile?.lastName,
         );
         showInitials(initials);
-        showToast("Profile photo removed.");
+        showToast(tr("toast.photoRemoved"));
       } catch (err) {
-        showToast("Could not remove photo. Please try again.", true);
+        showToast(tr("toast.photoRemoveFailed"), true);
         console.error("[admin-profile.js] Avatar remove error:", err);
       }
     });
@@ -316,24 +320,24 @@
     secError.style.display = "none";
 
     if (!current || !newPw || !confirm) {
-      showSecError("Please fill in all password fields.");
+      showSecError(tr("toast.fillPasswordFields"));
       return;
     }
     if (newPw.length < 8) {
-      showSecError("New password must be at least 8 characters.");
+      showSecError(tr("toast.newPasswordMinLength"));
       return;
     }
     if (newPw !== confirm) {
-      showSecError("New passwords do not match.");
+      showSecError(tr("toast.passwordsDoNotMatch"));
       return;
     }
 
     try {
       await apiChangePassword(current, newPw);
       lockSecurityFields();
-      showToast("Password updated successfully!");
+      showToast(tr("toast.passwordUpdated"));
     } catch (err) {
-      showSecError("Could not update password. Please try again.");
+      showSecError(tr("toast.passwordUpdateFailed"));
       console.error("[admin-profile.js] Password error:", err);
     }
   });
@@ -368,7 +372,11 @@
     if (user) {
       render(user);
     } else {
-      showToast("Could not load profile data.", true);
+      showToast(tr("toast.loadProfileFailed"), true);
     }
+  });
+
+  document.addEventListener("i18n:change", () => {
+    if (userData) render(userData);
   });
 })();

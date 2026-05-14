@@ -6,6 +6,7 @@
   const role = sessionStorage.getItem("role");
   const currentPage = document.body.dataset.page || "";
   const pageTitle = document.body.dataset.title || "";
+  const pageTitleKey = document.body.dataset.i18nTitle || "";
 
   // Decide which sidebar to load
   const sidebarFile =
@@ -38,8 +39,21 @@
   }
 
   // Set page title
-  const pageTitleEl = document.getElementById("page-title");
-  if (pageTitleEl && pageTitle) pageTitleEl.textContent = pageTitle;
+  function syncPageTitle() {
+    const pageTitleEl = document.getElementById("page-title");
+    const translatedTitle =
+      pageTitleKey && typeof t === "function" ? t(pageTitleKey) : pageTitle;
+    if (pageTitleEl && translatedTitle) pageTitleEl.textContent = translatedTitle;
+  }
+
+  syncPageTitle();
+
+  if (window.i18n) {
+    window.i18n.initLanguageSwitcher(document);
+    window.i18n.applyTranslations(document);
+  }
+
+  document.addEventListener("i18n:change", syncPageTitle);
 
   // Keep mounted shared components from accidentally submitting any page form.
   document.querySelectorAll("button:not([type])").forEach((button) => {

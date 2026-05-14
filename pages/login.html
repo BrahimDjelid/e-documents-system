@@ -9,11 +9,15 @@
     <link rel="stylesheet" href="../assets/css/auth.css" />
 </head>
 
-<body>
+<body data-i18n-title="login.pageTitle">
     <!-- Dark mode toggle -->
-    <button type="button" class="theme-toggle theme-toggle--fixed" id="theme-toggle" aria-label="Toggle dark mode">
+    <div class="auth-actions">
+        <div class="language-switcher language-switcher--fixed" data-language-switcher></div>
+        <button type="button" class="theme-toggle theme-toggle--fixed" id="theme-toggle" aria-label="Toggle dark mode"
+            data-i18n-aria-label="topbar.toggleTheme">
         <i class="fa-solid fa-moon" id="theme-icon"></i>
-    </button>
+        </button>
+    </div>
 
     <div class="auth-page">
 
@@ -26,37 +30,37 @@
                     <i class="fa-regular fa-file-lines"></i>
                 </div>
                 <div class="auth-logo-text">
-                    <h2>e-Documents</h2>
-                    <span>Digital Request &amp; Tracking System</span>
+                    <h2 data-i18n="app.name">e-Documents</h2>
+                    <span data-i18n="app.tagline">Digital Request &amp; Tracking System</span>
                 </div>
             </div>
 
             <!-- Hero text -->
             <div class="auth-hero">
-                <h1>Your documents,<br />digitized and<br />at your fingertips.</h1>
-                <p>
+                <h1 data-i18n="login.heroTitle">Your documents,<br />digitized and<br />at your fingertips.</h1>
+                <p data-i18n="login.heroText">
                     Request, track, and download official government documents
                     securely and efficiently from anywhere.
                 </p>
                 <ul class="auth-features">
                     <li>
                         <i class="fa-regular fa-circle-check"></i>
-                        Secure &amp; encrypted document processing
+                        <span data-i18n="login.featureSecure">Secure &amp; encrypted document processing</span>
                     </li>
                     <li>
                         <i class="fa-regular fa-circle-check"></i>
 
-                        Real-time status tracking &amp; notifications
+                        <span data-i18n="login.featureTracking">Real-time status tracking &amp; notifications</span>
                     </li>
                     <li>
                         <i class="fa-regular fa-circle-check"></i>
 
-                        Instant digital download for eligible documents
+                        <span data-i18n="login.featureDownload">Instant digital download for eligible documents</span>
                     </li>
                     <li>
                         <i class="fa-regular fa-circle-check"></i>
 
-                        WCAG 2.1 AA accessible platform
+                        <span data-i18n="login.featureAccessible">WCAG 2.1 AA accessible platform</span>
                     </li>
                 </ul>
             </div>
@@ -65,15 +69,15 @@
             <div class="auth-stats">
                 <div>
                     <span class="auth-stat-value">12K+</span>
-                    <span class="auth-stat-label">Citizens Served</span>
+                    <span class="auth-stat-label" data-i18n="login.citizensServed">Citizens Served</span>
                 </div>
                 <div>
                     <span class="auth-stat-value">98%</span>
-                    <span class="auth-stat-label">Satisfaction Rate</span>
+                    <span class="auth-stat-label" data-i18n="login.satisfactionRate">Satisfaction Rate</span>
                 </div>
                 <div>
                     <span class="auth-stat-value">&lt; 24Hours</span>
-                    <span class="auth-stat-label">Avg. Process Time</span>
+                    <span class="auth-stat-label" data-i18n="login.avgProcessTime">Avg. Process Time</span>
                 </div>
             </div>
 
@@ -89,8 +93,8 @@
                     <i class="fa-regular fa-file-lines"></i>
                 </div>
 
-                <h2>Login</h2>
-                <p class="auth-subtitle">National Administrative Documents Platform</p>
+                <h2 data-i18n="login.title">Login</h2>
+                <p class="auth-subtitle" data-i18n="login.subtitle">National Administrative Documents Platform</p>
 
                 <!-- Form -->
                 <form method="post" id="loginForm">
@@ -98,13 +102,14 @@
 
                         <!-- Identifier field (NIF or email) -->
                         <div class="form-group">
-                            <label for="identifier">NIF / Email</label>
+                            <label for="identifier" data-i18n="login.identifierLabel">NIF / Email</label>
                             <div class="input-wrapper">
                                 <i class="fa-regular fa-id-card input-icon"></i>
                                 <input type="text" id="identifier" placeholder="Enter your NIF or admin email"
+                                    data-i18n-placeholder="login.identifierPlaceholder"
                                     autocomplete="off" required />
                             </div>
-                            <span class="field-hint">
+                            <span class="field-hint" data-i18n="login.identifierHint">
                                 Citizens: enter your NIF (15 digits) &nbsp;|&nbsp; Admins: enter
                                 your
                                 email
@@ -114,14 +119,15 @@
 
                         <!-- Password field -->
                         <div class="form-group">
-                            <label for="password">Password</label>
+                            <label for="password" data-i18n="login.passwordLabel">Password</label>
                             <div class="input-wrapper">
                                 <i class="fa-solid fa-lock input-icon"></i>
                                 <input type="password" id="password" placeholder="••••••••"
+                                    data-i18n-placeholder="login.passwordPlaceholder"
                                     autocomplete="current-password" required />
                                 <!-- toggle button -->
                                 <button class="toggle-password" id="toggle-password" type="button"
-                                    aria-label="Toggle password visibility">
+                                    aria-label="Toggle password visibility" data-i18n-aria-label="login.togglePassword">
                                     <i class="fa-regular fa-eye" id="eye-icon"></i>
                                 </button>
                             </div>
@@ -129,7 +135,7 @@
                         </div>
 
                         <!-- Forgot password -->
-                        <a href="#" class="forgot-link">Forgot your password?</a>
+                        <a href="#" class="forgot-link" data-i18n="login.forgotPassword">Forgot your password?</a>
 
                         <!-- General error (wrong credentials / connection failure) -->
                         <div class="general-error" id="general-error">
@@ -140,7 +146,7 @@
                         <!-- Submit -->
                         <button class="btn-login" id="login-btn" type="button">
                             <div class="btn-spinner"></div>
-                            <span class="btn-text">Login</span>
+                            <span class="btn-text" data-i18n="login.submit">Login</span>
                         </button>
 
                     </div>
@@ -156,6 +162,9 @@
     <!-- end auth-page -->
 
 
+    <script src="../locales/en.js"></script>
+    <script src="../locales/fr.js"></script>
+    <script src="../js/i18n.js"></script>
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/auth.js"></script>

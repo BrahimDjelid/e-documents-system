@@ -33,6 +33,10 @@
   const btnEditSecurity = document.getElementById("btn-edit-security");
   const securityEditIcon = document.getElementById("security-edit-icon");
 
+  function tr(key, params) {
+    return typeof t === "function" ? t(key, params) : key;
+  }
+
   /* Toast */
   function showToast(msg, isError = false) {
     const toast = document.getElementById("profile-toast");
@@ -146,7 +150,7 @@
 
     /* Government info */
     setField("pf-nationalid", maskNationalId(p.nationalId));
-    setField("pf-civil", p.civilStatus || "Not specified");
+    setField("pf-civil", p.civilStatus || tr("profilePage.notSpecified"));
 
     /* Account summary */
     const total = requests.length;
@@ -198,6 +202,8 @@
       personne_morale: "Legal Entity",
     };
     const natureEl = document.getElementById("tax-nature");
+    natureMap.personne_physique = tr("profilePage.physicalPerson");
+    natureMap.personne_morale = tr("profilePage.legalEntity");
     if (natureEl) natureEl.textContent = natureMap[t.nature] || t.nature || "-";
 
     const estabEl = document.getElementById("tax-estab-date");
@@ -243,7 +249,7 @@
         secList.innerHTML = `
           <div class="tax-no-secondary">
             <i class="fa-regular fa-folder-open"></i>
-            <span>No secondary activities registered.</span>
+            <span>${tr("profilePage.noSecondaryActivities")}</span>
           </div>`;
       } else {
         secList.innerHTML = secondaries
@@ -279,10 +285,10 @@
       if (!el) return;
       if (f.value) {
         verifiedCount++;
-        el.innerHTML = `<i class="fa-solid fa-circle-check"></i> Verified`;
+        el.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${tr("dashboard.verified")}`;
         el.className = "eligibility-badge eligibility-badge--verified";
       } else {
-        el.innerHTML = `<i class="fa-regular fa-clock"></i> Pending`;
+        el.innerHTML = `<i class="fa-regular fa-clock"></i> ${tr("dashboard.pendingLabel")}`;
         el.className = "eligibility-badge eligibility-badge--pending";
       }
     });
@@ -335,7 +341,7 @@
     const phone = document.getElementById("pf-phone").value.trim();
 
     if (!email) {
-      showToast("Email address is required.", true);
+      showToast(tr("toast.emailRequired"), true);
       return;
     }
 
@@ -347,9 +353,9 @@
       originalPhone = phone;
 
       exitEditMode(true);
-      showToast("Profile updated successfully!");
+      showToast(tr("toast.profileUpdated"));
     } catch (err) {
-      showToast("Could not save changes. Please try again.", true);
+      showToast(tr("toast.saveChangesFailed"), true);
       console.error("[profile.js] Save error:", err);
     }
   });
@@ -360,11 +366,11 @@
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      showToast("Please select a valid image file.", true);
+      showToast(tr("toast.validImageRequired"), true);
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      showToast("Image must be under 2MB.", true);
+      showToast(tr("toast.imageTooLarge"), true);
       return;
     }
 
@@ -377,9 +383,9 @@
         const result = await apiUploadAvatar(base64, userData?.auth?.id);
         localStorage.setItem(`avatar_${userData.auth.id}`, result.avatarUrl);
         showAvatar(result.avatarUrl);
-        showToast("Profile photo updated!");
+        showToast(tr("toast.photoUpdated"));
       } catch (err) {
-        showToast("Could not save photo. Please try again.", true);
+        showToast(tr("toast.photoSaveFailed"), true);
         console.error("[profile.js] Avatar upload error:", err);
       }
     };
@@ -402,9 +408,9 @@
           userData?.profile?.lastName,
         );
         showInitials(initials);
-        showToast("Profile photo removed.");
+        showToast(tr("toast.photoRemoved"));
       } catch (err) {
-        showToast("Could not remove photo. Please try again.", true);
+        showToast(tr("toast.photoRemoveFailed"), true);
         console.error("[profile.js] Avatar remove error:", err);
       }
     });
@@ -457,24 +463,24 @@
     secError.style.display = "none";
 
     if (!current || !newPw || !confirm) {
-      showSecError("Please fill in all password fields.");
+      showSecError(tr("toast.fillPasswordFields"));
       return;
     }
     if (newPw.length < 8) {
-      showSecError("New password must be at least 8 characters.");
+      showSecError(tr("toast.newPasswordMinLength"));
       return;
     }
     if (newPw !== confirm) {
-      showSecError("New passwords do not match.");
+      showSecError(tr("toast.passwordsDoNotMatch"));
       return;
     }
 
     try {
       await apiChangePassword(current, newPw);
       lockSecurityFields();
-      showToast("Password updated successfully!");
+      showToast(tr("toast.passwordUpdated"));
     } catch (err) {
-      showSecError("Could not update password. Try again.");
+      showSecError(tr("toast.passwordUpdateFailed"));
       console.error("[profile.js] Password update error:", err);
     }
   });
@@ -509,7 +515,11 @@
     if (user) {
       render(user);
     } else {
-      showToast("Could not load profile data.", true);
+      showToast(tr("toast.loadProfileFailed"), true);
     }
+  });
+
+  document.addEventListener("i18n:change", () => {
+    if (userData) render(userData);
   });
 })();

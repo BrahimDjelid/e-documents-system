@@ -157,12 +157,60 @@ html {
   transform: rotate(15deg);
 }
 
-/* On the login page specifically — fixed position top right */
-.theme-toggle--fixed {
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.language-switcher-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.language-switcher-select {
+  height: 38px;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-full);
+  background: var(--gray-50);
+  color: var(--text-muted);
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0 32px 0 12px;
+  cursor: pointer;
+  outline: none;
+  box-shadow: var(--shadow-default);
+}
+
+.language-switcher-select:hover,
+.language-switcher-select:focus {
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  background: var(--gray-100);
+}
+
+.language-switcher--topbar .language-switcher-select {
+  box-shadow: none;
+}
+
+.auth-actions {
   position: fixed;
   top: var(--space-md);
   right: var(--space-md);
   z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* On the login page specifically — fixed position top right */
+.theme-toggle--fixed {
+  position: static;
 }
 
 body {

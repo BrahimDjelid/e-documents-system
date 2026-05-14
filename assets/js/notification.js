@@ -72,6 +72,10 @@
     _handleDeepLink();
   }
 
+  document.addEventListener("i18n:change", () => {
+    if (_notifications.length) _render();
+  });
+
   async function _loadAndRender() {
     try {
       _notifications = await apiGetNotifications();
@@ -154,7 +158,7 @@
         <i class="${iconClass}"></i>
       </div>
       <div class="notif-item-body">
-        <p class="notif-item-msg">${_escapeHtml(_toEnglishMessage(notif.message))}</p>
+        <p class="notif-item-msg">${_escapeHtml(_messageForNotification(notif))}</p>
         <span class="notif-item-time">
           <i class="fa-regular fa-clock"></i>
           ${timeStr}
@@ -163,12 +167,12 @@
       <div class="notif-item-actions">
         ${
           !notif.read
-            ? `<button type="button" class="notif-action-btn notif-read-btn" data-id="${notif.id}" title="Mark as read">
+            ? `<button type="button" class="notif-action-btn notif-read-btn" data-id="${notif.id}" title="${_escapeHtml(tr("notifications.markAsRead"))}">
           <i class="fa-solid fa-check"></i>
         </button>`
             : ""
         }
-        <button type="button" class="notif-action-btn notif-delete-btn" data-id="${notif.id}" title="Delete">
+        <button type="button" class="notif-action-btn notif-delete-btn" data-id="${notif.id}" title="${_escapeHtml(tr("notifications.delete"))}">
           <i class="fa-regular fa-trash-can"></i>
         </button>
       </div>
@@ -339,12 +343,12 @@
     const diffH = Math.floor(diffMs / 3600000);
     const diffD = Math.floor(diffMs / 86400000);
 
-    if (diffM < 1) return "Just now";
-    if (diffM < 60) return `${diffM}m ago`;
-    if (diffH < 24) return `${diffH}h ago`;
-    if (diffD < 7) return `${diffD}d ago`;
+    if (diffM < 1) return tr("notifications.justNow");
+    if (diffM < 60) return tr("notifications.minutesAgo", { count: diffM });
+    if (diffH < 24) return tr("notifications.hoursAgo", { count: diffH });
+    if (diffD < 7) return tr("notifications.daysAgo", { count: diffD });
 
-    return date.toLocaleDateString("en-GB", {
+    return date.toLocaleDateString(window.i18n?.getLanguage() === "fr" ? "fr-FR" : "en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -359,8 +363,51 @@
       .replace(/"/g, "&quot;");
   }
 
-  function _toEnglishMessage(message) {
-    return String(message || "").replaceAll("Extrait de rôle", "Tax Roll Extract");
+  function tr(key, params) {
+    return typeof t === "function" ? t(key, params) : key;
+  }
+
+  function _normalizeDocumentType(documentType) {
+    return String(documentType || "").replaceAll("Extrait de rôle", "Tax Roll Extract");
+  }
+
+  function _extractDocumentType(message) {
+    const text = String(message || "");
+    const userMatch = text.match(/^Your (.+?) request (has been approved|was rejected|status was updated)/i);
+    if (userMatch) return _normalizeDocumentType(userMatch[1]);
+    const adminMatch = text.match(/^New (.+?) request from /i);
+    if (adminMatch) return _normalizeDocumentType(adminMatch[1]);
+    return "";
+  }
+
+  function _extractName(message) {
+    const match = String(message || "").match(/^New .+? request from (.+)\.$/i);
+    return match ? match[1] : "";
+  }
+
+  function _extractNote(message) {
+    const match = String(message || "").match(/ Note: (.+)$/i);
+    return match ? match[1] : "";
+  }
+
+  function _messageForNotification(notif) {
+    const documentType = _extractDocumentType(notif.message);
+    if (notif.type === "request_approved" && documentType) {
+      return tr("notifications.requestApproved", { documentType });
+    }
+    if (notif.type === "request_rejected" && documentType) {
+      const note = _extractNote(notif.message);
+      return note
+        ? tr("notifications.requestRejectedWithNote", { documentType, note })
+        : tr("notifications.requestRejected", { documentType });
+    }
+    if (notif.type === "new_request" && documentType) {
+      return tr("notifications.newRequest", {
+        documentType,
+        name: _extractName(notif.message),
+      });
+    }
+    return _normalizeDocumentType(notif.message);
   }
 
   window.initNotifications = initNotifications;

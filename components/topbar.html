@@ -10,25 +10,25 @@
 
         <!-- Notification bell -->
         <div class="notif-wrapper" id="notif-wrapper">
-            <button type="button" class="topbar-btn notif-btn" id="notif-btn" aria-label="Notifications" aria-haspopup="true"
+            <button type="button" class="topbar-btn notif-btn" id="notif-btn" aria-label="Notifications" data-i18n-aria-label="topbar.notifications" aria-haspopup="true"
                 aria-expanded="false">
                 <i class="fa-regular fa-bell" id="notif-bell-icon"></i>
                 <span class="notif-badge" id="notif-badge" style="display:none;"></span>
             </button>
 
             <!-- Notification Dropdown -->
-            <div class="notif-dropdown" id="notif-dropdown" role="dialog" aria-label="Notifications panel">
+            <div class="notif-dropdown" id="notif-dropdown" role="dialog" aria-label="Notifications panel" data-i18n-aria-label="topbar.notificationsPanel">
 
                 <!-- Dropdown header -->
                 <div class="notif-dropdown-header">
                     <div class="notif-header-left">
                         <i class="fa-regular fa-bell notif-header-icon"></i>
-                        <span class="notif-header-title">Notifications</span>
+                        <span class="notif-header-title" data-i18n="notifications.title">Notifications</span>
                         <span class="notif-unread-count" id="notif-unread-pill" style="display:none;"></span>
                     </div>
-                    <button type="button" class="notif-mark-all-btn" id="notif-mark-all-btn" title="Mark all as read">
+                    <button type="button" class="notif-mark-all-btn" id="notif-mark-all-btn" title="Mark all as read" data-i18n-title="notifications.markAsRead">
                         <i class="fa-solid fa-check-double"></i>
-                        <span>Mark all read</span>
+                        <span data-i18n="notifications.markAllRead">Mark all read</span>
                     </button>
                 </div>
 
@@ -39,8 +39,8 @@
                         <div class="notif-empty-icon">
                             <i class="fa-regular fa-bell-slash"></i>
                         </div>
-                        <p>No notifications yet</p>
-                        <span>You'll be notified about request updates here.</span>
+                        <p data-i18n="notifications.emptyTitle">No notifications yet</p>
+                        <span data-i18n="notifications.emptyText">You'll be notified about request updates here.</span>
                     </div>
                 </div>
 
@@ -48,7 +48,9 @@
         </div>
 
         <!-- Dark mode toggle -->
-        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <div class="language-switcher language-switcher--topbar" data-language-switcher></div>
+
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" data-i18n-aria-label="topbar.toggleTheme">
             <i class="fa-solid fa-moon" id="theme-icon"></i>
         </button>
 

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../assets/css/admin-dashboard.css" />
 </head>
 
-<body data-page="dashboard" data-title="Dashboard">
+<body data-page="dashboard" data-title="Dashboard" data-i18n-title="pageTitle.dashboard">
     <div class="dashboard-page">
 
         <div id="sidebar-mount"></div>
@@ -24,13 +24,13 @@
                 <section class="welcome-banner">
                     <div class="welcome-text">
                         <h2 class="welcome-title" id="welcome-title">—</h2>
-                        <p class="welcome-sub" id="welcome-sub">Loading your dashboard...</p>
+                        <p class="welcome-sub" id="welcome-sub" data-i18n="dashboard.loadingDashboard">Loading your dashboard...</p>
                     </div>
                     <div class="welcome-actions">
                         <span class="service-badge" id="service-badge">—</span>
                         <a href="requests-management.html" class="btn-banner btn-banner--outline">
                             <i class="fa-regular fa-file-lines"></i>
-                            View All Requests
+                            <span data-i18n="dashboard.viewAllRequests">View All Requests</span>
                         </a>
                     </div>
                 </section>
@@ -39,7 +39,7 @@
                 <section class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Total Requests</span>
+                            <span class="stat-label" data-i18n="dashboard.totalRequests">Total Requests</span>
                             <span class="stat-value" id="stat-total">—</span>
                             <span class="stat-sub" id="stat-total-sub"></span>
                         </div>
@@ -50,7 +50,7 @@
 
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Pending</span>
+                            <span class="stat-label" data-i18n="dashboard.pending">Pending</span>
                             <span class="stat-value" id="stat-pending">—</span>
                             <span class="stat-sub stat-sub--yellow" id="stat-pending-sub"></span>
                         </div>
@@ -61,7 +61,7 @@
 
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Approved</span>
+                            <span class="stat-label" data-i18n="dashboard.approved">Approved</span>
                             <span class="stat-value" id="stat-approved">—</span>
                             <span class="stat-sub stat-sub--green" id="stat-approved-sub"></span>
                         </div>
@@ -72,7 +72,7 @@
 
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Rejected</span>
+                            <span class="stat-label" data-i18n="dashboard.rejected">Rejected</span>
                             <span class="stat-value" id="stat-rejected">—</span>
                             <span class="stat-sub stat-sub--red" id="stat-rejected-sub"></span>
                         </div>
@@ -87,18 +87,18 @@
                     <div class="dash-card-header">
                         <h3 class="dash-card-title">
                             <i class="fa-regular fa-clock"></i>
-                            Pending Requests
+                            <span data-i18n="dashboard.pendingRequestsTitle">Pending Requests</span>
                         </h3>
                         <a href="requests-management.html" class="dash-card-link">
-                            View all <i class="fa-solid fa-arrow-right"></i>
+                            <span data-i18n="dashboard.viewAll">View all</span> <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
 
                     <!-- Empty state — no pending -->
                     <div class="empty-state" id="empty-pending" style="display:none;">
                         <i class="fa-solid fa-circle-check"></i>
-                        <p>All caught up!</p>
-                        <span>No pending requests at the moment.</span>
+                        <p data-i18n="dashboard.allCaughtUp">All caught up!</p>
+                        <span data-i18n="dashboard.noPendingRequests">No pending requests at the moment.</span>
                     </div>
 
                     <!-- Table -->
@@ -106,11 +106,11 @@
                         <table class="admin-table">
                             <thead>
                                 <tr>
-                                    <th>Request ID</th>
-                                    <th>User</th>
-                                    <th>Submitted</th>
-                                    <th>Compliance</th>
-                                    <th>Action</th>
+                                    <th data-i18n="requests.requestId">Request ID</th>
+                                    <th data-i18n="requests.user">User</th>
+                                    <th data-i18n="requests.submittedDate">Submitted</th>
+                                    <th data-i18n="requests.compliance">Compliance</th>
+                                    <th data-i18n="requests.action">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="pending-tbody">
@@ -124,6 +124,9 @@
         </div>
     </div>
 
+    <script src="../../locales/en.js"></script>
+    <script src="../../locales/fr.js"></script>
+    <script src="../../js/i18n.js"></script>
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/router.js"></script>
     <script src="../../assets/js/components.js"></script>

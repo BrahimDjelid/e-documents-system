@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../assets/css/user-dashboard.css" />
 </head>
 
-<body data-page="dashboard" data-title="Dashboard">
+<body data-page="dashboard" data-title="Dashboard" data-i18n-title="pageTitle.dashboard">
     <div class="dashboard-page">
 
         <div id="sidebar-mount"></div>
@@ -46,7 +46,7 @@
                 <section class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Total Requests</span>
+                            <span class="stat-label" data-i18n="dashboard.totalRequests">Total Requests</span>
                             <span class="stat-value" id="stat-total">—</span>
                             <span class="stat-sub" id="stat-total-sub"></span>
                         </div>
@@ -57,7 +57,7 @@
 
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Approved</span>
+                            <span class="stat-label" data-i18n="dashboard.approved">Approved</span>
                             <span class="stat-value" id="stat-approved">—</span>
                             <span class="stat-sub stat-sub--green" id="stat-approved-sub"></span>
                         </div>
@@ -68,7 +68,7 @@
 
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Pending</span>
+                            <span class="stat-label" data-i18n="dashboard.pending">Pending</span>
                             <span class="stat-value" id="stat-pending">—</span>
                             <span class="stat-sub stat-sub--yellow" id="stat-pending-sub"></span>
                         </div>
@@ -79,7 +79,7 @@
 
                     <div class="stat-card">
                         <div class="stat-card-left">
-                            <span class="stat-label">Rejected</span>
+                            <span class="stat-label" data-i18n="dashboard.rejected">Rejected</span>
                             <span class="stat-value" id="stat-rejected">—</span>
                             <span class="stat-sub stat-sub--red" id="stat-rejected-sub"></span>
                         </div>
@@ -97,18 +97,18 @@
                         <div class="dash-card-header">
                             <h3 class="dash-card-title">
                                 <i class="fa-solid fa-clock-rotate-left"></i>
-                                Recent Requests
+                            <span data-i18n="dashboard.recentRequests">Recent Requests</span>
                             </h3>
                             <a href="documents.html" class="dash-card-link">
-                                View all <i class="fa-solid fa-arrow-right"></i>
+                                <span data-i18n="dashboard.viewAll">View all</span> <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
 
                         <!-- Empty state (shown when no requests) -->
                         <div class="empty-state" id="requests-empty" style="display:none;">
                             <i class="fa-regular fa-folder-open"></i>
-                            <p>No requests yet</p>
-                            <span>Your submitted requests will appear here.</span>
+                            <p data-i18n="dashboard.noRequestsYetTitle">No requests yet</p>
+                            <span data-i18n="dashboard.noRequestsYetText">Your submitted requests will appear here.</span>
                         </div>
 
                         <!-- Table -->
@@ -116,11 +116,11 @@
                             <table class="requests-table">
                                 <thead>
                                     <tr>
-                                        <th>Request ID</th>
-                                        <th>Type</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <th data-i18n="requests.requestId">Request ID</th>
+                                        <th data-i18n="requests.type">Type</th>
+                                        <th data-i18n="requests.date">Date</th>
+                                        <th data-i18n="common.status">Status</th>
+                                        <th data-i18n="requests.action">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="requests-tbody"></tbody>
@@ -136,7 +136,7 @@
                             <div class="dash-card-header">
                                 <h3 class="dash-card-title">
                                     <i class="fa-solid fa-bolt"></i>
-                                    Quick Actions
+                                    <span data-i18n="dashboard.quickActions">Quick Actions</span>
                                 </h3>
                             </div>
                             <div class="quick-actions-list">
@@ -145,8 +145,8 @@
                                         <i class="fa-regular fa-file-lines"></i>
                                     </div>
                                     <div class="quick-action-text">
-                                        <span class="quick-action-name">Request C20</span>
-                                        <span class="quick-action-desc">C20 Existence Certificate</span>
+                                        <span class="quick-action-name" data-i18n="dashboard.requestC20">Request C20</span>
+                                        <span class="quick-action-desc" data-i18n="dashboard.c20Description">C20 Existence Certificate</span>
                                     </div>
                                     <i class="fa-solid fa-chevron-right quick-action-arrow"></i>
                                 </a>
@@ -156,8 +156,8 @@
                                         <i class="fa-solid fa-file-arrow-down"></i>
                                     </div>
                                     <div class="quick-action-text">
-                                        <span class="quick-action-name">Tax Roll Extract</span>
-                                        <span class="quick-action-desc">Tax record extract</span>
+                                        <span class="quick-action-name" data-i18n="document.taxRollExtract">Tax Roll Extract</span>
+                                        <span class="quick-action-desc" data-i18n="dashboard.taxRollDescription">Tax record extract</span>
                                     </div>
                                     <i class="fa-solid fa-chevron-right quick-action-arrow"></i>
                                 </a>
@@ -170,7 +170,7 @@
                             <div class="dash-card-header">
                                 <h3 class="dash-card-title">
                                     <i class="fa-solid fa-shield-halved"></i>
-                                    Eligibility Status
+                                    <span data-i18n="dashboard.eligibilityStatus">Eligibility Status</span>
                                 </h3>
                                 <span class="eligibility-score" id="eligibility-score"></span>
                             </div>
@@ -183,7 +183,7 @@
                             <div class="dash-card-header">
                                 <h3 class="dash-card-title">
                                     <i class="fa-solid fa-download"></i>
-                                    Ready to Download
+                                    <span data-i18n="dashboard.readyToDownload">Ready to Download</span>
                                 </h3>
                             </div>
                             <div id="download-list">
@@ -205,6 +205,9 @@
         <span class="toast-msg" id="toast-msg"></span>
     </div>
 
+    <script src="../../locales/en.js"></script>
+    <script src="../../locales/fr.js"></script>
+    <script src="../../js/i18n.js"></script>
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/router.js"></script>
     <script src="../../assets/js/components.js"></script>

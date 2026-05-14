@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../../assets/css/admin-profile.css" />
 </head>
 
-<body data-page="profile" data-title="My Profile">
+<body data-page="profile" data-title="My Profile" data-i18n-title="pageTitle.profile">
     <div class="dashboard-page">
 
         <div id="sidebar-mount"></div>
@@ -23,12 +23,12 @@
                 <!-- Banner -->
                 <section class="ap-banner">
                     <div class="ap-banner-text">
-                        <h2 class="ap-banner-title">Admin Profile</h2>
-                        <p class="ap-banner-sub">Manage your account information and security settings</p>
+                        <h2 class="ap-banner-title" data-i18n="profilePage.adminProfile">Admin Profile</h2>
+                        <p class="ap-banner-sub" data-i18n="profilePage.adminSubtitle">Manage your account information and security settings</p>
                     </div>
                     <button type="button" class="btn-edit-profile" id="btn-edit-profile">
                         <i class="fa-solid fa-pen"></i>
-                        Edit Profile
+                        <span data-i18n="profilePage.editProfile">Edit Profile</span>
                     </button>
                 </section>
 
@@ -42,28 +42,28 @@
                         <div class="ap-card avatar-card">
                             <div class="avatar-wrap">
                                 <div class="avatar-circle">
-                                    <img src="" alt="Profile photo" class="avatar-img" id="avatar-img"
+                                    <img src="" alt="Profile photo" data-i18n-aria-label="profilePage.profilePhoto" class="avatar-img" id="avatar-img"
                                         style="display:none;" />
                                     <span class="avatar-initials" id="avatar-initials">—</span>
                                 </div>
                                 <!-- Upload button — shown only in edit mode (via JS) -->
-                                <label class="avatar-upload-btn" id="avatar-upload-label" title="Change photo"
+                                <label class="avatar-upload-btn" id="avatar-upload-label" title="Change photo" data-i18n-title="profilePage.changePhoto"
                                     style="display:none;">
                                     <i class="fa-solid fa-camera"></i>
                                     <input type="file" id="avatar-upload-input" accept="image/*" hidden />
                                 </label>
                                 <!-- Remove button — shown only when a photo is set (via JS) -->
-                                <button type="button" class="avatar-remove-btn" id="avatar-remove-btn" title="Remove photo"
+                                <button type="button" class="avatar-remove-btn" id="avatar-remove-btn" title="Remove photo" data-i18n-title="profilePage.removePhoto"
                                     type="button" style="display:none;">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
                             <h3 class="avatar-name" id="avatar-name">—</h3>
-                            <p class="avatar-role-label">Administrator</p>
+                            <p class="avatar-role-label" data-i18n="profilePage.administrator">Administrator</p>
                             <div class="avatar-badges">
                                 <span class="role-badge">
                                     <i class="fa-solid fa-shield-halved"></i>
-                                    Admin
+                                    <span data-i18n="profilePage.admin">Admin</span>
                                 </span>
                                 <span class="service-badge" id="service-badge">
                                     <i class="fa-regular fa-file-lines"></i>
@@ -79,36 +79,36 @@
                                     <i class="fa-solid fa-briefcase"></i>
                                 </div>
                                 <div>
-                                    <h4 class="ap-card-title">Service Assignment</h4>
-                                    <p class="ap-card-sub">Managed by the system administrator</p>
+                                    <h4 class="ap-card-title" data-i18n="profilePage.serviceAssignment">Service Assignment</h4>
+                                    <p class="ap-card-sub" data-i18n="profilePage.managedByAdmin">Managed by the system administrator</p>
                                 </div>
                             </div>
                             <div class="service-fields">
                                 <div class="service-field">
                                     <span class="service-field-label">
                                         <i class="fa-solid fa-user-tie"></i>
-                                        Role
+                                        <span data-i18n="profilePage.role">Role</span>
                                     </span>
-                                    <span class="service-field-value" id="svc-role">Administrator</span>
+                                    <span class="service-field-value" id="svc-role" data-i18n="profilePage.administrator">Administrator</span>
                                 </div>
                                 <div class="service-field">
                                     <span class="service-field-label">
                                         <i class="fa-solid fa-id-card"></i>
-                                        National ID
+                                        <span data-i18n="requestPage.nationalId">National ID</span>
                                     </span>
                                     <span class="service-field-value" id="svc-nationalid">—</span>
                                 </div>
                                 <div class="service-field">
                                     <span class="service-field-label">
                                         <i class="fa-regular fa-file-lines"></i>
-                                        Assigned Service
+                                        <span data-i18n="profilePage.assignedService">Assigned Service</span>
                                     </span>
                                     <span class="service-field-value service-field-value--highlight"
                                         id="svc-service">—</span>
                                 </div>
                                 <div class="service-readonly-note">
                                     <i class="fa-solid fa-lock"></i>
-                                    Service assignment is controlled by system administrators only.
+                                    <span data-i18n="profilePage.serviceReadonly">Service assignment is controlled by system administrators only.</span>
                                 </div>
                             </div>
                         </div>
@@ -122,14 +122,14 @@
                         <div class="ap-card info-card" id="info-card">
                             <div class="ap-card-header">
                                 <div>
-                                    <h4 class="ap-card-title">Account Information</h4>
-                                    <p class="ap-card-sub">Update your name and login email</p>
+                                    <h4 class="ap-card-title" data-i18n="profilePage.accountInformation">Account Information</h4>
+                                    <p class="ap-card-sub" data-i18n="profilePage.updateNameEmail">Update your name and login email</p>
                                 </div>
                                 <div class="edit-actions" id="edit-actions" style="display:none;">
-                                    <button type="button" class="btn-cancel-edit" id="btn-cancel-edit">Cancel</button>
+                                    <button type="button" class="btn-cancel-edit" id="btn-cancel-edit" data-i18n="common.cancel">Cancel</button>
                                     <button type="button" class="btn-save-edit" id="btn-save-edit">
                                         <i class="fa-solid fa-check"></i>
-                                        Save Changes
+                                        <span data-i18n="profilePage.saveChanges">Save Changes</span>
                                     </button>
                                 </div>
                             </div>
@@ -139,18 +139,18 @@
                                 <div class="info-field">
                                     <label class="info-label" for="pf-firstname">
                                         <i class="fa-regular fa-user"></i>
-                                        First Name
+                                        <span data-i18n="profilePage.firstName">First Name</span>
                                     </label>
                                     <div class="info-input-wrap">
                                         <input type="text" class="info-input info-input--readonly" id="pf-firstname"
                                             readonly />
-                                        <span class="info-lock-icon" title="Cannot be changed">
+                                        <span class="info-lock-icon" title="Cannot be changed" data-i18n-title="profilePage.cannotBeChanged">
                                             <i class="fa-solid fa-lock"></i>
                                         </span>
                                     </div>
                                     <span class="info-hint">
                                         <i class="fa-solid fa-triangle-exclamation"></i>
-                                        Name cannot be changed. Contact system admin if needed.
+                                        <span data-i18n="profilePage.nameCannotChange">Name cannot be changed. Contact system admin if needed.</span>
                                     </span>
                                 </div>
 
@@ -159,12 +159,12 @@
                                 <div class="info-field">
                                     <label class="info-label" for="pf-lastname">
                                         <i class="fa-regular fa-user"></i>
-                                        Last Name
+                                        <span data-i18n="profilePage.lastName">Last Name</span>
                                     </label>
                                     <div class="info-input-wrap">
                                         <input type="text" class="info-input info-input--readonly" id="pf-lastname"
                                             readonly />
-                                        <span class="info-lock-icon" title="Cannot be changed">
+                                        <span class="info-lock-icon" title="Cannot be changed" data-i18n-title="profilePage.cannotBeChanged">
                                             <i class="fa-solid fa-lock"></i>
                                         </span>
                                     </div>
@@ -174,8 +174,8 @@
                                 <div class="info-field info-field--full">
                                     <label class="info-label" for="pf-email">
                                         <i class="fa-regular fa-envelope"></i>
-                                        Email Address
-                                        <span class="info-label-note">(Login ID)</span>
+                                        <span data-i18n="profilePage.emailAddress">Email Address</span>
+                                        <span class="info-label-note" data-i18n="profilePage.loginId">(Login ID)</span>
                                     </label>
                                     <div class="info-input-wrap">
                                         <input type="email" class="info-input info-input--editable" id="pf-email"
@@ -183,7 +183,7 @@
                                     </div>
                                     <span class="info-hint">
                                         <i class="fa-solid fa-triangle-exclamation"></i>
-                                        Changing your email will update your login credentials.
+                                        <span data-i18n="profilePage.emailChangesLogin">Changing your email will update your login credentials.</span>
                                     </span>
                                 </div>
                             </div>
@@ -197,21 +197,21 @@
                                         <i class="fa-solid fa-lock"></i>
                                     </div>
                                     <div>
-                                        <h4 class="ap-card-title">Security &amp; Password</h4>
-                                        <p class="ap-card-sub">Change your account password</p>
+                                        <h4 class="ap-card-title" data-i18n="profilePage.securityPassword">Security &amp; Password</h4>
+                                        <p class="ap-card-sub" data-i18n="profilePage.updatePassword">Change your account password</p>
                                     </div>
                                 </div>
-                                <button type="button" class="btn-edit-security" id="btn-edit-security" title="Edit password">
+                                <button type="button" class="btn-edit-security" id="btn-edit-security" title="Edit password" data-i18n-title="profilePage.updatePassword">
                                     <i class="fa-solid fa-pen" id="security-edit-icon"></i>
                                 </button>
                             </div>
 
                             <div class="security-form" id="security-form">
                                 <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-current">Current Password</label>
+                                    <label class="sec-label" for="sec-current" data-i18n="profilePage.currentPassword">Current Password</label>
                                     <div class="sec-input-wrap">
                                         <input type="password" class="sec-input" id="sec-current"
-                                            placeholder="Enter current password" autocomplete="current-password"
+                                            placeholder="Enter current password" data-i18n-placeholder="profilePage.enterCurrentPassword" autocomplete="current-password"
                                             disabled />
                                         <button class="sec-toggle-pw" data-target="sec-current" type="button"
                                             tabindex="-1">
@@ -222,10 +222,10 @@
 
                                 <div class="sec-fields-row">
                                     <div class="sec-field-group">
-                                        <label class="sec-label" for="sec-new">New Password</label>
+                                        <label class="sec-label" for="sec-new" data-i18n="profilePage.newPassword">New Password</label>
                                         <div class="sec-input-wrap">
                                             <input type="password" class="sec-input" id="sec-new"
-                                                placeholder="New password" autocomplete="new-password" disabled />
+                                                placeholder="New password" data-i18n-placeholder="profilePage.enterNewPassword" autocomplete="new-password" disabled />
                                             <button class="sec-toggle-pw" data-target="sec-new" type="button"
                                                 tabindex="-1">
                                                 <i class="fa-regular fa-eye"></i>
@@ -233,10 +233,10 @@
                                         </div>
                                     </div>
                                     <div class="sec-field-group">
-                                        <label class="sec-label" for="sec-confirm">Confirm Password</label>
+                                        <label class="sec-label" for="sec-confirm" data-i18n="profilePage.confirmPassword">Confirm Password</label>
                                         <div class="sec-input-wrap">
                                             <input type="password" class="sec-input" id="sec-confirm"
-                                                placeholder="Confirm password" autocomplete="new-password" disabled />
+                                                placeholder="Confirm password" data-i18n-placeholder="profilePage.confirmNewPasswordPlaceholder" autocomplete="new-password" disabled />
                                             <button class="sec-toggle-pw" data-target="sec-confirm" type="button"
                                                 tabindex="-1">
                                                 <i class="fa-regular fa-eye"></i>
@@ -249,7 +249,7 @@
 
                                 <button type="button" class="btn-update-pw" id="btn-update-pw" disabled>
                                     <i class="fa-solid fa-key"></i>
-                                    Update Password
+                                    <span data-i18n="profilePage.updatePasswordButton">Update Password</span>
                                 </button>
                             </div>
                         </div>
@@ -267,6 +267,9 @@
         <span id="ap-toast-msg"></span>
     </div>
 
+    <script src="../../locales/en.js"></script>
+    <script src="../../locales/fr.js"></script>
+    <script src="../../js/i18n.js"></script>
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/router.js"></script>
     <script src="../../assets/js/components.js"></script>

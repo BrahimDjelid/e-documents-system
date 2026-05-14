@@ -17,11 +17,15 @@ const toastMsg = document.getElementById("toast-msg");
 let toastTimer = null;
 
 //  Helpers
+function tr(key, params) {
+  return typeof t === "function" ? t(key, params) : key;
+}
+
 function getGreeting() {
   const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
-  return "Good evening";
+  if (h < 12) return tr("dashboard.goodMorning");
+  if (h < 18) return tr("dashboard.goodAfternoon");
+  return tr("dashboard.goodEvening");
 }
 
 function formatDate(dateStr) {
@@ -44,8 +48,8 @@ function getDocBadgeClass(type) {
 
 function getDocumentLabel(type) {
   const map = {
-    C20: "Certificate C20",
-    "Extrait de rôle": "Tax Roll Extract",
+    C20: tr("document.c20"),
+    "Extrait de rôle": tr("document.taxRollExtract"),
   };
   return map[type] || type || "-";
 }
@@ -94,18 +98,27 @@ async function initDashboard() {
       const approved = requests.filter((r) => r.status === "approved").length;
 
       if (requests.length === 0) {
-        welcomeSub.textContent =
-          "Welcome! You have no requests yet. Start by submitting one.";
+        welcomeSub.textContent = tr("dashboard.welcomeNoRequests");
       } else {
         const parts = [];
         if (pending > 0)
-          parts.push(`${pending} pending request${pending > 1 ? "s" : ""}`);
+          parts.push(
+            tr("dashboard.pendingRequests", {
+              count: pending,
+              plural: pending > 1 ? "s" : "",
+            }),
+          );
         if (approved > 0)
-          parts.push(`${approved} approved request${approved > 1 ? "s" : ""}`);
+          parts.push(
+            tr("dashboard.approvedRequests", {
+              count: approved,
+              plural: approved > 1 ? "s" : "",
+            }),
+          );
         welcomeSub.textContent =
           parts.length > 0
-            ? "You have " + parts.join(" and ") + "."
-            : "All your requests have been processed.";
+            ? tr("dashboard.welcomeSummary", { summary: parts.join(" and ") })
+            : tr("requests.allProcessed");
       }
     }
 
@@ -123,26 +136,26 @@ async function initDashboard() {
     setHTML(
       "stat-total-sub",
       total > 0
-        ? `<i class="fa-solid fa-layer-group"></i> ${total} submitted`
-        : "No requests yet",
+        ? `<i class="fa-solid fa-layer-group"></i> ${total} ${tr("requests.submitted")}`
+        : tr("requests.noRequestsYet"),
     );
     setHTML(
       "stat-approved-sub",
       approved > 0
-        ? `<i class="fa-solid fa-arrow-trend-up"></i> ${approved} completed`
-        : "None yet",
+        ? `<i class="fa-solid fa-arrow-trend-up"></i> ${approved} ${tr("requests.completed")}`
+        : tr("requests.noneYet"),
     );
     setHTML(
       "stat-pending-sub",
       pending > 0
-        ? `<i class="fa-regular fa-clock"></i> Awaiting review`
-        : "None pending",
+        ? `<i class="fa-regular fa-clock"></i> ${tr("requests.awaitingReview")}`
+        : tr("requests.nonePending"),
     );
     setHTML(
       "stat-rejected-sub",
       rejected > 0
-        ? `<i class="fa-solid fa-arrow-trend-down"></i> ${rejected} unsuccessful`
-        : "None rejected",
+        ? `<i class="fa-solid fa-arrow-trend-down"></i> ${rejected} ${tr("requests.unsuccessful")}`
+        : tr("requests.noneRejected"),
     );
 
     // Recent requests table
@@ -177,7 +190,7 @@ async function initDashboard() {
             <td><span class="${getDocBadgeClass(req.documentType)}">${getDocumentLabel(req.documentType)}</span></td>
             <td class="req-date">${formatDate(req.submittedAt)}</td>
             <td>${getStatusBadge(req.status)}</td>
-            <td><button type="button" class="action-link" data-id="${req.requestId}">Details</button></td>
+            <td><button type="button" class="action-link" data-id="${req.requestId}">${tr("requests.details")}</button></td>
           </tr>
         `,
           )
@@ -196,9 +209,9 @@ async function initDashboard() {
     const eligibilityScore = document.getElementById("eligibility-score");
 
     const eligibilityItems = [
-      { key: "taxCompliance", label: "Tax Compliance" },
-      { key: "identityVerified", label: "Identity Verified" },
-      { key: "addressConfirmed", label: "Address Confirmed" },
+      { key: "taxCompliance", label: tr("dashboard.taxCompliance") },
+      { key: "identityVerified", label: tr("dashboard.identityVerified") },
+      { key: "addressConfirmed", label: tr("dashboard.addressConfirmed") },
     ];
 
     const verifiedCount = eligibilityItems.filter(
@@ -218,7 +231,7 @@ async function initDashboard() {
             <span class="eligibility-label">${item.label}</span>
             <span class="eligibility-badge ${ok ? "eligibility-badge--ok" : "eligibility-badge--pending"}">
               <i class="fa-solid ${ok ? "fa-circle-check" : "fa-clock"}"></i>
-              ${ok ? "Verified" : "Pending"}
+              ${ok ? tr("dashboard.verified") : tr("dashboard.pendingLabel")}
             </span>
           </div>
         `;
@@ -235,8 +248,8 @@ async function initDashboard() {
         downloadList.innerHTML = `
           <div class="download-empty">
             <i class="fa-regular fa-folder-open"></i>
-            <p>Nothing ready yet</p>
-            <span>Approved documents will appear here for download.</span>
+            <p>${tr("dashboard.nothingReady")}</p>
+            <span>${tr("dashboard.approvedDocumentsAppear")}</span>
           </div>
         `;
       } else {
@@ -252,7 +265,7 @@ async function initDashboard() {
                 </div>
                 <button type="button" class="download-btn" data-id="${req.requestId}">
                   <i class="fa-solid fa-download"></i>
-                  Download
+                  ${tr("requests.download")}
                 </button>
               </div>
             `,
@@ -271,7 +284,7 @@ async function initDashboard() {
             _btnDownloading = true;
             const originalHTML = btn.innerHTML;
             btn.innerHTML =
-              '<i class="fa-solid fa-spinner fa-spin"></i> Preparing…';
+              `<i class="fa-solid fa-spinner fa-spin"></i> ${tr("requests.preparing")}`;
             btn.disabled = true;
 
             try {
@@ -279,10 +292,10 @@ async function initDashboard() {
             } catch (err) {
               if (err.message === "MOCK") {
                 showToast(
-                  "Download will be available once the backend is connected.",
+                  tr("requests.backendDownloadPending"),
                 );
               } else {
-                showToast("Download failed. Please try again.", true);
+                showToast(tr("toast.downloadFailed"), true);
               }
             } finally {
               btn.innerHTML = originalHTML;
@@ -313,9 +326,9 @@ function setHTML(id, value) {
 //  Status badge HTM
 function getStatusBadge(status) {
   const map = {
-    approved: { cls: "status-badge--approved", label: "Approved" },
-    pending: { cls: "status-badge--pending", label: "Pending" },
-    rejected: { cls: "status-badge--rejected", label: "Rejected" },
+    approved: { cls: "status-badge--approved", label: tr("status.approved") },
+    pending: { cls: "status-badge--pending", label: tr("status.pending") },
+    rejected: { cls: "status-badge--rejected", label: tr("status.rejected") },
   };
   const s = map[status] || { cls: "", label: status };
   return `<span class="status-badge ${s.cls}">
@@ -327,4 +340,5 @@ function getStatusBadge(status) {
 if (!window.__userDashboardInitialized) {
   window.__userDashboardInitialized = true;
   initDashboard();
+  document.addEventListener("i18n:change", initDashboard);
 }
