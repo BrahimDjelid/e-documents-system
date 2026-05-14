@@ -87,6 +87,23 @@ function showToast(msg, isError = false) {
   toastTimer = setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
+function getDocumentLabel(type) {
+  const map = {
+    C20: "Certificate C20",
+    "Extrait de rôle": "Tax Roll Extract",
+  };
+  return map[type] || type || "All Requests";
+}
+
+function getTaxRegimeLabel(regime) {
+  const map = {
+    "Régime réel": "Actual tax regime",
+    "Régime simplifié": "Simplified tax regime",
+    "Régime forfaitaire": "Flat-rate tax regime",
+  };
+  return map[regime] || regime || "-";
+}
+
 // Compliance - always recomputed, never trusted
 function computeCompliance(taxRecords) {
   if (!taxRecords || taxRecords.length === 0) return false;
@@ -107,7 +124,7 @@ function getEffectiveNote(req) {
 
 // Setup service banner
 function setupBanner() {
-  if (serviceTitle) serviceTitle.textContent = adminService || "All Requests";
+  if (serviceTitle) serviceTitle.textContent = getDocumentLabel(adminService);
   if (serviceIcon && adminService === "Extrait de rôle") {
     serviceIcon.innerHTML = `<i class="fa-solid fa-receipt"></i>`;
   }
@@ -160,8 +177,8 @@ function renderTable(requests) {
       const effectStatus = getEffectiveStatus(req);
 
       const complianceHTML = isCompliant
-        ? `<span class="compliance-badge compliance-badge--ok"><i class="fa-solid fa-circle-check"></i> À jour</span>`
-        : `<span class="compliance-badge compliance-badge--nok"><i class="fa-solid fa-circle-xmark"></i> Non à jour</span>`;
+        ? `<span class="compliance-badge compliance-badge--ok"><i class="fa-solid fa-circle-check"></i> Up to date</span>`
+        : `<span class="compliance-badge compliance-badge--nok"><i class="fa-solid fa-circle-xmark"></i> Not up to date</span>`;
 
       const statusHTML = getStatusBadgeHTML(effectStatus);
 
@@ -244,15 +261,15 @@ function openModal(requestId) {
   modalDob.textContent = formatDOB(activeRequest._dob) || "-";
   modalPhone.textContent = activeRequest._phone || "-";
   modalEmail.textContent = activeRequest._email || "-";
-  modalTaxRegime.textContent = activeRequest._taxRegime || "-";
+  modalTaxRegime.textContent = getTaxRegimeLabel(activeRequest._taxRegime);
 
   // Compliance
   if (isCompliant) {
     modalCompliance.className = "compliance-badge compliance-badge--ok";
-    modalCompliance.innerHTML = `<i class="fa-solid fa-circle-check"></i> À jour`;
+    modalCompliance.innerHTML = `<i class="fa-solid fa-circle-check"></i> Up to date`;
   } else {
     modalCompliance.className = "compliance-badge compliance-badge--nok";
-    modalCompliance.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Non à jour`;
+    modalCompliance.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Not up to date`;
   }
 
   const yearInline = document.getElementById("modal-year-inline");

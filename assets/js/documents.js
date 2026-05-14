@@ -49,6 +49,14 @@ function getDocBadgeClass(type) {
   if (t.includes("extrait")) return "doc-badge doc-badge--extrait";
 }
 
+function getDocumentLabel(type) {
+  const map = {
+    C20: "Certificate C20",
+    "Extrait de rôle": "Tax Roll Extract",
+  };
+  return map[type] || type || "-";
+}
+
 function getStatusBadgeHTML(status) {
   const map = {
     approved: { cls: "status-badge--approved", label: "Approved" },
@@ -115,7 +123,7 @@ function renderTable(requests) {
               : ""
           }
         </td>
-        <td><span class="${getDocBadgeClass(req.documentType)}">${req.documentType}</span></td>
+        <td><span class="${getDocBadgeClass(req.documentType)}">${getDocumentLabel(req.documentType)}</span></td>
         <td class="req-date">${formatDate(req.submittedAt)}</td>
         <td>${getStatusBadgeHTML(req.status)}</td>
         <td>
@@ -188,7 +196,8 @@ function applyFilters() {
     const matchSearch =
       !query ||
       req.requestId.toLowerCase().includes(query) ||
-      req.documentType.toLowerCase().includes(query);
+      req.documentType.toLowerCase().includes(query) ||
+      getDocumentLabel(req.documentType).toLowerCase().includes(query);
 
     const matchType = !type || req.documentType === type;
     const matchStatus = !status || req.status === status;
@@ -248,7 +257,7 @@ function openModal(requestId) {
   if (!req) return;
 
   modalReqId.textContent = req.requestId;
-  modalDocBadge.textContent = req.documentType;
+  modalDocBadge.textContent = getDocumentLabel(req.documentType);
   modalDocBadge.className = "modal-doc-type";
   modalDate.textContent = formatDate(req.submittedAt);
   modalStatusBadge.innerHTML = getStatusBadgeHTML(req.status);

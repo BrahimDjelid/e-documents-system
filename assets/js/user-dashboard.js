@@ -42,6 +42,14 @@ function getDocBadgeClass(type) {
   return "doc-badge";
 }
 
+function getDocumentLabel(type) {
+  const map = {
+    C20: "Certificate C20",
+    "Extrait de rôle": "Tax Roll Extract",
+  };
+  return map[type] || type || "-";
+}
+
 function showToast(message, isError = false) {
   toastMsg.textContent = message;
 
@@ -166,7 +174,7 @@ async function initDashboard() {
                   : ""
               }
             </td>
-            <td><span class="${getDocBadgeClass(req.documentType)}">${req.documentType}</span></td>
+            <td><span class="${getDocBadgeClass(req.documentType)}">${getDocumentLabel(req.documentType)}</span></td>
             <td class="req-date">${formatDate(req.submittedAt)}</td>
             <td>${getStatusBadge(req.status)}</td>
             <td><button type="button" class="action-link" data-id="${req.requestId}">Details</button></td>
@@ -240,7 +248,7 @@ async function initDashboard() {
               <div class="download-item">
                 <div class="download-item-info">
                   <span class="download-item-id">${req.requestId}</span>
-                  <span class="download-item-type">${req.documentType}</span>
+                  <span class="download-item-type">${getDocumentLabel(req.documentType)}</span>
                 </div>
                 <button type="button" class="download-btn" data-id="${req.requestId}">
                   <i class="fa-solid fa-download"></i>

@@ -19,6 +19,11 @@
     },
   };
 
+  const DOC_LABELS = {
+    C20: "Certificate C20",
+    "Extrait de rôle": "Tax Roll Extract",
+  };
+
   /* DOM refs */
   const docCards = document.querySelectorAll(".doc-card");
   const btnContinue = document.getElementById("btn-step1-continue");
@@ -210,7 +215,7 @@
     const cfg = DOC_CONFIG[selectedDoc] || DOC_CONFIG["C20"];
     const docNameEl = document.getElementById("form-doc-name");
     const docIconEl = document.getElementById("form-doc-icon");
-    docNameEl.textContent = selectedDoc;
+    docNameEl.textContent = DOC_LABELS[selectedDoc] || selectedDoc;
     docIconEl.className = "form-doc-icon " + cfg.iconClass;
     docIconEl.innerHTML = `<i class="${cfg.icon}"></i>`;
 
@@ -261,13 +266,22 @@
       ? `${main.activityName}${main.activityCode ? " - Code " + main.activityCode : ""}`
       : "-";
     setField("pf-main-activity", activityLabel);
-    setField("pf-tax-regime", t.taxRegime || "-");
+    setField("pf-tax-regime", getTaxRegimeLabel(t.taxRegime));
     setField("pf-biz-address", t.businessAddress || "-");
   }
 
   function setField(id, value) {
     const el = document.getElementById(id);
     if (el) el.value = value || "-";
+  }
+
+  function getTaxRegimeLabel(regime) {
+    const map = {
+      "Régime réel": "Actual tax regime",
+      "Régime simplifié": "Simplified tax regime",
+      "Régime forfaitaire": "Flat-rate tax regime",
+    };
+    return map[regime] || regime || "-";
   }
 
   /* Declaration checkbox */
@@ -354,7 +368,8 @@
 
     // Populate step 3 confirmation
     document.getElementById("confirm-req-id").textContent = reqId;
-    document.getElementById("confirm-doc-type").textContent = selectedDoc;
+    document.getElementById("confirm-doc-type").textContent =
+      DOC_LABELS[selectedDoc] || selectedDoc;
     document.getElementById("confirm-date").textContent = formatDate(now);
 
     showToast("Request submitted successfully.");

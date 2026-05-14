@@ -154,7 +154,7 @@
         <i class="${iconClass}"></i>
       </div>
       <div class="notif-item-body">
-        <p class="notif-item-msg">${_escapeHtml(notif.message)}</p>
+        <p class="notif-item-msg">${_escapeHtml(_toEnglishMessage(notif.message))}</p>
         <span class="notif-item-time">
           <i class="fa-regular fa-clock"></i>
           ${timeStr}
@@ -357,6 +357,10 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  function _toEnglishMessage(message) {
+    return String(message || "").replaceAll("Extrait de rôle", "Tax Roll Extract");
   }
 
   window.initNotifications = initNotifications;

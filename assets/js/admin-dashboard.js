@@ -30,6 +30,14 @@ function setText(id, value) {
   if (el) el.textContent = value;
 }
 
+function getDocumentLabel(type) {
+  const map = {
+    C20: "Certificate C20",
+    "Extrait de rôle": "Tax Roll Extract",
+  };
+  return map[type] || type || "—";
+}
+
 //  Compliance — always recomputed
 function computeCompliance(taxRecords) {
   if (!taxRecords || taxRecords.length === 0) return false;
@@ -73,7 +81,7 @@ async function initAdminDashboard() {
         adminService === "C20"
           ? "fa-regular fa-file-lines"
           : "fa-solid fa-receipt";
-      serviceBadge.innerHTML = `<i class="${icon}"></i> ${adminService || "—"}`;
+      serviceBadge.innerHTML = `<i class="${icon}"></i> ${getDocumentLabel(adminService)}`;
     }
 
     //  Stats
@@ -128,8 +136,8 @@ async function initAdminDashboard() {
         .map((req) => {
           const isCompliant = computeCompliance(req._taxRecords);
           const compBadge = isCompliant
-            ? `<span class="compliance-badge compliance-badge--ok"><i class="fa-solid fa-circle-check"></i> À jour</span>`
-            : `<span class="compliance-badge compliance-badge--nok"><i class="fa-solid fa-circle-xmark"></i> Non à jour</span>`;
+            ? `<span class="compliance-badge compliance-badge--ok"><i class="fa-solid fa-circle-check"></i> Up to date</span>`
+            : `<span class="compliance-badge compliance-badge--nok"><i class="fa-solid fa-circle-xmark"></i> Not up to date</span>`;
 
           return `
           <tr>

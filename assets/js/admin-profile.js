@@ -65,6 +65,14 @@
     if (el) el.value = value || "";
   }
 
+  function getDocumentLabel(type) {
+    const map = {
+      C20: "Certificate C20",
+      "Extrait de rôle": "Tax Roll Extract",
+    };
+    return map[type] || type || "—";
+  }
+
   /* Avatar helpers  */
   function showAvatar(src) {
     avatarImg.src = src + "?t=" + Date.now();
@@ -120,7 +128,7 @@
       service === "C20" ? "fa-regular fa-file-lines" : "fa-solid fa-receipt";
     const serviceBadge = document.getElementById("service-badge");
     if (serviceBadge) {
-      serviceBadge.innerHTML = `<i class="${badgeIcon}"></i> ${service}`;
+      serviceBadge.innerHTML = `<i class="${badgeIcon}"></i> ${getDocumentLabel(service)}`;
     }
 
     /* Account info fields */
@@ -134,7 +142,7 @@
 
     /* Service Assignment card */
     const svcService = document.getElementById("svc-service");
-    if (svcService) svcService.textContent = service;
+    if (svcService) svcService.textContent = getDocumentLabel(service);
 
     const svcNationalId = document.getElementById("svc-nationalid");
     if (svcNationalId) svcNationalId.textContent = p.nationalId || "—";

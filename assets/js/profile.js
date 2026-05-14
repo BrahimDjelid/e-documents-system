@@ -168,11 +168,14 @@
 
   /* Tax info */
   const TAX_REGIME_CONFIG = {
-    "Régime réel": { cls: "tax-regime--blue", label: "Régime réel" },
-    "Régime simplifié": { cls: "tax-regime--teal", label: "Régime simplifié" },
+    "Régime réel": { cls: "tax-regime--blue", label: "Actual tax regime" },
+    "Régime simplifié": {
+      cls: "tax-regime--teal",
+      label: "Simplified tax regime",
+    },
     "Régime forfaitaire": {
       cls: "tax-regime--amber",
-      label: "Régime forfaitaire",
+      label: "Flat-rate tax regime",
     },
   };
 
