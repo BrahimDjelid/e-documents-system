@@ -173,6 +173,8 @@ window.I18N_FR = {
     goodEvening: "Bonsoir",
     welcomeNoRequests:
       "Bienvenue ! Vous n'avez encore aucune demande. Commencez par en soumettre une.",
+    newRequest: "Nouvelle demande",
+    track: "Suivre",
     welcomeSummary: "Vous avez {summary}.",
     pendingRequests: "{count} demande{plural} en attente",
     approvedRequests: "{count} demande{plural} approuvee{plural}",
@@ -318,6 +320,8 @@ window.I18N_FR = {
       "Changer votre email mettra a jour vos identifiants de connexion.",
     serviceAssignment: "Affectation de service",
     managedByAdmin: "Gere par l'administrateur systeme",
+    governmentInfoHint:
+      "Ces champs sont gérés par l'administration fiscale et ne peuvent pas être modifiés directement.",
     role: "Role",
     assignedService: "Service affecte",
     serviceReadonly:

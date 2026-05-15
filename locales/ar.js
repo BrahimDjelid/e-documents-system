@@ -170,6 +170,8 @@ window.I18N_AR = {
     goodEvening: "مساء الخير",
     welcomeNoRequests: "مرحبا! لا توجد لديك طلبات بعد. ابدأ بإرسال طلب.",
     welcomeSummary: "لديك {summary}.",
+    newRequest: "طلب جديد",
+    track: "تتبع",
     pendingRequests: "{count} طلب قيد الانتظار",
     approvedRequests: "{count} طلب موافق عليه",
     totalRequests: "إجمالي الطلبات",
@@ -300,6 +302,8 @@ window.I18N_AR = {
     loginId: "(معرّف الدخول)",
     cannotBeChanged: "لا يمكن تغييره",
     cannotBeChangedSupport: "لا يمكن تغييره. اتصل بالدعم عند الحاجة.",
+    governmentInfoHint:
+      "هذه الحقول تدار من قبل السلطة الضريبية ولا يمكن تغييرها مباشرة.",
     nameCannotChange: "لا يمكن تغيير الاسم. اتصل بمسؤول النظام عند الحاجة.",
     emailChangesLogin:
       "سيؤدي تغيير بريدك الإلكتروني إلى تحديث بيانات تسجيل الدخول.",

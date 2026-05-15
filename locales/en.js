@@ -170,6 +170,8 @@ window.I18N_EN = {
     goodEvening: "Good evening",
     welcomeNoRequests:
       "Welcome! You have no requests yet. Start by submitting one.",
+    newRequest: "New Request",
+    track: "Track",
     welcomeSummary: "You have {summary}.",
     pendingRequests: "{count} pending request{plural}",
     approvedRequests: "{count} approved request{plural}",
@@ -294,6 +296,8 @@ window.I18N_EN = {
     updatePasswordButton: "Update Password",
     personalInformation: "Personal Information",
     governmentInformation: "Government Information",
+    governmentInfoHint:
+      "These fields are managed by the tax authority and cannot be changed directly.",
     taxInformation: "Tax Information",
     contactDetails: "Contact Details",
     accountInformation: "Account Information",

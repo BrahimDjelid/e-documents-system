@@ -24,7 +24,8 @@
                 <section class="profile-banner">
                     <div class="profile-banner-text">
                         <h2 class="profile-banner-title" data-i18n="profilePage.myProfile">My Profile</h2>
-                        <p class="profile-banner-sub" data-i18n="profilePage.userSubtitle">Manage your personal information and account settings</p>
+                        <p class="profile-banner-sub" data-i18n="profilePage.userSubtitle">Manage your personal
+                            information and account settings</p>
                     </div>
                     <button type="button" class="btn-edit-profile" id="btn-edit-profile">
                         <i class="fa-solid fa-pen"></i>
@@ -47,14 +48,15 @@
                                     <span class="avatar-initials" id="avatar-initials">-</span>
                                 </div>
                                 <!-- Upload button — shown only in edit mode (via JS) -->
-                                <label class="avatar-upload-btn" id="avatar-upload-label" title="Change photo" data-i18n-title="profilePage.changePhoto"
-                                    style="display:none;">
+                                <label class="avatar-upload-btn" id="avatar-upload-label" title="Change photo"
+                                    data-i18n-title="profilePage.changePhoto" style="display:none;">
                                     <i class="fa-solid fa-camera"></i>
                                     <input type="file" id="avatar-upload-input" accept="image/*" hidden />
                                 </label>
                                 <!-- Remove button — shown only when a photo is set (via JS) -->
-                                <button type="button" class="avatar-remove-btn" id="avatar-remove-btn" title="Remove photo" data-i18n-title="profilePage.removePhoto"
-                                    type="button" style="display:none;">
+                                <button type="button" class="avatar-remove-btn" id="avatar-remove-btn"
+                                    title="Remove photo" data-i18n-title="profilePage.removePhoto" type="button"
+                                    style="display:none;">
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
@@ -74,7 +76,8 @@
                                     <div class="summary-icon summary-icon--blue">
                                         <i class="fa-regular fa-file-lines"></i>
                                     </div>
-                                    <span class="summary-label" data-i18n="dashboard.totalRequests">Total Requests</span>
+                                    <span class="summary-label" data-i18n="dashboard.totalRequests">Total
+                                        Requests</span>
                                     <span class="summary-value" id="sum-total">-</span>
                                 </li>
                                 <li class="summary-item">
@@ -106,21 +109,25 @@
                             <div class="eligibility-header">
                                 <div class="eligibility-title-row">
                                     <i class="fa-solid fa-shield-halved"></i>
-                                    <h4 class="card-section-title" data-i18n="dashboard.eligibilityStatus">Eligibility Status</h4>
+                                    <h4 class="card-section-title" data-i18n="dashboard.eligibilityStatus">Eligibility
+                                        Status</h4>
                                 </div>
                                 <span class="eligibility-score" id="eligibility-score">-</span>
                             </div>
                             <ul class="eligibility-list">
                                 <li class="eligibility-item">
-                                    <span class="eligibility-label" data-i18n="dashboard.taxCompliance">Tax Compliance</span>
+                                    <span class="eligibility-label" data-i18n="dashboard.taxCompliance">Tax
+                                        Compliance</span>
                                     <span class="eligibility-badge" id="elig-tax">-</span>
                                 </li>
                                 <li class="eligibility-item">
-                                    <span class="eligibility-label" data-i18n="dashboard.identityVerified">Identity Verified</span>
+                                    <span class="eligibility-label" data-i18n="dashboard.identityVerified">Identity
+                                        Verified</span>
                                     <span class="eligibility-badge" id="elig-identity">-</span>
                                 </li>
                                 <li class="eligibility-item">
-                                    <span class="eligibility-label" data-i18n="dashboard.addressConfirmed">Address Confirmed</span>
+                                    <span class="eligibility-label" data-i18n="dashboard.addressConfirmed">Address
+                                        Confirmed</span>
                                     <span class="eligibility-badge" id="elig-address">-</span>
                                 </li>
                             </ul>
@@ -133,21 +140,26 @@
                                     <i class="fa-solid fa-lock"></i>
                                 </div>
                                 <div>
-                                    <h4 class="card-section-title" data-i18n="profilePage.securityPassword">Security &amp; Password</h4>
-                                    <p class="card-section-sub" data-i18n="profilePage.updatePassword">Update your password</p>
+                                    <h4 class="card-section-title" data-i18n="profilePage.securityPassword">Security
+                                        &amp; Password</h4>
+                                    <p class="card-section-sub" data-i18n="profilePage.updatePassword">Update your
+                                        password</p>
                                 </div>
-                                <button type="button" class="btn-edit-security" id="btn-edit-security" title="Edit password" data-i18n-title="profilePage.updatePassword">
+                                <button type="button" class="btn-edit-security" id="btn-edit-security"
+                                    title="Edit password" data-i18n-title="profilePage.updatePassword">
                                     <i class="fa-solid fa-pen" id="security-edit-icon"></i>
                                 </button>
                             </div>
 
                             <div class="security-form">
                                 <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-current" data-i18n="profilePage.currentPassword">Current Password</label>
+                                    <label class="sec-label" for="sec-current"
+                                        data-i18n="profilePage.currentPassword">Current Password</label>
                                     <div class="sec-input-wrap">
                                         <input type="password" class="sec-input" id="sec-current"
-                                            placeholder="Enter current password" data-i18n-placeholder="profilePage.enterCurrentPassword" autocomplete="current-password"
-                                            disabled />
+                                            placeholder="Enter current password"
+                                            data-i18n-placeholder="profilePage.enterCurrentPassword"
+                                            autocomplete="current-password" disabled />
                                         <button class="sec-toggle-pw" data-target="sec-current" type="button"
                                             tabindex="-1">
                                             <i class="fa-regular fa-eye"></i>
@@ -155,20 +167,26 @@
                                     </div>
                                 </div>
                                 <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-new" data-i18n="profilePage.newPassword">New Password</label>
+                                    <label class="sec-label" for="sec-new" data-i18n="profilePage.newPassword">New
+                                        Password</label>
                                     <div class="sec-input-wrap">
                                         <input type="password" class="sec-input" id="sec-new"
-                                            placeholder="Enter new password" data-i18n-placeholder="profilePage.enterNewPassword" autocomplete="new-password" disabled />
+                                            placeholder="Enter new password"
+                                            data-i18n-placeholder="profilePage.enterNewPassword"
+                                            autocomplete="new-password" disabled />
                                         <button class="sec-toggle-pw" data-target="sec-new" type="button" tabindex="-1">
                                             <i class="fa-regular fa-eye"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <div class="sec-field-group">
-                                    <label class="sec-label" for="sec-confirm" data-i18n="profilePage.confirmNewPassword">Confirm New Password</label>
+                                    <label class="sec-label" for="sec-confirm"
+                                        data-i18n="profilePage.confirmNewPassword">Confirm New Password</label>
                                     <div class="sec-input-wrap">
                                         <input type="password" class="sec-input" id="sec-confirm"
-                                            placeholder="Confirm new password" data-i18n-placeholder="profilePage.confirmNewPasswordPlaceholder" autocomplete="new-password" disabled />
+                                            placeholder="Confirm new password"
+                                            data-i18n-placeholder="profilePage.confirmNewPasswordPlaceholder"
+                                            autocomplete="new-password" disabled />
                                         <button class="sec-toggle-pw" data-target="sec-confirm" type="button"
                                             tabindex="-1">
                                             <i class="fa-regular fa-eye"></i>
@@ -190,9 +208,11 @@
                         <!-- Personal Information -->
                         <div class="profile-card info-card">
                             <div class="info-card-header">
-                                <h4 class="card-section-title" data-i18n="profilePage.personalInformation">Personal Information</h4>
+                                <h4 class="card-section-title" data-i18n="profilePage.personalInformation">Personal
+                                    Information</h4>
                                 <div class="edit-actions" id="edit-actions" style="display:none;">
-                                    <button type="button" class="btn-cancel-edit" id="btn-cancel-edit" data-i18n="common.cancel">Cancel</button>
+                                    <button type="button" class="btn-cancel-edit" id="btn-cancel-edit"
+                                        data-i18n="common.cancel">Cancel</button>
                                     <button type="button" class="btn-save-edit" id="btn-save-edit">
                                         <i class="fa-solid fa-check"></i>
                                         <span data-i18n="profilePage.saveChanges">Save Changes</span>
@@ -268,9 +288,11 @@
 
                         <!-- Government Information -->
                         <div class="profile-card gov-card">
-                            <h4 class="card-section-title" data-i18n="profilePage.governmentInformation">Government Information</h4>
-                            <p class="card-section-sub gov-sub">These fields are managed by the tax authority
-                                and cannot be changed directly.</p>
+                            <h4 class="card-section-title" data-i18n="profilePage.governmentInformation">Government
+                                Information</h4>
+                            <p class="card-section-sub gov-sub" data-i18n="profilePage.governmentInfoHint">These fields
+                                are managed by the tax
+                                authority and cannot be changed directly.</p>
 
                             <div class="info-grid">
                                 <div class="info-field">
@@ -283,7 +305,8 @@
                                             readonly />
                                         <span class="info-lock-icon"><i class="fa-solid fa-lock"></i></span>
                                     </div>
-                                    <span class="info-hint" data-i18n="profilePage.cannotBeChangedSupport">Cannot be changed. Contact support if needed.</span>
+                                    <span class="info-hint" data-i18n="profilePage.cannotBeChangedSupport">Cannot be
+                                        changed. Contact support if needed.</span>
                                 </div>
 
                                 <div class="info-field">
@@ -296,7 +319,8 @@
                                             readonly />
                                         <span class="info-lock-icon"><i class="fa-solid fa-lock"></i></span>
                                     </div>
-                                    <span class="info-hint" data-i18n="profilePage.cannotBeChangedSupport">Cannot be changed. Contact support if needed.</span>
+                                    <span class="info-hint" data-i18n="profilePage.cannotBeChangedSupport">Cannot be
+                                        changed. Contact support if needed.</span>
                                 </div>
                             </div>
                         </div>
@@ -310,8 +334,10 @@
                                         <i class="fa-solid fa-building-columns"></i>
                                     </div>
                                     <div>
-                                        <h4 class="card-section-title" data-i18n="profilePage.taxInformation">Tax Information</h4>
-                                        <p class="card-section-sub" data-i18n="profilePage.taxInfoSubtitle">Your registered fiscal and business information.</p>
+                                        <h4 class="card-section-title" data-i18n="profilePage.taxInformation">Tax
+                                            Information</h4>
+                                        <p class="card-section-sub" data-i18n="profilePage.taxInfoSubtitle">Your
+                                            registered fiscal and business information.</p>
                                     </div>
                                 </div>
                                 <span class="tax-regime-badge" id="tax-regime-badge">-</span>
@@ -324,15 +350,18 @@
                                     <span class="tax-field-value" id="tax-nature">-</span>
                                 </div>
                                 <div class="tax-field">
-                                    <span class="tax-field-label" data-i18n="profilePage.establishmentDate">Establishment Date</span>
+                                    <span class="tax-field-label"
+                                        data-i18n="profilePage.establishmentDate">Establishment Date</span>
                                     <span class="tax-field-value" id="tax-estab-date">-</span>
                                 </div>
                                 <div class="tax-field">
-                                    <span class="tax-field-label" data-i18n="requestPage.businessAddress">Business Address</span>
+                                    <span class="tax-field-label" data-i18n="requestPage.businessAddress">Business
+                                        Address</span>
                                     <span class="tax-field-value" id="tax-biz-address">-</span>
                                 </div>
                                 <div class="tax-field" id="tax-rc-row">
-                                    <span class="tax-field-label" data-i18n="profilePage.commercialRegister">Commercial Register</span>
+                                    <span class="tax-field-label" data-i18n="profilePage.commercialRegister">Commercial
+                                        Register</span>
                                     <span class="tax-field-value tax-field-value--mono" id="tax-rc">-</span>
                                 </div>
                             </div>
