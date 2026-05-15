@@ -547,13 +547,17 @@ def _empty_status_counts():
 
 def get_admin_stats(admin_id, admin_service):
     """Get statistics filtered by current admin's ID and service."""
-    where_sql = f"""
-        WHERE assigned_to = ? AND document_type = ?
-    """
     with get_db() as conn:
         status_counts = _empty_status_counts()
+        
+        # Fix: Complete the SQL query with proper FROM and WHERE clauses
         for row in conn.execute(
-            f"SELECT status, COUNT(*) AS total FROM requests {where_sql} GROUP BY status",
+            """
+            SELECT status, COUNT(*) AS total 
+            FROM requests 
+            WHERE assigned_to = ? AND document_type = ? 
+            GROUP BY status
+            """,
             (admin_id, admin_service),
         ):
             status_counts[row["status"]] = row["total"]
@@ -561,9 +565,10 @@ def get_admin_stats(admin_id, admin_service):
         requests_by_type = [
             {"type": row["document_type"], "count": row["total"]}
             for row in conn.execute(
-                f"""
+                """
                 SELECT document_type, COUNT(*) AS total
-                FROM requests {where_sql}
+                FROM requests 
+                WHERE assigned_to = ? AND document_type = ?
                 GROUP BY document_type
                 ORDER BY total DESC, document_type
                 """,
@@ -574,10 +579,11 @@ def get_admin_stats(admin_id, admin_service):
         monthly_requests = [
             {"month": row["month"], "count": row["total"]}
             for row in conn.execute(
-                f"""
+                """
                 SELECT substr(submitted_at, 1, 7) AS month, COUNT(*) AS total
-                FROM requests {where_sql}
-                WHERE submitted_at IS NOT NULL AND submitted_at != ''
+                FROM requests 
+                WHERE assigned_to = ? AND document_type = ?
+                    AND submitted_at IS NOT NULL AND submitted_at != ''
                 GROUP BY month
                 ORDER BY month
                 """,
@@ -599,7 +605,6 @@ def get_admin_stats(admin_id, admin_service):
         "requestsByType": requests_by_type,
         "monthlyRequests": monthly_requests,
     }
-
 
 def get_global_admin_stats():
     with get_db() as conn:
