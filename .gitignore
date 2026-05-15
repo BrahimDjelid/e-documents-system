@@ -72,3 +72,6 @@ prompt*.txt
 
 # Ignore signature
 backend/assets/signatures/
+
+# Ignore project context file
+PROJECT_CONTEXT.md
