@@ -514,6 +514,77 @@ async function apiGetAdminDashboard() {
 }
 
 /**
+ * Get global admin statistics for reports KPI cards and initial charts.
+ *
+ * Flask: GET /api/admin/stats
+ * Headers: Authorization: Bearer {token} (admin only)
+ */
+async function apiGetAdminStats() {
+  if (USE_MOCK) {
+    throw new Error("Reports are available when Flask is connected");
+  }
+
+  const res = await fetch(`${API_BASE}/api/admin/stats`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new Error("Could not load admin statistics");
+  return res.json();
+}
+
+/**
+ * Build a filtered statistical report.
+ *
+ * Flask: POST /api/admin/reports
+ * Headers: Authorization: Bearer {token} (admin only)
+ * Body: { dateFrom, dateTo, status, type }
+ */
+async function apiGenerateAdminReport(filters) {
+  if (USE_MOCK) {
+    throw new Error("Reports are available when Flask is connected");
+  }
+
+  const res = await fetch(`${API_BASE}/api/admin/reports`, {
+    method: "POST",
+    headers: _authHeaders(),
+    body: JSON.stringify(filters || {}),
+  });
+  if (!res.ok) throw new Error("Could not generate report");
+  return res.json();
+}
+
+/**
+ * Export the current admin report as PDF or CSV and trigger a download.
+ *
+ * Flask: GET /api/admin/reports/export?format=pdf|csv&...
+ */
+async function apiExportAdminReport(format, filters) {
+  if (USE_MOCK) {
+    throw new Error("Reports are available when Flask is connected");
+  }
+
+  const params = new URLSearchParams({ format });
+  Object.entries(filters || {}).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
+
+  const res = await fetch(`${API_BASE}/api/admin/reports/export?${params}`, {
+    headers: _authHeaders(),
+  });
+  if (!res.ok) throw new Error("Report export failed");
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const extension = format === "csv" ? "csv" : "pdf";
+  a.href = url;
+  a.download = `admin_report.${extension}`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
+
+/**
  * Save an admin's decision on a request.
  *
  * Flask: POST /api/requests/{requestId}/decision

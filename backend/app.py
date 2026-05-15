@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 from werkzeug.security import check_password_hash, generate_password_hash
 import base64
+import csv
+from io import BytesIO, StringIO
 import json
 import os
 import random
@@ -9,6 +11,7 @@ import sqlite3
 import threading
 from datetime import datetime, timezone, timedelta
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
 
 app = Flask(__name__)
@@ -433,6 +436,506 @@ def _request_visible_to_admin(req, admin_id, admin_service):
         return assigned == admin_id
     # Legacy requests with no assignedTo: fall back to service matching
     return req.get("documentType") == admin_service
+
+
+# ----------------------------
+# Report helpers
+# ----------------------------
+
+REPORT_STATUSES = {"pending", "approved", "rejected"}
+
+
+def require_admin_user():
+    user_id = extract_user_id()
+    if not user_id:
+        return None, ({"error": "Unauthorized"}, 401)
+
+    with get_db() as conn:
+        admin = conn.execute(
+            "SELECT auth_id, role, service, profile_json FROM users WHERE auth_id = ?",
+            (user_id,),
+        ).fetchone()
+
+    if not admin or admin["role"] != "admin":
+        return None, ({"error": "Forbidden"}, 403)
+
+    return admin, None
+
+
+def _safe_date(value, field_name):
+    if value in (None, ""):
+        return None, None
+    try:
+        parsed = datetime.strptime(str(value), "%Y-%m-%d").date()
+        return parsed.isoformat(), None
+    except (TypeError, ValueError):
+        return None, f"Invalid {field_name}"
+
+
+def _available_document_types(conn):
+    rows = conn.execute(
+        """
+        SELECT DISTINCT document_type
+        FROM requests
+        WHERE document_type IS NOT NULL AND document_type != ''
+        ORDER BY document_type
+        """
+    ).fetchall()
+    return [row["document_type"] for row in rows]
+
+
+def validate_report_filters(raw_filters):
+    filters = raw_filters or {}
+    date_from, date_from_error = _safe_date(filters.get("dateFrom"), "dateFrom")
+    if date_from_error:
+        return None, date_from_error
+
+    date_to, date_to_error = _safe_date(filters.get("dateTo"), "dateTo")
+    if date_to_error:
+        return None, date_to_error
+
+    if date_from and date_to and date_from > date_to:
+        return None, "dateFrom cannot be after dateTo"
+
+    status = filters.get("status") or ""
+    if status and status not in REPORT_STATUSES:
+        return None, "Invalid status"
+
+    doc_type = filters.get("type") or ""
+    with get_db() as conn:
+        available_types = _available_document_types(conn)
+    if doc_type and doc_type not in available_types:
+        return None, "Invalid document type"
+
+    return {
+        "dateFrom": date_from,
+        "dateTo": date_to,
+        "status": status,
+        "type": doc_type,
+    }, None
+
+
+def _report_where(filters, prefix="r", admin_id=None, admin_service=None):
+    clauses = []
+    params = []
+    
+    # CRITICAL: Always filter by current admin's assigned requests AND service
+    if admin_id:
+        clauses.append(f"{prefix}.assigned_to = ?")
+        params.append(admin_id)
+    if admin_service:
+        clauses.append(f"{prefix}.document_type = ?")
+        params.append(admin_service)
+    
+    if filters.get("dateFrom"):
+        clauses.append(f"substr({prefix}.submitted_at, 1, 10) >= ?")
+        params.append(filters["dateFrom"])
+    if filters.get("dateTo"):
+        clauses.append(f"substr({prefix}.submitted_at, 1, 10) <= ?")
+        params.append(filters["dateTo"])
+    if filters.get("status"):
+        clauses.append(f"{prefix}.status = ?")
+        params.append(filters["status"])
+    # NOTE: Type filter from user input is IGNORED - we use admin_service instead
+
+    return (" WHERE " + " AND ".join(clauses)) if clauses else "", params
+
+
+def _empty_status_counts():
+    return {status: 0 for status in REPORT_STATUSES}
+
+
+def get_admin_stats(admin_id, admin_service):
+    """Get statistics filtered by current admin's ID and service."""
+    where_sql = f"""
+        WHERE assigned_to = ? AND document_type = ?
+    """
+    with get_db() as conn:
+        status_counts = _empty_status_counts()
+        for row in conn.execute(
+            f"SELECT status, COUNT(*) AS total FROM requests {where_sql} GROUP BY status",
+            (admin_id, admin_service),
+        ):
+            status_counts[row["status"]] = row["total"]
+
+        requests_by_type = [
+            {"type": row["document_type"], "count": row["total"]}
+            for row in conn.execute(
+                f"""
+                SELECT document_type, COUNT(*) AS total
+                FROM requests {where_sql}
+                GROUP BY document_type
+                ORDER BY total DESC, document_type
+                """,
+                (admin_id, admin_service),
+            )
+        ]
+
+        monthly_requests = [
+            {"month": row["month"], "count": row["total"]}
+            for row in conn.execute(
+                f"""
+                SELECT substr(submitted_at, 1, 7) AS month, COUNT(*) AS total
+                FROM requests {where_sql}
+                WHERE submitted_at IS NOT NULL AND submitted_at != ''
+                GROUP BY month
+                ORDER BY month
+                """,
+                (admin_id, admin_service),
+            )
+        ]
+
+        total_users = conn.execute(
+            "SELECT COUNT(*) FROM users WHERE role = 'user'"
+        ).fetchone()[0]
+
+    return {
+        "totalRequests": sum(status_counts.values()),
+        "approved": status_counts["approved"],
+        "pending": status_counts["pending"],
+        "rejected": status_counts["rejected"],
+        "totalUsers": total_users,
+        "totalDocuments": status_counts["approved"],
+        "requestsByType": requests_by_type,
+        "monthlyRequests": monthly_requests,
+    }
+
+
+def get_global_admin_stats():
+    with get_db() as conn:
+        status_counts = _empty_status_counts()
+        for row in conn.execute(
+            "SELECT status, COUNT(*) AS total FROM requests GROUP BY status"
+        ):
+            status_counts[row["status"]] = row["total"]
+
+        requests_by_type = [
+            {"type": row["document_type"], "count": row["total"]}
+            for row in conn.execute(
+                """
+                SELECT document_type, COUNT(*) AS total
+                FROM requests
+                GROUP BY document_type
+                ORDER BY total DESC, document_type
+                """
+            )
+        ]
+
+        monthly_requests = [
+            {"month": row["month"], "count": row["total"]}
+            for row in conn.execute(
+                """
+                SELECT substr(submitted_at, 1, 7) AS month, COUNT(*) AS total
+                FROM requests
+                WHERE submitted_at IS NOT NULL AND submitted_at != ''
+                GROUP BY month
+                ORDER BY month
+                """
+            )
+        ]
+
+        total_users = conn.execute(
+            "SELECT COUNT(*) FROM users WHERE role = 'user'"
+        ).fetchone()[0]
+
+    return {
+        "totalRequests": sum(status_counts.values()),
+        "approved": status_counts["approved"],
+        "pending": status_counts["pending"],
+        "rejected": status_counts["rejected"],
+        "totalUsers": total_users,
+        "totalDocuments": status_counts["approved"],
+        "requestsByType": requests_by_type,
+        "monthlyRequests": monthly_requests,
+    }
+
+
+def query_report_requests(filters, admin_id=None, admin_service=None):
+    where_sql, params = _report_where(filters, admin_id=admin_id, admin_service=admin_service)
+    query = f"""
+        SELECT
+            r.request_id AS requestId,
+            r.document_type AS documentType,
+            r.status,
+            r.submitted_at AS submittedAt,
+            r.processed_by AS processedBy,
+            r.assigned_to AS assignedAdmin,
+            COALESCE(json_extract(u.profile_json, '$.firstName'), '') AS userFirstName,
+            COALESCE(json_extract(u.profile_json, '$.lastName'), '') AS userLastName,
+            u.auth_id AS userNif,
+            COALESCE(json_extract(p.profile_json, '$.firstName'), '') AS processedFirstName,
+            COALESCE(json_extract(p.profile_json, '$.lastName'), '') AS processedLastName,
+            COALESCE(json_extract(a.profile_json, '$.firstName'), '') AS assignedFirstName,
+            COALESCE(json_extract(a.profile_json, '$.lastName'), '') AS assignedLastName
+        FROM requests r
+        JOIN users u ON u.auth_id = r.user_id
+        LEFT JOIN users p ON p.auth_id = r.processed_by
+        LEFT JOIN users a ON a.auth_id = r.assigned_to
+        {where_sql}
+        ORDER BY r.submitted_at DESC, r.sort_order DESC, r.request_id DESC
+    """
+    with get_db() as conn:
+        rows = conn.execute(query, params).fetchall()
+
+    data = []
+    for row in rows:
+        user_name = f"{row['userFirstName']} {row['userLastName']}".strip()
+        processed_name = f"{row['processedFirstName']} {row['processedLastName']}".strip()
+        assigned_name = f"{row['assignedFirstName']} {row['assignedLastName']}".strip()
+        data.append({
+            "requestId": row["requestId"],
+            "userName": user_name or row["userNif"],
+            "userNif": row["userNif"],
+            "documentType": row["documentType"],
+            "status": row["status"],
+            "submittedAt": row["submittedAt"],
+            "processedBy": processed_name or row["processedBy"] or "",
+            "assignedAdmin": assigned_name or row["assignedAdmin"] or "",
+        })
+    return data
+
+
+def build_report_data(filters, admin_id=None, admin_service=None):
+    where_sql, params = _report_where(filters, admin_id=admin_id, admin_service=admin_service)
+
+    with get_db() as conn:
+        status_counts = _empty_status_counts()
+        for row in conn.execute(
+            f"SELECT status, COUNT(*) AS total FROM requests r {where_sql} GROUP BY status",
+            params,
+        ):
+            status_counts[row["status"]] = row["total"]
+
+        type_counts = [
+            {"type": row["document_type"], "count": row["total"]}
+            for row in conn.execute(
+                f"""
+                SELECT document_type, COUNT(*) AS total
+                FROM requests r
+                {where_sql}
+                GROUP BY document_type
+                ORDER BY total DESC, document_type
+                """,
+                params,
+            )
+        ]
+
+        monthly = [
+            {"month": row["month"], "count": row["total"]}
+            for row in conn.execute(
+                f"""
+                SELECT substr(submitted_at, 1, 7) AS month, COUNT(*) AS total
+                FROM requests r
+                {where_sql}
+                GROUP BY month
+                ORDER BY month
+                """,
+                params,
+            )
+        ]
+
+        total_users = conn.execute(
+            "SELECT COUNT(*) FROM users WHERE role = 'user'"
+        ).fetchone()[0]
+
+    total = sum(status_counts.values())
+    summary = {
+        "totalRequests": total,
+        "approved": status_counts["approved"],
+        "pending": status_counts["pending"],
+        "rejected": status_counts["rejected"],
+        "totalUsers": total_users,
+        "totalDocuments": status_counts["approved"],
+        "approvalRate": round((status_counts["approved"] / total) * 100, 1) if total else 0,
+        "rejectionRate": round((status_counts["rejected"] / total) * 100, 1) if total else 0,
+    }
+
+    return {
+        "summary": summary,
+        "charts": {
+            "byStatus": [
+                {"status": "approved", "count": status_counts["approved"]},
+                {"status": "pending", "count": status_counts["pending"]},
+                {"status": "rejected", "count": status_counts["rejected"]},
+            ],
+            "byType": type_counts,
+            "monthlyRequests": monthly,
+        },
+        "data": query_report_requests(filters, admin_id=admin_id, admin_service=admin_service),
+        "filters": filters,
+    }
+
+
+def generate_report_csv(report):
+    buffer = StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow([
+        "ID de demande",
+        "Utilisateur",
+        "NIF",
+        "Type de document",
+        "Statut",
+        "Date de soumission",
+        "Traité par",
+        "Admin assigné",
+    ])
+    
+    # Map status to French
+    status_fr = {
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "rejected": "Rejeté",
+    }
+    
+    for row in report["data"]:
+        writer.writerow([
+            row["requestId"],
+            row["userName"],
+            row["userNif"],
+            row["documentType"],
+            status_fr.get(row["status"], row["status"]),
+            row["submittedAt"],
+            row["processedBy"],
+            row["assignedAdmin"],
+        ])
+
+    output = BytesIO()
+    output.write(("\ufeff" + buffer.getvalue()).encode("utf-8"))
+    output.seek(0)
+    return output
+
+
+def _pdf_text(value):
+    return str(value or "-").encode("latin-1", "replace").decode("latin-1")
+
+
+def _draw_report_row(c, y, values, widths, font="Helvetica", size=8):
+    c.setFont(font, size)
+    x = 14 * mm
+    for value, col_w in zip(values, widths):
+        c.drawString(x + 2, y, _pdf_text(value)[:34])
+        x += col_w
+
+
+def generate_report_pdf(report):
+    output = BytesIO()
+    c = canvas.Canvas(output, pagesize=A4)
+    width, height = A4
+
+    def new_page(page_number):
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(14 * mm, height - 16 * mm, "REPUBLIQUE ALGERIENNE DEMOCRATIQUE ET POPULAIRE")
+        c.drawString(14 * mm, height - 22 * mm, "MINISTERE DES FINANCES - DIRECTION GENERALE DES IMPOTS")
+        c.setFont("Helvetica-Bold", 16)
+        c.drawCentredString(width / 2, height - 36 * mm, "RAPPORT STATISTIQUE")
+        c.setFont("Helvetica", 8)
+        c.drawRightString(width - 14 * mm, 10 * mm, f"Page {page_number}")
+        c.line(14 * mm, height - 42 * mm, width - 14 * mm, height - 42 * mm)
+        return height - 52 * mm
+
+    page = 1
+    y = new_page(page)
+    generated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+    filters = report.get("filters", {})
+    
+    # Build filter text in French
+    filter_parts = []
+    if filters.get('dateFrom'):
+        filter_parts.append(f"De: {filters['dateFrom']}")
+    else:
+        filter_parts.append("De: Tous")
+    if filters.get('dateTo'):
+        filter_parts.append(f"À: {filters['dateTo']}")
+    else:
+        filter_parts.append("À: Tous")
+    if filters.get('status'):
+        status_fr_map = {
+            "pending": "En attente",
+            "approved": "Approuvé",
+            "rejected": "Rejeté",
+        }
+        filter_parts.append(f"Statut: {status_fr_map.get(filters['status'], filters['status'])}")
+    else:
+        filter_parts.append("Statut: Tous")
+
+    c.setFont("Helvetica", 9)
+    c.drawString(14 * mm, y, f"Généré: {generated_at}")
+    y -= 7 * mm
+    c.drawString(14 * mm, y, "Filtres: " + " | ".join(_pdf_text(part) for part in filter_parts))
+    y -= 12 * mm
+
+    summary = report["summary"]
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(14 * mm, y, "Résumé")
+    y -= 8 * mm
+    c.setFont("Helvetica", 9)
+    summary_lines = [
+        f"Nombre total de demandes: {summary['totalRequests']}",
+        f"Approuvé: {summary['approved']} ({summary['approvalRate']}%)",
+        f"En attente: {summary['pending']}",
+        f"Rejeté: {summary['rejected']} ({summary['rejectionRate']}%)",
+        f"Total utilisateurs: {summary['totalUsers']}",
+        f"Documents générés: {summary['totalDocuments']}",
+    ]
+    for index, line in enumerate(summary_lines):
+        x = 14 * mm + (index % 2) * 88 * mm
+        if index and index % 2 == 0:
+            y -= 7 * mm
+        c.drawString(x, y, line)
+    y -= 14 * mm
+
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(14 * mm, y, "Demandes Détaillées")
+    y -= 7 * mm
+
+    widths = [28 * mm, 38 * mm, 27 * mm, 30 * mm, 22 * mm, 30 * mm]
+    headers = ["ID de demande", "Utilisateur", "NIF", "Type", "Statut", "Soumise le"]
+
+    def draw_table_header(current_y):
+        c.setFillColorRGB(0.95, 0.96, 0.98)
+        c.rect(14 * mm, current_y - 3, sum(widths), 14, fill=1, stroke=0)
+        c.setFillColorRGB(0, 0, 0)
+        _draw_report_row(c, current_y, headers, widths, "Helvetica-Bold", 7)
+        return current_y - 6 * mm
+
+    y = draw_table_header(y)
+    
+    # Map status to French
+    status_fr = {
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "rejected": "Rejeté",
+    }
+    
+    for row in report["data"]:
+        if y < 24 * mm:
+            c.showPage()
+            page += 1
+            y = new_page(page)
+            y = draw_table_header(y)
+
+        _draw_report_row(
+            c,
+            y,
+            [
+                row["requestId"],
+                row["userName"],
+                row["userNif"],
+                row["documentType"],
+                status_fr.get(row["status"], row["status"]),
+                row["submittedAt"],
+            ],
+            widths,
+        )
+        y -= 6 * mm
+
+    if not report["data"]:
+        c.setFont("Helvetica", 9)
+        c.drawString(14 * mm, y, "Aucune demande ne correspond aux filtres sélectionnés.")
+
+    c.save()
+    output.seek(0)
+    return output
 
 
 # ----------------------------
@@ -1468,6 +1971,80 @@ def admin_dashboard():
 # ----------------------------
 # ADMIN — DECISION
 # ----------------------------
+
+# ----------------------------
+# ADMIN - STATISTICAL REPORTS
+# ----------------------------
+
+@app.route("/api/admin/stats", methods=["GET"])
+def admin_stats():
+    admin, auth_error = require_admin_user()
+    if auth_error:
+        return auth_error
+
+    return jsonify(get_admin_stats(admin["auth_id"], admin["service"]))
+
+
+@app.route("/api/admin/reports", methods=["POST"])
+def admin_reports():
+    admin, auth_error = require_admin_user()
+    if auth_error:
+        return auth_error
+
+    filters, filter_error = validate_report_filters(request.get_json() or {})
+    if filter_error:
+        return {"error": filter_error}, 400
+
+    return jsonify(build_report_data(
+        filters,
+        admin_id=admin["auth_id"],
+        admin_service=admin["service"]
+    ))
+
+
+@app.route("/api/admin/reports/export", methods=["GET"])
+def admin_reports_export():
+    admin, auth_error = require_admin_user()
+    if auth_error:
+        return auth_error
+
+    export_format = (request.args.get("format") or "pdf").lower()
+    if export_format not in ("pdf", "csv"):
+        return {"error": "Invalid export format"}, 400
+
+    filters, filter_error = validate_report_filters({
+        "dateFrom": request.args.get("dateFrom") or "",
+        "dateTo": request.args.get("dateTo") or "",
+        "status": request.args.get("status") or "",
+        "type": request.args.get("type") or "",
+    })
+    if filter_error:
+        return {"error": filter_error}, 400
+
+    report = build_report_data(
+        filters,
+        admin_id=admin["auth_id"],
+        admin_service=admin["service"]
+    )
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    if export_format == "csv":
+        csv_file = generate_report_csv(report)
+        return send_file(
+            csv_file,
+            mimetype="text/csv; charset=utf-8",
+            as_attachment=True,
+            download_name=f"admin_report_{timestamp}.csv",
+        )
+
+    pdf_file = generate_report_pdf(report)
+    return send_file(
+        pdf_file,
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=f"admin_report_{timestamp}.pdf",
+    )
+
 
 @app.route("/api/requests/<request_id>/decision", methods=["POST"])
 def save_decision(request_id):

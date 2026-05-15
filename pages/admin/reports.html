@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports - e-Documents Admin</title>
+
+    <link rel="stylesheet" href="../../assets/css/all.min.css" />
+    <link rel="stylesheet" href="../../assets/css/reports.css" />
+</head>
+
+<body data-page="reports" data-title="Reports" data-i18n-title="pageTitle.reports">
+    <div class="dashboard-page">
+
+        <div id="sidebar-mount"></div>
+
+        <div class="dashboard-main">
+            <div id="topbar-mount"></div>
+
+            <main class="dashboard-content page-transition">
+                <section class="reports-banner">
+                    <div class="reports-banner-left">
+                        <div class="reports-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h2 class="reports-title" data-i18n="reports.title">Statistical Reports</h2>
+                            <p class="reports-sub" data-i18n="reports.subtitle">Analyze requests, generate reports, and
+                                export official summaries.</p>
+                        </div>
+                    </div>
+                    <div class="reports-banner-actions">
+                        <button type="button" class="btn-banner btn-banner--outline" id="export-pdf-btn">
+                            <i class="fa-regular fa-file-pdf"></i>
+                            <span data-i18n="reports.exportPdf">Export PDF</span>
+                        </button>
+                        <button type="button" class="btn-banner btn-banner--outline" id="export-csv-btn">
+                            <i class="fa-solid fa-file-csv"></i>
+                            <span data-i18n="reports.exportCsv">Export CSV</span>
+                        </button>
+                    </div>
+                </section>
+
+                <section class="stats-grid reports-stats-grid" id="reports-kpis" aria-live="polite">
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label" data-i18n="dashboard.totalRequests">Total Requests</span>
+                            <span class="stat-value" id="kpi-total">-</span>
+                            <span class="stat-sub" data-i18n="reports.allSubmitted">All submitted requests</span>
+                        </div>
+                        <div class="stat-icon stat-icon--blue"><i class="fa-regular fa-file-lines"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label" data-i18n="dashboard.approved">Approved</span>
+                            <span class="stat-value" id="kpi-approved">-</span>
+                            <span class="stat-sub stat-sub--green" id="kpi-approval-rate">-</span>
+                        </div>
+                        <div class="stat-icon stat-icon--green"><i class="fa-solid fa-circle-check"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label" data-i18n="dashboard.pending">Pending</span>
+                            <span class="stat-value" id="kpi-pending">-</span>
+                            <span class="stat-sub stat-sub--yellow" data-i18n="requests.awaitingReview">Awaiting
+                                review</span>
+                        </div>
+                        <div class="stat-icon stat-icon--yellow"><i class="fa-regular fa-clock"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label" data-i18n="dashboard.rejected">Rejected</span>
+                            <span class="stat-value" id="kpi-rejected">-</span>
+                            <span class="stat-sub stat-sub--red" id="kpi-rejection-rate">-</span>
+                        </div>
+                        <div class="stat-icon stat-icon--red"><i class="fa-solid fa-circle-xmark"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label" data-i18n="reports.totalUsers">Total Users</span>
+                            <span class="stat-value" id="kpi-users">-</span>
+                            <span class="stat-sub" data-i18n="reports.registeredCitizens">Registered citizens</span>
+                        </div>
+                        <div class="stat-icon stat-icon--blue"><i class="fa-regular fa-user"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-left">
+                            <span class="stat-label" data-i18n="reports.documentsGenerated">Documents Generated</span>
+                            <span class="stat-value" id="kpi-documents">-</span>
+                            <span class="stat-sub stat-sub--green" data-i18n="reports.approvedDocuments">Approved
+                                documents</span>
+                        </div>
+                        <div class="stat-icon stat-icon--green"><i class="fa-solid fa-file-circle-check"></i></div>
+                    </div>
+                </section>
+
+                <section class="reports-card reports-filter-card">
+                    <div class="reports-card-header">
+                        <h3 class="reports-card-title">
+                            <i class="fa-solid fa-filter"></i>
+                            <span data-i18n="reports.filters">Filters</span>
+                        </h3>
+                    </div>
+                    <form class="reports-filters" id="reports-filter-form">
+                        <label class="report-field">
+                            <span data-i18n="reports.dateFrom">Date from</span>
+                            <input type="date" id="filter-date-from" class="report-input" />
+                        </label>
+                        <label class="report-field">
+                            <span data-i18n="reports.dateTo">Date to</span>
+                            <input type="date" id="filter-date-to" class="report-input" />
+                        </label>
+                        <label class="report-field">
+                            <span data-i18n="common.status">Status</span>
+                            <select id="filter-report-status" class="report-input">
+                                <option value="" data-i18n="requests.allStatuses">All Statuses</option>
+                                <option value="pending" data-i18n="status.pending">Pending</option>
+                                <option value="approved" data-i18n="status.approved">Approved</option>
+                                <option value="rejected" data-i18n="status.rejected">Rejected</option>
+                            </select>
+                        </label>
+                        <div class="reports-filter-actions">
+                            <button type="submit" class="btn-primary" id="generate-report-btn">
+                                <i class="fa-solid fa-chart-simple"></i>
+                                <span data-i18n="reports.generateReport">Generate Report</span>
+                            </button>
+                            <button type="button" class="btn-secondary" id="reset-filters-btn">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span data-i18n="reports.resetFilters">Reset Filters</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="reports-charts-grid" id="charts-section">
+                    <div class="reports-card chart-card">
+                        <div class="reports-card-header">
+                            <h3 class="reports-card-title"><span data-i18n="reports.requestsByStatus">Requests by
+                                    status</span></h3>
+                        </div>
+                        <div class="chart-box"><canvas id="status-chart"></canvas></div>
+                    </div>
+                    <div class="reports-card chart-card chart-card--wide">
+                        <div class="reports-card-header">
+                            <h3 class="reports-card-title"><span data-i18n="reports.monthlyEvolution">Monthly
+                                    evolution</span></h3>
+                        </div>
+                        <div class="chart-box"><canvas id="monthly-chart"></canvas></div>
+                    </div>
+                </section>
+
+                <section class="reports-card">
+                    <div class="reports-card-header reports-table-header">
+                        <h3 class="reports-card-title">
+                            <i class="fa-solid fa-table-list"></i>
+                            <span data-i18n="reports.detailedReport">Detailed Report</span>
+                        </h3>
+                        <span class="results-count" id="reports-count"></span>
+                    </div>
+
+                    <div class="reports-loading" id="reports-loading">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span data-i18n="reports.loadingReports">Loading reports...</span>
+                    </div>
+
+                    <div class="empty-state" id="reports-error" style="display:none;">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <p data-i18n="reports.errorTitle">Could not load report</p>
+                        <span data-i18n="reports.errorText">Please check your filters and try again.</span>
+                    </div>
+
+                    <div class="empty-state" id="reports-empty" style="display:none;">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <p data-i18n="reports.emptyTitle">No report data</p>
+                        <span data-i18n="reports.emptyText">No requests match the selected filters.</span>
+                    </div>
+
+                    <div class="table-wrapper" id="reports-table-wrapper">
+                        <table class="reports-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="requests.requestId">Request ID</th>
+                                    <th data-i18n="requests.user">User</th>
+                                    <th>NIF</th>
+                                    <th data-i18n="common.status">Status</th>
+                                    <th data-i18n="requests.submittedDate">Submitted</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-tbody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div class="rm-toast" id="reports-toast">
+        <i class="fa-solid fa-circle-check rm-toast-icon" id="reports-toast-icon"></i>
+        <span id="reports-toast-msg"></span>
+    </div>
+
+    <script src="../../locales/en.js"></script>
+    <script src="../../locales/fr.js"></script>
+    <script src="../../locales/ar.js"></script>
+    <script src="../../js/i18n.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/router.js"></script>
+    <script src="../../assets/js/components.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/notification.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../assets/js/reports.js"></script>
+</body>
+
+</html>
