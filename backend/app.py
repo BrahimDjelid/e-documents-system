@@ -827,6 +827,22 @@ def generate_report_pdf(report):
     c = canvas.Canvas(output, pagesize=A4)
     width, height = A4
 
+    # Helper function to format ISO datetime to human-readable
+    def format_datetime(iso_string):
+        if not iso_string:
+            return "-"
+        try:
+            # Parse ISO format
+            if 'T' in iso_string:
+                # Remove microseconds and timezone
+                # 2026-05-15T14:33:49.151Z -> 2026-05-15 14:33:49
+                date_part = iso_string.split('T')[0]
+                time_part = iso_string.split('T')[1].split('.')[0].split('Z')[0].split('+')[0]
+                return f"{date_part} {time_part}"
+            return iso_string
+        except Exception:
+            return iso_string
+
     def new_page(page_number):
         c.setFont("Helvetica-Bold", 10)
         c.drawString(14 * mm, height - 16 * mm, "REPUBLIQUE ALGERIENNE DEMOCRATIQUE ET POPULAIRE")
@@ -919,6 +935,9 @@ def generate_report_pdf(report):
             y = new_page(page)
             y = draw_table_header(y)
 
+        # Format the date using our helper function
+        formatted_date = format_datetime(row["submittedAt"])
+
         _draw_report_row(
             c,
             y,
@@ -928,7 +947,7 @@ def generate_report_pdf(report):
                 row["userNif"],
                 row["documentType"],
                 status_fr.get(row["status"], row["status"]),
-                row["submittedAt"],
+                formatted_date,  # Use formatted date instead of raw
             ],
             widths,
         )
