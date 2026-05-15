@@ -14,7 +14,7 @@
 .notif-badge {
   position: absolute;
   top: -5px;
-  right: -5px;
+  inset-inline-end: -5px;
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
@@ -42,8 +42,9 @@
 .notif-dropdown {
   position: absolute;
   top: calc(100% + 10px);
-  right: 0;
+  inset-inline-end: 0;
   width: 360px;
+  max-width: calc(100vw - (var(--space-md) * 2));
   max-height: 480px;
   background: var(--surface-1);
   border: 1px solid var(--border-light);
@@ -298,6 +299,7 @@
   line-height: 1.45;
   margin: 0 0 4px;
   word-break: break-word;
+  unicode-bidi: plaintext;
 }
 
 .notif-item--unread .notif-item-msg {
@@ -311,6 +313,7 @@
   font-size: 0.72rem;
   color: var(--text-muted);
   font-family: var(--font-main);
+  unicode-bidi: isolate;
 }
 
 .notif-item-time i {
@@ -364,7 +367,7 @@
 /* Unread dot indicator */
 .notif-unread-dot {
   position: absolute;
-  left: 10px;
+  inset-inline-start: 10px;
   top: 50%;
   transform: translateY(-50%);
   width: 6px;
@@ -376,7 +379,12 @@
 
 /* Push content right to make room for dot */
 .notif-item--unread {
-  padding-left: 22px;
+  padding-inline-start: 22px;
+}
+
+html[dir="rtl"] .notif-dropdown {
+  inset-inline: auto 0;
+  transform-origin: top left;
 }
 
 /* Dark mode  */
@@ -428,6 +436,6 @@
 @media (max-width: 480px) {
   .notif-dropdown {
     width: calc(100vw - var(--space-lg));
-    right: calc(-1 * var(--space-md));
+    inset-inline-end: calc(-1 * var(--space-md));
   }
 }

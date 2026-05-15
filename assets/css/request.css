@@ -343,14 +343,15 @@
     font-size: 12px;
     color: var(--text-muted);
     font-family: var(--font-main);
-    padding-left: 14px;
+    padding-inline-start: 14px;
     position: relative;
+    text-align: start;
 }
 
 .doc-card-bullets li::before {
-    content: '•';
+    content: '\2022';
     position: absolute;
-    left: 0;
+    inset-inline-start: 0;
     color: var(--primary-blue);
     font-weight: 700;
 }
@@ -504,7 +505,7 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
-  padding-right: 36px;
+  padding-inline-end: 36px;
 }
 
 .form-select:focus {
@@ -773,6 +774,8 @@
     font-family: var(--font-main);
     flex: 1;
     text-align: left;
+    direction: ltr;
+    unicode-bidi: isolate;
 }
 
 .confirm-copy-btn {
@@ -885,7 +888,8 @@
 .req-toast {
     position: fixed;
     bottom: var(--space-xl);
-    right: var(--space-xl);
+    inset-inline-end: var(--space-xl);
+    max-width: calc(100vw - (var(--space-xl) * 2));
     background: var(--gray-900);
     color: #fff;
     border-radius: var(--radius-md);
@@ -902,11 +906,17 @@
     pointer-events: none;
     transition: opacity 0.3s, transform 0.3s;
     z-index: 1000;
+    overflow-wrap: anywhere;
+    text-align: start;
 }
 
 .req-toast.show {
     opacity: 1;
     transform: translateY(0);
+}
+
+html[dir="rtl"] .req-toast {
+    inset-inline: var(--space-xl) auto;
 }
 
 .req-toast-icon {

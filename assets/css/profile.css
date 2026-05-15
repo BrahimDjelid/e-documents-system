@@ -449,7 +449,8 @@
   background: var(--input-bg);
   border: 1.5px solid var(--input-border);
   border-radius: var(--radius-md);
-  padding: 10px var(--space-2xl) 10px var(--space-md);
+  padding-block: 10px;
+  padding-inline: var(--space-md) var(--space-2xl);
   font-size: 14px;
   font-family: var(--font-main);
   color: var(--text-primary);
@@ -474,7 +475,7 @@
 
 .sec-toggle-pw {
   position: absolute;
-  right: 12px;
+  inset-inline-end: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -494,6 +495,14 @@
   opacity: 0.35;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+html[dir="rtl"] .sec-input {
+  padding-inline: var(--space-2xl) var(--space-md);
+}
+
+html[dir="rtl"] .sec-toggle-pw {
+  inset-inline: auto 12px;
 }
 
 .sec-error {
@@ -587,7 +596,7 @@
 
 /* EDIT SECURITY BUTTON */
 .btn-edit-security {
-  margin-left: auto;
+  margin-inline-start: auto;
   width: 34px;
   height: 34px;
   border-radius: var(--radius-md);
@@ -702,7 +711,7 @@
 /* Read-only fields */
 .info-input--readonly {
   background: var(--surface-2);
-  padding-right: 36px;
+  padding-inline-end: 36px;
   cursor: not-allowed;
   color: var(--text-muted);
 }
@@ -734,7 +743,7 @@
 
 .info-lock-icon {
   position: absolute;
-  right: 10px;
+  inset-inline-end: 10px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--gray-300);
@@ -845,7 +854,8 @@
 .profile-toast {
   position: fixed;
   bottom: var(--space-xl);
-  right: var(--space-xl);
+  inset-inline-end: var(--space-xl);
+  max-width: calc(100vw - (var(--space-xl) * 2));
   background: var(--gray-900);
   color: #fff;
   border-radius: var(--radius-md);
@@ -864,11 +874,17 @@
     opacity 0.3s,
     transform 0.3s;
   z-index: 1000;
+  overflow-wrap: anywhere;
+  text-align: start;
 }
 
 .profile-toast.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+html[dir="rtl"] .profile-toast {
+  inset-inline: var(--space-xl) auto;
 }
 
 .profile-toast-icon {
@@ -1049,7 +1065,9 @@
 .tax-field {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
+  min-width: 0;
 }
 
 .tax-field-label {
@@ -1066,6 +1084,9 @@
   color: var(--text-primary);
   font-family: var(--font-main);
   font-weight: 500;
+  text-align: start;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .tax-field-value--mono {
@@ -1073,6 +1094,12 @@
   font-size: 13px;
   letter-spacing: 0.04em;
   color: var(--primary-blue);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+html[dir="rtl"] .tax-field-value--mono {
+  text-align: right;
 }
 
 /* Activity cards */

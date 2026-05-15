@@ -444,7 +444,7 @@
 
 .info-lock-icon {
   position: absolute;
-  right: 10px;
+  inset-inline-end: 10px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--gray-300);
@@ -456,7 +456,7 @@
   background: var(--surface-2);
   color: var(--text-muted);
   cursor: not-allowed;
-  padding-right: 36px;
+  padding-inline-end: 36px;
 }
 
 .info-input--readonly:focus {
@@ -661,7 +661,8 @@
   background: var(--input-bg);
   border: 1.5px solid var(--input-border);
   border-radius: var(--radius-md);
-  padding: 10px 40px 10px var(--space-md);
+  padding-block: 10px;
+  padding-inline: var(--space-md) 40px;
   font-size: 0.875rem;
   font-family: var(--font-main);
   color: var(--text-primary);
@@ -686,7 +687,7 @@
 
 .sec-toggle-pw {
   position: absolute;
-  right: 12px;
+  inset-inline-end: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -706,6 +707,14 @@
   opacity: 0.35;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+html[dir="rtl"] .sec-input {
+  padding-inline: 40px var(--space-md);
+}
+
+html[dir="rtl"] .sec-toggle-pw {
+  inset-inline: auto 12px;
 }
 
 .sec-error {
@@ -764,7 +773,8 @@
 .ap-toast {
   position: fixed;
   bottom: var(--space-xl);
-  right: var(--space-xl);
+  inset-inline-end: var(--space-xl);
+  max-width: calc(100vw - (var(--space-xl) * 2));
   background: var(--gray-900);
   color: #fff;
   border-radius: var(--radius-md);
@@ -783,11 +793,17 @@
     opacity 0.3s,
     transform 0.3s;
   z-index: 1000;
+  overflow-wrap: anywhere;
+  text-align: start;
 }
 
 .ap-toast.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+html[dir="rtl"] .ap-toast {
+  inset-inline: var(--space-xl) auto;
 }
 
 .ap-toast-icon {

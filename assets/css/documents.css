@@ -810,8 +810,11 @@
 .toast {
   position: fixed;
   bottom: var(--space-xl);
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
+  inset-inline: var(--space-md);
+  margin-inline: auto;
+  width: max-content;
+  max-width: calc(100vw - (var(--space-md) * 2));
+  transform: translateY(20px);
   background: var(--gray-900);
   color: #fff;
   padding: 12px var(--space-lg);
@@ -828,12 +831,14 @@
     opacity 0.3s ease,
     transform 0.3s ease;
   z-index: 300;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: start;
 }
 
 .toast.show {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
 }
 
 .toast-icon {

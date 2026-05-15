@@ -333,8 +333,8 @@ html[dir="rtl"] .notif-unread-dot {
   right: 10px;
 }
 
-html[dir="rtl"] .notif-item--unread .notif-item-body {
-  padding-left: 0;
+html[dir="rtl"] .notif-item--unread {
+  padding-left: var(--space-lg);
   padding-right: 22px;
 }
 
@@ -356,6 +356,15 @@ html[dir="rtl"] .tax-activity-card--secondary {
 
 html[dir="rtl"] .tax-activity-card--secondary {
   border-right-color: var(--teal-accent);
+}
+
+.toast-msg,
+.profile-toast-msg,
+.req-toast-msg,
+#rm-toast-msg,
+#ap-toast-msg,
+#toast-msg {
+  unicode-bidi: plaintext;
 }
 
 html[dir="rtl"] .docs-table,
@@ -406,6 +415,10 @@ html[dir="rtl"] .eligibility-score {
 html[dir="rtl"] .fa-chevron-right,
 html[dir="rtl"] .fa-arrow-right {
   transform: scaleX(-1);
+}
+
+html[dir="rtl"] .form-select{
+  background-position: left  14px center;;
 }
 
 .error-message {
