@@ -6,6 +6,7 @@
 ![Flask](https://img.shields.io/badge/Flask-3.x-000000?style=for-the-badge&logo=flask&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES2020-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![ReportLab](https://img.shields.io/badge/ReportLab-PDF_Engine-red?style=for-the-badge)
@@ -15,9 +16,9 @@
 ![French](https://img.shields.io/badge/🇫🇷_French-Supported-003189?style=for-the-badge)
 ![Arabic](https://img.shields.io/badge/🇩🇿_Arabic_RTL-Supported-006233?style=for-the-badge)
 
-**A production-grade, full-stack tax document management platform enabling citizens to request official government documents online — with automated PDF generation, admin review workflows, real-time notifications, and full multilingual support (English, French, Arabic/RTL).**
+**A production-grade, full-stack tax document management platform enabling citizens to request official government documents online — with automated PDF generation, admin review workflows, statistical reporting, real-time notifications, and full multilingual support (English, French, Arabic/RTL).**
 
-[Features](#-features) · [Architecture](#-system-architecture) · [Multilingual Support](#-multilingual-support) · [Installation](#-installation) · [API Docs](#-api-endpoints) · [Demo Accounts](#-demo-accounts)
+[Features](#-features) · [Architecture](#-system-architecture) · [Reports System](#-admin-reports-system) · [Multilingual Support](#-multilingual-support) · [Installation](#-installation) · [API Docs](#-api-endpoints) · [Demo Accounts](#-demo-accounts)
 
 </div>
 
@@ -34,22 +35,23 @@
 7. [Database Design](#-database-design)
 8. [Authentication & Security](#-authentication--security)
 9. [API Endpoints](#-api-endpoints)
-10. [Multilingual Support](#-multilingual-support)
-11. [Installation](#-installation)
-12. [Dependencies](#-dependencies)
-13. [Environment Variables](#-environment-variables)
-14. [Running the Backend](#-running-the-backend)
-15. [Running the Frontend](#-running-the-frontend)
-16. [User Workflow](#-user-workflow)
-17. [PDF Generation Engine](#-pdf-generation-engine)
-18. [Notification System](#-notification-system)
-19. [Admin Assignment System](#-admin-assignment-system)
-20. [Demo Accounts](#-demo-accounts)
-21. [Future Improvements](#-future-improvements)
-22. [Known Limitations](#-known-limitations)
-23. [Contributors](#-contributors)
-24. [License](#-license)
-25. [Acknowledgements](#-acknowledgements)
+10. [Admin Reports System](#-admin-reports-system)
+11. [Multilingual Support](#-multilingual-support)
+12. [Installation](#-installation)
+13. [Dependencies](#-dependencies)
+14. [Environment Variables](#-environment-variables)
+15. [Running the Backend](#-running-the-backend)
+16. [Running the Frontend](#-running-the-frontend)
+17. [User Workflow](#-user-workflow)
+18. [PDF Generation Engine](#-pdf-generation-engine)
+19. [Notification System](#-notification-system)
+20. [Admin Assignment System](#-admin-assignment-system)
+21. [Demo Accounts](#-demo-accounts)
+22. [Future Improvements](#-future-improvements)
+23. [Known Limitations](#-known-limitations)
+24. [Contributors](#-contributors)
+25. [License](#-license)
+26. [Acknowledgements](#-acknowledgements)
 
 ---
 
@@ -66,7 +68,9 @@ The system supports two primary document types:
 
 Citizens submit requests through a guided multi-step form pre-filled with their fiscal data. The system automatically assigns each request to the appropriate least-loaded administrator. Upon review, the admin's decision triggers PDF generation in a background thread, stamped with the official seal, the processing agent's signature, and precise approval timestamps. The citizen is notified in real time and can download their document immediately.
 
-> **Context:** This project was built as a demonstration of a complete government e-services platform, covering user authentication, role-based access control, document lifecycle management, automated PDF generation, a robust notification system, and full multilingual support with Arabic RTL layout — all delivered through a polished, accessible user interface.
+Administrators additionally have access to a full statistical reports dashboard that lets them analyze request volumes, approval rates, and monthly trends — with one-click PDF and CSV export for official reporting.
+
+> **Context:** This project was built as a demonstration of a complete government e-services platform, covering user authentication, role-based access control, document lifecycle management, automated PDF generation, statistical reporting, a robust notification system, and full multilingual support with Arabic RTL layout — all delivered through a polished, accessible user interface.
 
 ---
 
@@ -93,6 +97,15 @@ Citizens submit requests through a guided multi-step form pre-filled with their 
 - 📡 **Admin Notifications** — Instant alerts on new pending requests
 - 🌐 **Localized Admin UI** — All management tables, modals, and status labels are fully translated
 
+### Reports & Analytics
+- 📈 **Statistical Reports Dashboard** — Dedicated reports page with KPI overview cards
+- 🔍 **Dynamic Filtering** — Filter reports by date range and request status
+- 📊 **Interactive Charts** — Requests-by-status pie chart and monthly evolution line chart (Chart.js)
+- 📋 **Detailed Report Table** — Paginated table of all matching requests with user and NIF data
+- 📄 **PDF Export** — Generate and download official-grade statistical reports as PDF (ReportLab)
+- 📑 **CSV Export** — Export filtered report data as UTF-8 CSV for spreadsheet analysis
+- 🔒 **Scope-Locked Reports** — Each admin's report data is automatically scoped to their assigned requests and document type
+
 ### System-Wide
 - 🧩 **Component-Based UI** — Sidebar and topbar loaded dynamically for consistent layout
 - 📡 **Dual-Mode API Layer** — `api.js` supports both mock (JSON) and live (Flask) modes with a single flag
@@ -115,6 +128,7 @@ Citizens submit requests through a guided multi-step form pre-filled with their 
 | **My Documents** | Filterable table with modal detail view and timeline tracker |
 | **Admin Dashboard** | Pending requests queue with compliance badges |
 | **Request Management** | Full admin table with modal decision panel and tax records |
+| **Reports** | KPI cards, interactive charts, filter bar, detailed table, PDF/CSV export |
 | **Profile** | Avatar, account info, eligibility, tax information, security settings |
 
 ### Multilingual UI Screenshots
@@ -136,6 +150,7 @@ Citizens submit requests through a guided multi-step form pre-filled with their 
 | HTML5 | Page structure and semantic markup |
 | CSS3 (custom design system) | Component styling, CSS variables, dark mode, RTL layout, animations |
 | Vanilla JavaScript (ES2020) | DOM manipulation, routing, API calls, state management |
+| Chart.js | Interactive charts for the reports dashboard (pie chart, line chart) |
 | `i18n.js` (custom) | Lightweight internationalization engine — translation lookup, interpolation, language switching, RTL toggling |
 | `en.js` / `fr.js` / `ar.js` | Language catalog files — flat key-path objects covering all UI strings |
 | Font Awesome 6 | Icon library |
@@ -149,7 +164,8 @@ Citizens submit requests through a guided multi-step form pre-filled with their 
 | Flask 3.x | REST API framework |
 | Flask-CORS | Cross-origin resource sharing |
 | SQLite3 | Relational database (via Python stdlib) |
-| ReportLab | PDF generation engine |
+| ReportLab | PDF generation engine — official documents and statistical report export |
+| `csv` (Python stdlib) | CSV report generation and export |
 | Werkzeug | Password hashing (scrypt/pbkdf2) |
 
 ---
@@ -158,18 +174,18 @@ Citizens submit requests through a guided multi-step form pre-filled with their 
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                     BROWSER CLIENT                       │
-│                                                          │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────┐  │
-│  │  Login   │  │  User    │  │  Admin   │  │Shared  │  │
-│  │  Page    │  │  Pages   │  │  Pages   │  │Comps   │  │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └───┬────┘  │
-│       └─────────────┴──────────────┴────────────┘       │
-│                          │                               │
-│                    ┌─────▼──────┐                        │
-│                    │   api.js   │  ◄── USE_MOCK flag      │
-│                    │ API Layer  │                        │
-│                    └─────┬──────┘                        │
+│                     BROWSER CLIENT                      │
+│                                                         │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────┐   │
+│  │  Login   │  │  User    │  │  Admin   │  │Shared  │   │
+│  │  Page    │  │  Pages   │  │  Pages   │  │Comps   │   │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └───┬────┘   │
+│       └─────────────┴─────────────┴────────────┘        │
+│                          │                              │
+│                    ┌─────▼──────┐                       │
+│                    │   api.js   │  ◄── USE_MOCK flag    │
+│                    │ API Layer  │                       │
+│                    └─────┬──────┘                       │
 └──────────────────────────┼──────────────────────────────┘
                            │ HTTP / REST (JSON)
                     ┌──────▼──────┐
@@ -178,13 +194,12 @@ Citizens submit requests through a guided multi-step form pre-filled with their 
                     │  (app.py)   │
                     └──────┬──────┘
                            │
-              ┌────────────┼────────────┐
-              │            │            │
-       ┌──────▼──────┐  ┌──▼─────┐  ┌──▼──────────┐
-       │   SQLite    │  │ PDF    │  │  Filesystem  │
-       │  Database   │  │ Engine │  │  (uploads,  │
-       │  (app.db)   │  │(ReportLab)  │  documents) │
-       └─────────────┘  └────────┘  └─────────────┘
+            ┌──────────────┼──────────────┐
+            │              │              │
+     ┌──────▼──────┐  ┌────▼────┐  ┌──────▼───────┐
+     │  Database   │  │  CSV    │  │  (uploads,   │
+     │  (app.db)   |  │ Engine  │  │  documents)  │
+     └─────────────┘  └─────────┘  └──────────────┘
 ```
 
 ### Key Design Decisions
@@ -193,6 +208,7 @@ Citizens submit requests through a guided multi-step form pre-filled with their 
 - **Runtime database path:** The SQLite database is stored outside the project directory in the OS AppData folder (`%LOCALAPPDATA%/e-documents-system/app.db`). This prevents accidental overwrites during development and separates runtime state from source code.
 - **Background PDF threads:** After an admin approves a request, PDF generation is offloaded to a daemon thread so the HTTP response returns immediately. The PDF is cached on disk and served on the next download request.
 - **Compliance computed dynamically:** Tax compliance status is never stored directly. It is always recomputed from raw `taxRecords` data at display time, ensuring administrators always see the current financial picture.
+- **Scope-locked reports:** Report data is automatically filtered by each admin's `assigned_to` field and service type. An admin can never view another admin's request data through the reports API.
 - **Zero-dependency i18n engine:** Rather than importing an external localization library, the application ships a custom `i18n.js` module. It resolves translations by dot-path key (`"dashboard.goodMorning"`), supports named interpolation (`{count}`, `{name}`), applies `dir="rtl"` and `lang` attributes to `<html>` automatically on language change, and fires a `i18n:change` DOM event so every page module can re-render translated content reactively.
 
 ---
@@ -202,68 +218,91 @@ Citizens submit requests through a guided multi-step form pre-filled with their 
 ```
 e-documents-system/
 │
-├── app.py                          # Flask REST API — all routes and business logic
-├── users.json                      # Seed data (used only on first DB initialization)
-├── db-note.txt                     # Important note on runtime DB location
+├── index.html
 │
-├── pages/                          # All HTML pages
+├── assets/
+│   ├── css/
+│   │   ├── all.min.css
+│   │   ├── main.css                    # Global design system, CSS variables, RTL overrides
+│   │   ├── auth.css                    # Login page
+│   │   ├── dashboard.css               # Shared dashboard layout (sidebar, topbar)
+│   │   ├── documents.css               # My Documents page
+│   │   ├── request.css                 # Request form page
+│   │   ├── profile.css                 # User profile
+│   │   ├── user-dashboard.css          # User dashboard
+│   │   ├── admin-dashboard.css         # Admin dashboard
+│   │   ├── admin-profile.css           # Admin profile
+│   │   ├── requests-management.css     # Admin request management
+│   │   ├── reports.css                 # Admin statistical reports
+│   │   └── notification.css            # Notification dropdown
+│   │
+│   └── js/
+│       ├── auth.js                     # Login form logic
+│       ├── router.js                   # Route guard and logout utility
+│       ├── theme.js                    # Dark/light mode toggle
+│       ├── components.js               # Dynamic sidebar/topbar loader + i18n init
+│       ├── api.js                      # Centralized API layer (mock + Flask modes)
+│       │
+│       ├── documents.js                # My Documents page logic
+│       ├── request.js                  # Request form logic
+│       ├── profile.js                  # User profile logic
+│       ├── user-dashboard.js           # User dashboard logic
+│       │
+│       ├── admin-dashboard.js          # Admin dashboard logic
+│       ├── admin-profile.js            # Admin profile logic
+│       ├── requests-management.js      # Admin request management logic
+│       ├── reports.js                  # Admin statistical reports logic
+│       │
+│       └── notification.js             # Notification system
+│
+├── pages/
 │   ├── login.html
+│   │
 │   ├── user/
 │   │   ├── dashboard.html
 │   │   ├── documents.html
 │   │   ├── request.html
 │   │   └── profile.html
+│   │
 │   └── admin/
 │       ├── dashboard.html
 │       ├── requests-management.html
+│       ├── reports.html
 │       └── profile.html
 │
-├── components/                     # Shared HTML fragments (loaded by components.js)
+├── components/                         # Shared HTML fragments (loaded by components.js)
 │   ├── user-sidebar.html
 │   ├── admin-sidebar.html
 │   └── topbar.html
 │
-├── locales/                        # Language catalog files
-│   ├── en.js                       # English translations (window.I18N_EN)
-│   ├── fr.js                       # French translations (window.I18N_FR)
-│   └── ar.js                       # Arabic translations (window.I18N_AR)
-│
-├── assets/
-│   ├── css/
-│   │   ├── main.css                # Global design system, CSS variables, RTL overrides
-│   │   ├── dashboard.css           # Shared dashboard layout (sidebar, topbar)
-│   │   ├── auth.css                # Login page
-│   │   ├── user-dashboard.css      # User dashboard
-│   │   ├── admin-dashboard.css     # Admin dashboard
-│   │   ├── documents.css           # My Documents page
-│   │   ├── request.css             # Request form page
-│   │   ├── requests-management.css # Admin request management
-│   │   ├── profile.css             # User profile
-│   │   ├── admin-profile.css       # Admin profile
-│   │   └── notification.css        # Notification dropdown
+├── backend/
+│   ├── app.py                          # Flask REST API — all routes and business logic
+│   ├── app.db                          # Legacy/seed database (runtime DB is in AppData)
 │   │
-│   ├── js/
-│   │   ├── api.js                  # Centralized API layer (mock + Flask modes)
-│   │   ├── auth.js                 # Login form logic
-│   │   ├── router.js               # Route guard and logout utility
-│   │   ├── theme.js                # Dark/light mode toggle
-│   │   ├── i18n.js                 # Internationalization engine
-│   │   ├── components.js           # Dynamic sidebar/topbar loader + i18n init
-│   │   ├── notification.js         # Notification system
-│   │   ├── user-dashboard.js       # User dashboard logic
-│   │   ├── admin-dashboard.js      # Admin dashboard logic
-│   │   ├── documents.js            # My Documents page logic
-│   │   ├── request.js              # Request form logic
-│   │   ├── requests-management.js  # Admin request management logic
-│   │   ├── profile.js              # User profile logic
-│   │   └── admin-profile.js        # Admin profile logic
+│   ├── assets/
+│   │   ├── signatures/                 # Admin signature PNG files (named by nationalId)
+│   │   ├── line.png                    # Decorative line asset for Extrait de Rôle
+│   │   └── stamp.png                   # Official institution stamp
 │   │
-│   ├── signatures/                 # Admin signature PNG files (named by nationalId)
-│   ├── stamp.png                   # Official institution stamp
-│   └── line.png                    # Decorative line asset for Extrait de Rôle
+│   ├── data/
+│   │   └── users.json                  # Seed data (used only on first DB initialization)
+│   │
+│   ├── documents/                      # Generated PDF storage
+│   │
+│   └── uploads/                        # User avatar storage
 │
-└── data/
-    └── users.json                  # Seed file (same as root users.json)
+├── js/
+│   └── i18n.js                         # Internationalization engine
+│
+├── locales/                            # Language catalog files
+│   ├── ar.js                           # Arabic translations (window.I18N_AR)
+│   ├── en.js                           # English translations (window.I18N_EN)
+│   └── fr.js                           # French translations (window.I18N_FR)
+│
+├── .gitignore
+├── db-note.txt                         # Important note on runtime DB location
+│
+└── README.md
 ```
 
 ---
@@ -398,6 +437,14 @@ All endpoints are prefixed with `/api`. Protected endpoints require `Authorizati
 | `GET` | `/api/admin/dashboard` | ✅ (admin) | Get dashboard summary (requests + compliance data) |
 | `PUT` | `/api/admin/profile` | ✅ (admin) | Update admin account info (email) |
 
+### Reports
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/admin/stats` | ✅ (admin) | Get KPI summary statistics for the reports dashboard |
+| `POST` | `/api/admin/reports` | ✅ (admin) | Generate a filtered statistical report |
+| `GET` | `/api/admin/reports/export?format=pdf\|csv` | ✅ (admin) | Export the current report as PDF or CSV |
+
 ### Notifications
 
 | Method | Endpoint | Auth | Description |
@@ -458,6 +505,99 @@ Content-Type: application/json
 }
 ```
 
+#### Example: Generate a Filtered Report
+
+```http
+POST /api/admin/reports
+Authorization: Bearer token-admin-c20@dashboard.com
+Content-Type: application/json
+
+{
+  "dateFrom": "2026-01-01",
+  "dateTo": "2026-05-15",
+  "status": "approved"
+}
+```
+
+---
+
+## 📊 Admin Reports System
+
+The Reports module provides administrators with a dedicated analytics dashboard for monitoring request volumes, approval rates, and trends over time. All report data is automatically scoped to the logged-in admin's assigned requests and document type, ensuring data isolation between administrators.
+
+### Accessing Reports
+
+Administrators navigate to the **Reports** page via the admin sidebar. The page initializes by calling `GET /api/admin/stats` for global KPI data, then immediately generates a full unfiltered report.
+
+### KPI Cards
+
+Six summary cards are displayed at the top of the page:
+
+| KPI | Description |
+|---|---|
+| **Total Requests** | All requests assigned to this admin |
+| **Approved** | Count and approval rate percentage |
+| **Pending** | Requests still awaiting a decision |
+| **Rejected** | Count and rejection rate percentage |
+| **Total Users** | Number of registered citizen accounts in the system |
+| **Documents Generated** | Count of approved (generated) documents |
+
+### Dynamic Filtering
+
+Administrators can narrow the report using the filter panel:
+
+- **Date From / Date To** — Filter requests by submission date range.
+- **Status** — Filter to show only pending, approved, or rejected requests.
+
+Clicking **Generate Report** re-queries the backend with the selected filters and updates all KPI cards, charts, and the detailed table simultaneously. **Reset Filters** clears all filters and regenerates the full report.
+
+### Interactive Charts
+
+The charts section contains two visualizations rendered with **Chart.js**:
+
+- **Requests by Status** — A pie chart showing the distribution of pending, approved, and rejected requests.
+- **Monthly Evolution** — A line chart plotting request volume over time, grouped by submission month.
+
+Both charts automatically re-render when the language or theme changes, respecting RTL direction and dark mode color tokens.
+
+### Detailed Report Table
+
+Below the charts, a paginated table lists every request matching the active filters, with the following columns:
+
+| Column | Description |
+|---|---|
+| Request ID | Unique request identifier |
+| User | Citizen's full name |
+| NIF | Citizen's tax identification number |
+| Status | Current request status with color badge |
+| Submitted | Submission date |
+
+### PDF Export
+
+Clicking **Export PDF** sends a `GET /api/admin/reports/export?format=pdf` request (with active filter parameters) to the backend. Flask generates an official-grade A4 PDF report using **ReportLab**, which includes:
+
+- Official header (République Algérienne Démocratique et Populaire)
+- Report generation timestamp
+- Active filter summary
+- KPI summary block
+- Full detailed request table with pagination across pages
+- Page numbers
+
+The PDF is returned as a binary download and saved to the user's downloads folder.
+
+### CSV Export
+
+Clicking **Export CSV** calls `GET /api/admin/reports/export?format=csv`. The backend generates a UTF-8 encoded CSV file (with BOM for Excel compatibility) containing all columns from the detailed table plus the processed-by and assigned-admin fields. Dates are formatted as `YYYY-MM-DD HH:MM` in the CSV output.
+
+### Reports Module File Reference
+
+| File | Layer | Responsibility |
+|---|---|---|
+| `pages/admin/reports.html` | Frontend | Page structure — KPI grid, filter form, chart canvases, table, export buttons |
+| `assets/js/reports.js` | Frontend | Page logic — API calls, Chart.js rendering, filter state, PDF/CSV export triggers, i18n re-render |
+| `assets/css/reports.css` | Frontend | Reports-specific styles — banner, filter form, chart cards, table, responsive layout |
+| `backend/app.py` | Backend | `/api/admin/stats`, `/api/admin/reports`, `/api/admin/reports/export` routes; `build_report_data`, `generate_report_pdf`, `generate_report_csv` helpers |
+
 ---
 
 ## 🌐 Multilingual Support
@@ -501,12 +641,8 @@ Every page module listens for the `i18n:change` event and re-renders translated 
 // example from user-dashboard.js
 document.addEventListener("i18n:change", initDashboard);
 
-// example from requests-management.js
-document.addEventListener("i18n:change", () => {
-  setupBanner();
-  applyFilters();
-  if (activeRequest) openModal(activeRequest.requestId);
-});
+// example from reports.js
+document.addEventListener("i18n:change", rerenderForLocaleOrTheme);
 ```
 
 ---
@@ -535,6 +671,7 @@ The catalogs are plain JavaScript objects assigned to `window.I18N_EN`, `window.
 | Request form | All 3 steps — document cards, form labels, declaration text, confirmation |
 | My Documents | Filter bar, table headers, status badges, modal timeline, note section |
 | Request management | Service banner, table, modal sections (applicant, compliance, tax records, status options) |
+| Reports | KPI labels, filter form, chart titles, table headers, export buttons, toast messages |
 | Profile pages | All field labels, security section, tax information, eligibility badges |
 | Notifications | Dropdown title, empty state, time-ago strings, all notification messages |
 | Toast messages | All success and error toasts across every feature |
@@ -580,7 +717,7 @@ Switching to Arabic applies `dir="rtl"` to the `<html>` element and activates a 
 - Select dropdowns flip their chevron background position
 
 **Tables & Data**
-- All data tables (`docs-table`, `rm-table`, `admin-table`, `tax-records-table`) apply `direction: rtl`
+- All data tables (`docs-table`, `rm-table`, `admin-table`, `tax-records-table`, `reports-table`) apply `direction: rtl`
 - Column headers and cell text align to `start` (right in RTL)
 - Numeric and identifier fields (NIF, request IDs, emails, phone numbers, monetary values) are individually preserved in LTR using `direction: ltr; unicode-bidi: isolate` to ensure correct rendering of mixed-direction content
 
@@ -590,13 +727,13 @@ Switching to Arabic applies `dir="rtl"` to the `<html>` element and activates a 
 - Notification items and action buttons reverse their flex direction
 
 **Toast Messages**
-- All toast elements (`.toast`, `.profile-toast`, `.req-toast`, `.rm-toast`, `.ap-toast`) shift from the right side of the viewport to the left
+- All toast elements shift from the right side of the viewport to the left
 
 **Typography**
-- When `lang="ar"` is active, the `<body>` font family switches to `"Noto Sans Arabic"` (loaded via Google Fonts alongside Roboto) for correct Arabic glyph rendering
+- When `lang="ar"` is active, the `<body>` font family switches to `"Noto Sans Arabic"` for correct Arabic glyph rendering
 
 ```css
-/* main.css — excerpt showing RTL typography switch */
+/* main.css — RTL typography switch */
 html[lang="ar"] body {
   font-family: "Noto Sans Arabic", var(--font-main);
 }
@@ -659,7 +796,7 @@ reportlab>=4.0.0
 werkzeug>=3.0.0
 ```
 
-> **Note:** `sqlite3` is included in Python's standard library and requires no additional installation.
+> **Note:** `sqlite3` and `csv` are included in Python's standard library and require no additional installation. Chart.js is loaded from CDN on the reports page and requires no npm install.
 
 ---
 
@@ -753,44 +890,50 @@ const USE_MOCK = false;
 const API_BASE = "http://127.0.0.1:5000";
 ```
 
+> **Note:** The reports feature (`/api/admin/stats`, `/api/admin/reports`, `/api/admin/reports/export`) requires Flask to be running and `USE_MOCK` set to `false`. These endpoints are not available in mock mode.
+
 ---
 
 ## 👤 User Workflow
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  CITIZEN WORKFLOW                                        │
-│                                                          │
-│  1. Login          →  Enter NIF + password              │
-│  2. Dashboard      →  View stats and quick actions      │
-│  3. New Request    →  Select document type              │
-│                   →  Review pre-filled form             │
-│                   →  Accept declaration + Submit        │
-│  4. Notification   →  Receive status update alert       │
-│  5. My Documents   →  View decision and admin note      │
-│  6. Download       →  Download signed official PDF      │
-└─────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│  CITIZEN WORKFLOW                                         │
+│                                                           │
+│  1. Login          →  Enter NIF + password                │
+│  2. Dashboard      →  View stats and quick actions        │
+│  3. New Request    →  Select document type                │
+│                    →  Review pre-filled form              │
+│                    →  Accept declaration + Submit         │
+│  4. Notification   →  Receive status update alert         │
+│  5. My Documents   →  View decision and admin note        │
+│  6. Download       →  Download signed official PDF        │
+└───────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────────────────┐
-│  ADMIN WORKFLOW                                          │
-│                                                          │
-│  1. Login          →  Enter admin email + password      │
-│  2. Dashboard      →  View pending queue (service-scoped│
-│  3. Review         →  Open request modal                │
-│                   →  Check tax compliance + records     │
-│  4. Decision       →  Select Approved / Rejected        │
-│                   →  Add optional note                  │
-│                   →  Save (decision becomes immutable)  │
-│  5. Background     →  PDF generated in daemon thread    │
-│  6. Notification   →  Citizen receives status alert     │
-└─────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│  ADMIN WORKFLOW                                           │
+│                                                           │
+│  1. Login          →  Enter admin email + password        │
+│  2. Dashboard      →  View pending queue (service-scoped) │
+│  3. Review         →  Open request modal                  │
+│                    →  Check tax compliance + records      │
+│  4. Decision       →  Select Approved / Rejected          │
+│                    →  Add optional note                   │
+│                    →  Save (decision becomes immutable)   │
+│  5. Background     →  PDF generated in daemon thread      │
+│  6. Notification   →  Citizen receives status alert       │
+│  7. Reports        →  Navigate to Reports page            │
+│                    →  Apply date/status filters           │
+│                    →  Review KPIs, charts, and table      │
+│                    →  Export PDF or CSV as needed         │
+└───────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## 🧾 PDF Generation Engine
 
-PDF generation is handled by **ReportLab** and is implemented for two document types.
+PDF generation is handled by **ReportLab** and is implemented for three document types: the Certificate C20, the Extrait de Rôle, and the statistical report export.
 
 ### Certificate C20
 
@@ -816,6 +959,16 @@ The Extrait de Rôle PDF is generated by `generate_extrait_role()` and includes:
 - Approval timestamp in Algeria local time
 - Processing agent name and signature image
 - Official stamp with rotation
+
+### Statistical Report PDF
+
+The report PDF is generated by `generate_report_pdf()` and includes:
+
+- Official header (République Algérienne Démocratique et Populaire, Ministère des Finances)
+- Report generation timestamp and active filter summary
+- KPI summary block (totals, rates)
+- Full detailed request table with automatic page breaks and repeated headers
+- Page numbers
 
 ### Background Generation
 
@@ -938,6 +1091,7 @@ def pick_admin_for_service(users, service):
 - [ ] **Search across all users (super-admin)** — Cross-user request search for oversight roles.
 - [ ] **PostgreSQL migration** — Replace SQLite with PostgreSQL for multi-instance deployments.
 - [ ] **Rate limiting** — Protect login and submission endpoints from brute force and abuse.
+- [ ] **Reports in mock mode** — Provide a mock implementation of the reports endpoints so the reports dashboard is usable without a running Flask server.
 - [ ] **Additional language support** — The i18n architecture is designed for easy extensibility; adding a fourth language (e.g., Tamazight/Berber) requires only a new catalog file and a one-line addition to `SUPPORTED_LANGUAGES` in `i18n.js`.
 - [ ] **Server-side locale for notifications** — Store notification messages as template keys rather than English strings, enabling purely server-driven localization without client-side message parsing.
 - [ ] **Locale-aware PDF generation** — Generate C20 and Extrait de Rôle PDFs in the citizen's preferred language rather than the current fixed French template.
@@ -952,6 +1106,7 @@ def pick_admin_for_service(users, service):
 - **PDF asset dependency:** Signature images and the stamp file must be placed manually in `assets/`. If these files are absent, PDFs are generated without signatures or stamps but do not fail.
 - **No HTTPS enforcement:** The Flask dev server does not enforce HTTPS. A reverse proxy (nginx, Caddy) with TLS termination is required for production.
 - **Avatar storage:** User avatars are stored as files on the local filesystem. This is not compatible with horizontally scaled or containerized deployments without a shared volume or object storage (e.g., S3).
+- **Reports require Flask:** The reports, statistics, and export endpoints are not implemented in mock mode. The reports dashboard is only functional with `USE_MOCK = false` and a running Flask server.
 - **Seed data format:** Changing the structure of `users.json` after the database has been initialized requires either manually migrating the SQLite database or deleting the runtime `app.db` to trigger a re-seed.
 
 ---
@@ -963,6 +1118,7 @@ def pick_admin_for_service(users, service):
 | Full-Stack Development | Project Author |
 | System Design | Project Author |
 | PDF Generation Engine | Project Author |
+| Reports & Analytics System | Project Author |
 | UI/UX Design | Project Author |
 | Internationalization & RTL System | Project Author |
 
@@ -1001,7 +1157,8 @@ SOFTWARE.
 ## 🙏 Acknowledgements
 
 - **[Flask](https://flask.palletsprojects.com/)** — Lightweight and flexible Python web framework.
-- **[ReportLab](https://www.reportlab.com/)** — The industry-standard PDF generation library for Python.
+- **[ReportLab](https://www.reportlab.com/)** — The industry-standard PDF generation library for Python, used for both official document PDFs and statistical report exports.
+- **[Chart.js](https://www.chartjs.org/)** — Simple yet flexible JavaScript charting library, powering the reports dashboard visualizations.
 - **[Werkzeug](https://werkzeug.palletsprojects.com/)** — Comprehensive WSGI utility library providing the security primitives used for password hashing.
 - **[Font Awesome](https://fontawesome.com/)** — The icon library powering the entire UI icon set.
 - **[Google Fonts](https://fonts.google.com/)** — Roboto typeface for LTR content and Noto Sans Arabic for correct Arabic glyph rendering in RTL mode.
