@@ -181,9 +181,30 @@ function destroyChart(name) {
   }
 }
 
-function baseChartOptions() {
+function baseChartOptions(maxValue = null) {
   const textColor = chartTextColor();
   const gridColor = chartGridColor();
+
+  // Calculate dynamic step size based on max value
+  let stepSize = 5;
+  let suggestedMax = null;
+
+  if (maxValue && maxValue > 0) {
+    // Determine appropriate step size based on the range
+    if (maxValue <= 20) {
+      stepSize = 5;
+      suggestedMax = 20; // Cap at 20 for clean look
+    } else if (maxValue <= 50) {
+      stepSize = 10;
+    } else if (maxValue <= 100) {
+      stepSize = 20;
+    } else if (maxValue <= 200) {
+      stepSize = 25;
+    } else {
+      stepSize = 50;
+    }
+  }
+
   return {
     responsive: true,
     maintainAspectRatio: false,
@@ -209,7 +230,12 @@ function baseChartOptions() {
       },
       y: {
         beginAtZero: true,
-        ticks: { color: textColor, precision: 0 },
+        ticks: {
+          color: textColor,
+          precision: 0,
+          stepSize: stepSize,
+        },
+        max: suggestedMax,
         grid: { color: gridColor },
       },
     },
@@ -243,12 +269,18 @@ function renderCharts(report) {
       ],
     },
     options: {
-      ...baseChartOptions(),
+      ...baseChartOptions(), // Pie chart doesn't need max value
       scales: {},
     },
   });
 
-  const monthlyOptions = baseChartOptions();
+  // Calculate max value for monthly requests
+  const monthlyData = (report.charts.monthlyRequests || []).map(
+    (item) => item.count,
+  );
+  const maxMonthlyValue = Math.max(...monthlyData, 0);
+
+  const monthlyOptions = baseChartOptions(maxMonthlyValue);
   reportState.charts.monthly = new Chart(monthlyCanvas, {
     type: "line",
     data: {
@@ -256,7 +288,7 @@ function renderCharts(report) {
       datasets: [
         {
           label: tr("reports.requests"),
-          data: (report.charts.monthlyRequests || []).map((item) => item.count),
+          data: monthlyData,
           borderColor: "#035e7b",
           backgroundColor: "rgba(3, 94, 123, 0.12)",
           tension: 0.35,
