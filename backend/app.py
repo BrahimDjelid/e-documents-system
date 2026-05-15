@@ -792,16 +792,35 @@ def generate_report_csv(report):
         "rejected": "Rejeté",
     }
     
+    # Helper function to format ISO datetime to human-readable
+    def format_datetime(iso_string):
+        if not iso_string:
+            return "-"
+        try:
+            # Parse ISO format
+            if 'T' in iso_string:
+                # Remove microseconds and timezone
+                # 2026-05-15T14:33:49.151Z -> 2026-05-15 14:33:49
+                date_part = iso_string.split('T')[0]
+                time_part = iso_string.split('T')[1].split('.')[0].split('Z')[0].split('+')[0]
+                return f"{date_part} {time_part}"
+            return iso_string
+        except Exception:
+            return iso_string
+    
     for row in report["data"]:
+        # Format the date
+        formatted_date = format_datetime(row["submittedAt"])
+        
         writer.writerow([
             row["requestId"],
             row["userName"],
             row["userNif"],
             row["documentType"],
             status_fr.get(row["status"], row["status"]),
-            row["submittedAt"],
-            row["processedBy"],
-            row["assignedAdmin"],
+            formatted_date,  # Use formatted date instead of raw
+            row.get("processedBy", ""),
+            row.get("assignedAdmin", ""),
         ])
 
     output = BytesIO()
@@ -905,11 +924,27 @@ def generate_report_pdf(report):
         c.drawString(x, y, line)
     y -= 14 * mm
 
+    # Display Admin name above the table (if available)
+    admin_name = None
+    if report["data"] and len(report["data"]) > 0:
+        # Get the first non-empty processedBy from the data
+        for row in report["data"]:
+            if row.get("processedBy") and row["processedBy"] != "-":
+                admin_name = row["processedBy"]
+                break
+    
+    if admin_name:
+        c.setFont("Helvetica-Bold", 9)
+        c.drawString(14 * mm, y, "Admin traitant: ")
+        c.setFont("Helvetica", 9)
+        c.drawString(14 * mm + c.stringWidth("Admin traitant: ", "Helvetica-Bold", 9), y, admin_name)
+        y -= 10 * mm
+
     c.setFont("Helvetica-Bold", 11)
     c.drawString(14 * mm, y, "Demandes Détaillées")
     y -= 7 * mm
 
-    widths = [28 * mm, 38 * mm, 27 * mm, 30 * mm, 22 * mm, 30 * mm]
+    widths = [30 * mm, 35 * mm, 30 * mm, 30 * mm, 25 * mm, 32 * mm]
     headers = ["ID de demande", "Utilisateur", "NIF", "Type", "Statut", "Soumise le"]
 
     def draw_table_header(current_y):
@@ -933,21 +968,39 @@ def generate_report_pdf(report):
             c.showPage()
             page += 1
             y = new_page(page)
+            
+            # Re-display admin name on new page if exists
+            if admin_name:
+                c.setFont("Helvetica-Bold", 9)
+                c.drawString(14 * mm, y, "Admin traitant: ")
+                c.setFont("Helvetica", 9)
+                c.drawString(14 * mm + c.stringWidth("Admin traitant: ", "Helvetica-Bold", 9), y, admin_name)
+                y -= 10 * mm
+            
+            c.setFont("Helvetica-Bold", 11)
+            c.drawString(14 * mm, y, "Demandes Détaillées")
+            y -= 7 * mm
             y = draw_table_header(y)
 
         # Format the date using our helper function
         formatted_date = format_datetime(row["submittedAt"])
+        
+        # Truncate long values to prevent overflow
+        user_name = row["userName"][:25] + "..." if len(row["userName"]) > 25 else row["userName"]
+        nif_value = row["userNif"][:18] if len(row["userNif"]) > 18 else row["userNif"]
+        doc_type = row["documentType"][:20] + "..." if len(row["documentType"]) > 20 else row["documentType"]
+        request_id = row["requestId"][:15] if len(row["requestId"]) > 15 else row["requestId"]
 
         _draw_report_row(
             c,
             y,
             [
-                row["requestId"],
-                row["userName"],
-                row["userNif"],
-                row["documentType"],
+                request_id,
+                user_name,
+                nif_value,
+                doc_type,
                 status_fr.get(row["status"], row["status"]),
-                formatted_date,  # Use formatted date instead of raw
+                formatted_date,
             ],
             widths,
         )
@@ -960,7 +1013,6 @@ def generate_report_pdf(report):
     c.save()
     output.seek(0)
     return output
-
 
 # ----------------------------
 # C20 PDF GENERATOR
