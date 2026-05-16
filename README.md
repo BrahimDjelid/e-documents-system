@@ -108,9 +108,9 @@ Administrators additionally have access to a full statistical reports dashboard 
 
 ### System-Wide
 - 🧩 **Component-Based UI** — Sidebar and topbar loaded dynamically for consistent layout
-- 📡 **Dual-Mode API Layer** — `api.js` supports both mock (JSON) and live (Flask) modes with a single flag
+- 📡 **Flask-Only API Layer** — `api.js` connects exclusively to the Flask backend; there is no mock mode
 - 🔄 **Background PDF Generation** — PDFs are generated in daemon threads immediately after approval
-- 🗃️ **SQLite Persistence** — Runtime database stored in OS AppData, seeded from `users.json` on first boot
+- 🗃️ **SQLite Persistence** — Runtime database stored in OS AppData, seeded from `users.json` on first boot only
 - 🛡️ **Role-Based Access Control** — Router guard enforces correct page access per role
 - 🔀 **RTL Layout Engine** — Full right-to-left layout support for Arabic, including mirrored navigation, direction-aware tables, and RTL-compatible notifications
 
@@ -183,8 +183,8 @@ Administrators additionally have access to a full statistical reports dashboard 
 │       └─────────────┴─────────────┴────────────┘        │
 │                          │                              │
 │                    ┌─────▼──────┐                       │
-│                    │   api.js   │  ◄── USE_MOCK flag    │
-│                    │ API Layer  │                       │
+│                    │   api.js   │  ← Flask-only         │
+│                    │ API Layer  │    no mock mode       │
 │                    └─────┬──────┘                       │
 └──────────────────────────┼──────────────────────────────┘
                            │ HTTP / REST (JSON)
@@ -197,14 +197,16 @@ Administrators additionally have access to a full statistical reports dashboard 
             ┌──────────────┼──────────────┐
             │              │              │
      ┌──────▼──────┐  ┌────▼────┐  ┌──────▼───────┐
-     │  Database   │  │  CSV    │  │  (uploads,   │
-     │  (app.db)   |  │ Engine  │  │  documents)  │
-     └─────────────┘  └─────────┘  └──────────────┘
+     │  Database   │  │  CSV /  │  │  File system │
+     │  (app.db)   │  │  PDF    │  │  (uploads,   │
+     └─────────────┘  │ Engine  │  │  documents)  │
+                      └─────────┘  └──────────────┘
 ```
 
 ### Key Design Decisions
 
-- **Dual-mode API layer:** `api.js` contains both mock (pure JSON) and live (Flask) implementations for every endpoint. Switching between modes requires changing a single constant (`USE_MOCK`). This enabled full frontend development before the backend was ready.
+- **Flask-only API layer:** `api.js` communicates exclusively with the Flask backend. There is no mock mode or client-side JSON fallback. The Flask server must be running for the application to function.
+- **`users.json` as last-resort seed only:** `users.json` is read by the backend exactly once — during the very first startup, if and only if both the runtime database (`app.db` in AppData) and the legacy project-root database are absent or empty. After that initial seed, `users.json` is never read again. It serves purely as a recovery baseline, not as a data source for any live request.
 - **Runtime database path:** The SQLite database is stored outside the project directory in the OS AppData folder (`%LOCALAPPDATA%/e-documents-system/app.db`). This prevents accidental overwrites during development and separates runtime state from source code.
 - **Background PDF threads:** After an admin approves a request, PDF generation is offloaded to a daemon thread so the HTTP response returns immediately. The PDF is cached on disk and served on the next download request.
 - **Compliance computed dynamically:** Tax compliance status is never stored directly. It is always recomputed from raw `taxRecords` data at display time, ensuring administrators always see the current financial picture.
@@ -241,7 +243,7 @@ e-documents-system/
 │       ├── router.js                   # Route guard and logout utility
 │       ├── theme.js                    # Dark/light mode toggle
 │       ├── components.js               # Dynamic sidebar/topbar loader + i18n init
-│       ├── api.js                      # Centralized API layer (mock + Flask modes)
+│       ├── api.js                      # Flask-only API layer (all endpoints)
 │       │
 │       ├── documents.js                # My Documents page logic
 │       ├── request.js                  # Request form logic
@@ -285,7 +287,8 @@ e-documents-system/
 │   │   └── stamp.png                   # Official institution stamp
 │   │
 │   ├── data/
-│   │   └── users.json                  # Seed data (used only on first DB initialization)
+│   │   └── users.json                  # Last-resort seed file — read only on first boot
+│   │                                   # if no runtime DB or legacy DB exists
 │   │
 │   ├── documents/                      # Generated PDF storage
 │   │
@@ -309,7 +312,16 @@ e-documents-system/
 
 ## 🗄 Database Design
 
-The system uses SQLite with three normalized tables. The database is initialized from `users.json` on first startup and persisted at the runtime path.
+The system uses SQLite with three normalized tables. The database is initialized from `users.json` on first startup **only if no existing database is found** (neither the runtime AppData DB nor the legacy project-root DB). After that initial seed, the database is the sole source of truth and `users.json` is never consulted again.
+
+### Initialization Priority
+
+When the Flask server starts, `init_db()` follows this order:
+
+1. Connect to (or create) the **runtime database** at `%LOCALAPPDATA%/e-documents-system/app.db`.
+2. If the `users` table is empty, check for the **legacy project-root `app.db`** and migrate from it if found.
+3. If neither database has data, seed from **`users.json`** as a last resort.
+4. From this point on, all reads and writes go exclusively to the runtime database.
 
 ### `users`
 
@@ -403,6 +415,8 @@ Every dashboard page loads `router.js` synchronously. On execution it:
 ## 🔌 API Endpoints
 
 All endpoints are prefixed with `/api`. Protected endpoints require `Authorization: Bearer {token}`.
+
+> **Note:** The Flask server must be running at `http://127.0.0.1:5000` for all API calls to work. `api.js` connects exclusively to Flask — there is no offline or mock fallback.
 
 ### Authentication
 
@@ -830,8 +844,8 @@ python app.py
 ## 🖥 Running the Backend
 
 ```bash
-# Navigate to the project root
-cd e-documents-system
+# Navigate to the backend directory
+cd e-documents-system/backend
 
 # Start the Flask development server
 python app.py
@@ -842,8 +856,9 @@ The API will be available at: **`http://127.0.0.1:5000`**
 On first startup, the server will:
 1. Create the runtime directory if it does not exist.
 2. Initialize the SQLite database schema.
-3. Seed the database from `users.json` if the `users` table is empty.
-4. Start accepting requests.
+3. If the `users` table is empty, attempt to migrate from the legacy project-root `app.db`.
+4. If that is also empty or absent, seed from `users.json` as a last resort.
+5. Start accepting requests.
 
 ```
  * Running on http://127.0.0.1:5000
@@ -860,7 +875,7 @@ On first startup, the server will:
 
 ## 🌐 Running the Frontend
 
-The frontend is a static multi-page application. It requires a local HTTP server to correctly resolve relative paths and fetch HTML component files.
+The frontend is a static multi-page application. It requires a local HTTP server to correctly resolve relative paths and fetch HTML component files. **The Flask backend must also be running** — `api.js` makes live requests to Flask for every operation.
 
 ### Option 1: VS Code Live Server (recommended)
 
@@ -877,20 +892,7 @@ python -m http.server 5500
 
 Then open: **`http://localhost:5500`**
 
-### Switching Between Mock and Live Modes
-
-Open `assets/js/api.js` and change the `USE_MOCK` constant:
-
-```javascript
-// Mock mode — reads from users.json, no backend needed
-const USE_MOCK = true;
-
-// Live mode — connects to Flask at API_BASE
-const USE_MOCK = false;
-const API_BASE = "http://127.0.0.1:5000";
-```
-
-> **Note:** The reports feature (`/api/admin/stats`, `/api/admin/reports`, `/api/admin/reports/export`) requires Flask to be running and `USE_MOCK` set to `false`. These endpoints are not available in mock mode.
+> **There is no mock or offline mode.** All pages require a running Flask server at `http://127.0.0.1:5000`. If the server is not running, login will fail and all data-fetching operations will throw network errors.
 
 ---
 
@@ -1091,7 +1093,6 @@ def pick_admin_for_service(users, service):
 - [ ] **Search across all users (super-admin)** — Cross-user request search for oversight roles.
 - [ ] **PostgreSQL migration** — Replace SQLite with PostgreSQL for multi-instance deployments.
 - [ ] **Rate limiting** — Protect login and submission endpoints from brute force and abuse.
-- [ ] **Reports in mock mode** — Provide a mock implementation of the reports endpoints so the reports dashboard is usable without a running Flask server.
 - [ ] **Additional language support** — The i18n architecture is designed for easy extensibility; adding a fourth language (e.g., Tamazight/Berber) requires only a new catalog file and a one-line addition to `SUPPORTED_LANGUAGES` in `i18n.js`.
 - [ ] **Server-side locale for notifications** — Store notification messages as template keys rather than English strings, enabling purely server-driven localization without client-side message parsing.
 - [ ] **Locale-aware PDF generation** — Generate C20 and Extrait de Rôle PDFs in the citizen's preferred language rather than the current fixed French template.
@@ -1101,12 +1102,13 @@ def pick_admin_for_service(users, service):
 
 ## ⚠️ Known Limitations
 
+- **Flask server required:** The frontend has no offline or mock fallback. All pages depend on a running Flask server at `http://127.0.0.1:5000`. The application will not function without it.
 - **Single-server only:** SQLite does not support concurrent write access from multiple processes. The application must run on a single server instance. Use PostgreSQL for horizontal scaling.
 - **Token scheme:** The current `token-{userId}` scheme does not expire and contains the user ID in plain text. It is suitable for development and demonstration but should be replaced with signed JWTs before any production deployment.
 - **PDF asset dependency:** Signature images and the stamp file must be placed manually in `assets/`. If these files are absent, PDFs are generated without signatures or stamps but do not fail.
 - **No HTTPS enforcement:** The Flask dev server does not enforce HTTPS. A reverse proxy (nginx, Caddy) with TLS termination is required for production.
 - **Avatar storage:** User avatars are stored as files on the local filesystem. This is not compatible with horizontally scaled or containerized deployments without a shared volume or object storage (e.g., S3).
-- **Reports require Flask:** The reports, statistics, and export endpoints are not implemented in mock mode. The reports dashboard is only functional with `USE_MOCK = false` and a running Flask server.
+- **`users.json` is not a live data source:** Editing `users.json` after the first boot has no effect on a running application. All data changes must be made directly to the runtime SQLite database. `users.json` is only read during initial seeding when no database exists.
 - **Seed data format:** Changing the structure of `users.json` after the database has been initialized requires either manually migrating the SQLite database or deleting the runtime `app.db` to trigger a re-seed.
 
 ---
