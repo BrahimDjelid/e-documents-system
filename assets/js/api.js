@@ -1,19 +1,11 @@
-// api.js - Centralized API layer
-// USE_MOCK = true  → reads from users.json (no backend needed)
-// USE_MOCK = false → calls Flask REST API
-//
-// When Flask is ready:
-//   1. Set USE_MOCK = false
-//   2. Set API_BASE to your production server URL
-//   3. Done — entire app switches to Flask
+// api.js - Centralized API layer (Flask only)
+// All requests go to the Flask backend at API_BASE.
 
 "use strict";
 
-const USE_MOCK = false;
 const API_BASE = "http://127.0.0.1:5000";
-const MOCK_PATH = "../../data/users.json";
 
-// Internal helpers
+// Internal helpers 
 
 function _getToken() {
   return sessionStorage.getItem("token") || "";
@@ -27,50 +19,12 @@ function _authHeaders() {
   };
 }
 
-async function _loadMockUsers() {
-  const res = await fetch(MOCK_PATH);
-  if (!res.ok) throw new Error("Could not load users.json");
-  return res.json();
-}
-
-// Mock: merge localStorage status/note overrides into request list,
-// and inject new requests submitted in this session (not yet in users.json)
-function _applyOverrides(requests) {
-  try {
-    const overrides = JSON.parse(localStorage.getItem("req_overrides") || "{}");
-
-    // Update existing requests with any saved status/note/year overrides
-    const updated = requests.map((req) => {
-      const override = overrides[req.requestId];
-      if (!override) return req;
-      return {
-        ...req,
-        status: override.status ?? req.status,
-        note: override.note ?? req.note ?? "",
-        ...(override.year !== undefined ? { year: override.year } : {}),
-      };
-    });
-
-    // Inject new requests that don't exist in users.json yet
-    const existingIds = new Set(requests.map((r) => r.requestId));
-    Object.values(overrides).forEach((override) => {
-      if (override._new && !existingIds.has(override.requestId)) {
-        updated.push(override._new);
-      }
-    });
-
-    return updated;
-  } catch {
-    return requests;
-  }
-}
-
-// AUTH
+// AUTH 
 
 /**
  * Login — accepts NIF (15-digit string) or admin email.
  *
- * Flask: POST /api/auth/login
+ * POST /api/auth/login
  * Body:  { id: string, password: string }
  * Response: {
  *   token:         string,
@@ -82,22 +36,6 @@ function _applyOverrides(requests) {
  * }
  */
 async function apiLogin(id, password) {
-  if (USE_MOCK) {
-    const users = await _loadMockUsers();
-    const match = users.find(
-      (u) => u.auth.id === id && u.auth.password === password,
-    );
-    if (!match) throw new Error("Incorrect credentials");
-    return {
-      userId: match.auth.id,
-      role: match.role,
-      userFirstName: match.profile?.firstName || "",
-      userLastName: match.profile?.lastName || "",
-      service: match.service || null,
-    };
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -107,32 +45,18 @@ async function apiLogin(id, password) {
   return res.json();
 }
 
-// CURRENT USER
+// CURRENT USER 
 
 /**
  * Get the full object for the currently logged-in user or admin.
  *
- * For users returns:
- *   { auth, profile, taxInfo, eligibility, requests, role }
- * For admins returns:
- *   { auth, profile, role, service }
+ * For users returns:  { auth, profile, taxInfo, eligibility, requests, role }
+ * For admins returns: { auth, profile, role, service }
  *
- * Flask: GET /api/user/me
+ * GET /api/user/me
  * Headers: Authorization: Bearer {token}
  */
 async function apiGetCurrentUser() {
-  if (USE_MOCK) {
-    const userId = sessionStorage.getItem("userId");
-    const users = await _loadMockUsers();
-    const user = users.find((u) => u.auth.id === userId);
-    if (!user) throw new Error("User not found");
-    return {
-      ...user,
-      requests: _applyOverrides(user.requests || []),
-    };
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/user/me`, {
     headers: _authHeaders(),
   });
@@ -140,28 +64,18 @@ async function apiGetCurrentUser() {
   return res.json();
 }
 
-// USER — PROFILE UPDATE
-
+// USER — PROFILE UPDATE 
 /**
  * Update the logged-in citizen's editable contact fields.
  * Read-only fields (name, DOB, address, nationalId, civilStatus) are
  * managed by the tax authority and must NOT be sent here.
  *
- * Flask: PATCH /api/user/profile
+ * PATCH /api/user/profile
  * Headers: Authorization: Bearer {token}
- * Body: {
- *   email: string,   // new contact email
- *   phone: string    // new phone number
- * }
+ * Body: { email: string, phone: string }
  * Response: { success: true }
  */
 async function apiUpdateProfile(email, phone) {
-  if (USE_MOCK) {
-    console.log("[api.js | MOCK] PATCH /api/user/profile →", { email, phone });
-    return { success: true };
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/user/profile`, {
     method: "PATCH",
     headers: _authHeaders(),
@@ -171,7 +85,7 @@ async function apiUpdateProfile(email, phone) {
   return res.json();
 }
 
-// ADMIN — PROFILE UPDATE
+// ADMIN — PROFILE UPDATE 
 
 /**
  * Update the logged-in admin's editable profile fields.
@@ -179,30 +93,15 @@ async function apiUpdateProfile(email, phone) {
  * must update both the profile AND the auth credential atomically,
  * then return a fresh session token (or invalidate the old one).
  *
- * Flask: PUT /api/admin/profile
+ * PUT /api/admin/profile
  * Headers: Authorization: Bearer {token}  (admin only)
- * Body: {
- *   firstName: string,
- *   lastName:  string,
- *   email:     string   // also updates auth.id / login credential
- * }
+ * Body: { firstName: string, lastName: string, email: string }
  * Response: {
  *   success:   true,
- *   newToken?: string   // returned when email changed; client must
- *                       // refresh sessionStorage.userId + auth header
+ *   newToken?: string   // returned when email changed
  * }
  */
 async function apiUpdateAdminProfile({ firstName, lastName, email }) {
-  if (USE_MOCK) {
-    console.log("[api.js | MOCK] PUT /api/admin/profile →", {
-      firstName,
-      lastName,
-      email,
-    });
-    return { success: true };
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/admin/profile`, {
     method: "PUT",
     headers: _authHeaders(),
@@ -216,38 +115,19 @@ async function apiUpdateAdminProfile({ firstName, lastName, email }) {
 
 /**
  * Persist a user's or admin's avatar photo.
- *
- * In MOCK mode the base64 data-URI is written to localStorage only
- * (browsers cannot write to users.json).
- * When Flask is connected the base64 is sent to the server; the server
- * stores the image and returns a public URL that replaces the cached copy.
+ * The server stores the image and returns a public URL.
  *
  * Caller workflow (profile.js / admin-profile.js):
  *   1. User picks a file → FileReader → base64 data-URI
  *   2. Call apiUploadAvatar(base64, userId)
  *   3. Use returned { avatarUrl } to set <img src> and update the sidebar avatar
  *
- * Flask: POST /api/user/avatar
+ * POST /api/user/avatar
  * Headers: Authorization: Bearer {token}
- * Body: {
- *   userId:    string,    // owner of the avatar (auth.id)
- *   avatarB64: string     // full data-URI, e.g. "data:image/png;base64,..."
- * }
- * Response: {
- *   success:   true,
- *   avatarUrl: string     // server-hosted URL to use as <img src>
- * }
+ * Body: { userId: string, avatarB64: string }
+ * Response: { success: true, avatarUrl: string }
  */
 async function apiUploadAvatar(base64, userId) {
-  if (USE_MOCK) {
-    localStorage.setItem(`avatar_${userId}`, base64);
-    console.log(
-      "[api.js | MOCK] POST /api/user/avatar → stored in localStorage",
-    );
-    return { success: true, avatarUrl: base64 };
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/user/avatar`, {
     method: "POST",
     headers: _authHeaders(),
@@ -265,26 +145,12 @@ async function apiUploadAvatar(base64, userId) {
 /**
  * Remove a user's or admin's avatar photo, reverting to initials display.
  *
- * In MOCK mode removes the localStorage entry.
- * When Flask is connected the server deletes the stored image file.
- *
- * Flask: DELETE /api/user/avatar
+ * DELETE /api/user/avatar
  * Headers: Authorization: Bearer {token}
- * Body: {
- *   userId: string    // owner of the avatar (auth.id)
- * }
+ * Body: { userId: string }
  * Response: { success: true }
  */
 async function apiRemoveAvatar(userId) {
-  if (USE_MOCK) {
-    localStorage.removeItem(`avatar_${userId}`);
-    console.log(
-      "[api.js | MOCK] DELETE /api/user/avatar → removed from localStorage",
-    );
-    return { success: true };
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/user/avatar`, {
     method: "DELETE",
     headers: _authHeaders(),
@@ -300,24 +166,12 @@ async function apiRemoveAvatar(userId) {
  * Change the logged-in user's or admin's password.
  * Works for both roles — the server identifies the account via the token.
  *
- * Flask: POST /api/user/password
+ * POST /api/user/password
  * Headers: Authorization: Bearer {token}
- * Body: {
- *   currentPassword: string,
- *   newPassword:     string
- * }
+ * Body: { currentPassword: string, newPassword: string }
  * Response: { success: true }
  */
 async function apiChangePassword(currentPassword, newPassword) {
-  if (USE_MOCK) {
-    console.log("[api.js | MOCK] POST /api/user/password →", {
-      currentPassword: "***",
-      newPassword: "***",
-    });
-    return { success: true };
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/user/password`, {
     method: "POST",
     headers: _authHeaders(),
@@ -327,7 +181,7 @@ async function apiChangePassword(currentPassword, newPassword) {
   return res.json();
 }
 
-// REQUESTS — USER SIDE
+// REQUESTS — USER SIDE 
 
 /**
  * Submit a new document request.
@@ -335,65 +189,24 @@ async function apiChangePassword(currentPassword, newPassword) {
  * computed client-side from live taxRecords data and must never be
  * taken from a stored/cached field.
  *
- * Flask: POST /api/requests
+ * POST /api/requests
  * Headers: Authorization: Bearer {token}
  * Body: {
- *   requestId:    string,              // e.g. "REQ-14-26-042"
+ *   requestId:    string,
  *   submittedAt:  string,              // ISO-8601 timestamp
- *   status:       "pending",           // always "pending" on creation
- *   userId:       string,              // auth.id of the submitting citizen
+ *   status:       "pending",
+ *   userId:       string,
  *   documentType: "C20" | "Extrait de rôle",
  *   purpose:      string | null,
- *   taxStatus:    "À jour" | "Non à jour",  // computed, never stored value
- *   applicant: {
- *     fullName:    string,
- *     nationalId:  string | null,
- *     dateOfBirth: string | null,
- *     phone:       string | null,
- *     email:       string | null
- *   },
- *   business: {
- *     mainActivityName:         string | null,
- *     mainActivityCode:         string | null,
- *     businessAddress:          string | null,
- *     taxRegime:                string | null,
- *     commercialRegisterNumber: string | null
- *   },
- *   taxRecords: Array | undefined      // only present for "Extrait de rôle"
+ *   taxStatus:    "À jour" | "Non à jour",
+ *   applicant:    { fullName, nationalId, dateOfBirth, phone, email },
+ *   business:     { mainActivityName, mainActivityCode, businessAddress,
+ *                   taxRegime, commercialRegisterNumber },
+ *   taxRecords:   Array | undefined    // only for "Extrait de rôle"
  * }
  * Response: { requestId: string, status: "pending" }
  */
 async function apiSubmitRequest(payload) {
-  if (USE_MOCK) {
-    // Persist the new request so the admin side can see it immediately,
-    // including the year field for C20 requests.
-    try {
-      const overrides = JSON.parse(
-        localStorage.getItem("req_overrides") || "{}",
-      );
-      const newRecord = {
-        requestId: payload.requestId,
-        documentType: payload.documentType,
-        status: "pending",
-        submittedAt: payload.submittedAt,
-        note: "",
-        ...(payload.year !== undefined ? { year: payload.year } : {}),
-      };
-      overrides[payload.requestId] = {
-        status: "pending",
-        note: "",
-        ...(payload.year !== undefined ? { year: payload.year } : {}),
-        _new: newRecord,
-      };
-      localStorage.setItem("req_overrides", JSON.stringify(overrides));
-    } catch (err) {
-      console.error("[api.js | MOCK] Could not persist new request:", err);
-    }
-    console.log("[api.js | MOCK] POST /api/requests →", payload);
-    return { requestId: payload.requestId, status: "pending" };
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/requests`, {
     method: "POST",
     headers: _authHeaders(),
@@ -403,61 +216,20 @@ async function apiSubmitRequest(payload) {
   return res.json();
 }
 
-// REQUESTS — ADMIN SIDE
-
+// REQUESTS — ADMIN SIDE 
 /**
  * Get all requests for the logged-in admin's assigned service.
  * Each request is enriched server-side with the applicant's profile
  * and tax records so the admin never has to join data manually.
  *
- * Flask: GET /api/requests
+ * GET /api/requests
  * Headers: Authorization: Bearer {token}  (admin only)
- *   Backend filters by the admin's assigned service automatically.
  * Response: Array<{
  *   ...requestFields,
- *   _fullName:   string,
- *   _nif:        string,
- *   _dob:        string | null,
- *   _phone:      string | null,
- *   _email:      string | null,
- *   _taxRegime:  string | null,
- *   _taxRecords: Array
+ *   _fullName, _nif, _dob, _phone, _email, _taxRegime, _taxRecords
  * }>
  */
 async function apiGetRequests() {
-  const adminService = sessionStorage.getItem("service") || "";
-
-  if (USE_MOCK) {
-    const users = await _loadMockUsers();
-    const enriched = [];
-
-    users.forEach((user) => {
-      if (user.role !== "user") return;
-      const requests = _applyOverrides(user.requests || []);
-      const profile = user.profile || {};
-      const taxInfo = user.taxInfo || {};
-
-      requests.forEach((req) => {
-        if (req.documentType !== adminService) return;
-        enriched.push({
-          ...req,
-          _fullName: [profile.firstName, profile.lastName]
-            .filter(Boolean)
-            .join(" "),
-          _nif: user.auth.id,
-          _dob: profile.dateOfBirth || null,
-          _phone: profile.phone || null,
-          _email: profile.email || null,
-          _taxRegime: taxInfo.taxRegime || null,
-          _taxRecords: taxInfo.taxRecords || [],
-        });
-      });
-    });
-
-    return enriched;
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/requests`, {
     headers: _authHeaders(),
   });
@@ -467,45 +239,12 @@ async function apiGetRequests() {
 
 /**
  * Get dashboard summary data for the logged-in admin.
- * Returns requests enriched with applicant name + tax records
- * (needed to compute compliance badges on the dashboard).
  *
- * Flask: GET /api/admin/dashboard
+ * GET /api/admin/dashboard
  * Headers: Authorization: Bearer {token}  (admin only)
- * Response: Array<{
- *   ...requestFields,
- *   _fullName:   string,
- *   _taxRecords: Array
- * }>
+ * Response: Array<{ ...requestFields, _fullName, _taxRecords }>
  */
 async function apiGetAdminDashboard() {
-  const adminService = sessionStorage.getItem("service") || "";
-
-  if (USE_MOCK) {
-    const users = await _loadMockUsers();
-    const requests = [];
-
-    users.forEach((user) => {
-      if (user.role !== "user") return;
-      const profile = user.profile || {};
-      const taxInfo = user.taxInfo || {};
-
-      _applyOverrides(user.requests || []).forEach((req) => {
-        if (req.documentType !== adminService) return;
-        requests.push({
-          ...req,
-          _fullName: [profile.firstName, profile.lastName]
-            .filter(Boolean)
-            .join(" "),
-          _taxRecords: taxInfo.taxRecords || [],
-        });
-      });
-    });
-
-    return requests;
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/admin/dashboard`, {
     headers: _authHeaders(),
   });
@@ -516,14 +255,10 @@ async function apiGetAdminDashboard() {
 /**
  * Get global admin statistics for reports KPI cards and initial charts.
  *
- * Flask: GET /api/admin/stats
- * Headers: Authorization: Bearer {token} (admin only)
+ * GET /api/admin/stats
+ * Headers: Authorization: Bearer {token}  (admin only)
  */
 async function apiGetAdminStats() {
-  if (USE_MOCK) {
-    throw new Error("Reports are available when Flask is connected");
-  }
-
   const res = await fetch(`${API_BASE}/api/admin/stats`, {
     headers: _authHeaders(),
   });
@@ -534,15 +269,11 @@ async function apiGetAdminStats() {
 /**
  * Build a filtered statistical report.
  *
- * Flask: POST /api/admin/reports
- * Headers: Authorization: Bearer {token} (admin only)
+ * POST /api/admin/reports
+ * Headers: Authorization: Bearer {token}  (admin only)
  * Body: { dateFrom, dateTo, status, type }
  */
 async function apiGenerateAdminReport(filters) {
-  if (USE_MOCK) {
-    throw new Error("Reports are available when Flask is connected");
-  }
-
   const res = await fetch(`${API_BASE}/api/admin/reports`, {
     method: "POST",
     headers: _authHeaders(),
@@ -555,13 +286,10 @@ async function apiGenerateAdminReport(filters) {
 /**
  * Export the current admin report as PDF or CSV and trigger a download.
  *
- * Flask: GET /api/admin/reports/export?format=pdf|csv&...
+ * GET /api/admin/reports/export?format=pdf|csv&...
+ * Headers: Authorization: Bearer {token}  (admin only)
  */
 async function apiExportAdminReport(format, filters) {
-  if (USE_MOCK) {
-    throw new Error("Reports are available when Flask is connected");
-  }
-
   const params = new URLSearchParams({ format });
   Object.entries(filters || {}).forEach(([key, value]) => {
     if (value) params.set(key, value);
@@ -587,37 +315,14 @@ async function apiExportAdminReport(format, filters) {
 /**
  * Save an admin's decision on a request.
  *
- * Flask: POST /api/requests/{requestId}/decision
+ * POST /api/requests/{requestId}/decision
  * Headers: Authorization: Bearer {token}  (admin only)
- * Body: {
- *   status:      "approved" | "rejected" | "pending",
- *   processedBy: string,       // admin's userId (auth.id)
- *   note:        string
- * }
+ * Body: { status: "approved"|"rejected"|"pending", processedBy: string, note: string }
  * Response: { requestId: string, status: string }
  */
 async function apiSaveDecision(requestId, status, note = "") {
   const adminId = sessionStorage.getItem("userId") || "";
 
-  if (USE_MOCK) {
-    try {
-      const overrides = JSON.parse(
-        localStorage.getItem("req_overrides") || "{}",
-      );
-      overrides[requestId] = { status, note };
-      localStorage.setItem("req_overrides", JSON.stringify(overrides));
-    } catch (err) {
-      console.error("[api.js | MOCK] localStorage error:", err);
-    }
-    console.log(`[api.js | MOCK] POST /api/requests/${requestId}/decision →`, {
-      status,
-      processedBy: adminId,
-      note,
-    });
-    return { requestId, status };
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/requests/${requestId}/decision`, {
     method: "POST",
     headers: _authHeaders(),
@@ -627,23 +332,16 @@ async function apiSaveDecision(requestId, status, note = "") {
   return res.json();
 }
 
-// DOCUMENT DOWNLOAD
+// DOCUMENT DOWNLOAD 
 
 /**
  * Download an approved document as a PDF.
- * In MOCK mode throws "MOCK" so the caller can show an info toast.
  *
- * Flask: GET /api/requests/{requestId}/document
+ * GET /api/requests/{requestId}/document
  * Headers: Authorization: Bearer {token}
  * Response: PDF blob (Content-Type: application/pdf)
  */
 async function apiDownloadDocument(requestId, documentType) {
-  if (USE_MOCK) {
-    console.log(`[api.js | MOCK] GET /api/requests/${requestId}/document`);
-    throw new Error("MOCK");
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/requests/${requestId}/document`, {
     headers: _authHeaders(),
   });
@@ -656,172 +354,23 @@ async function apiDownloadDocument(requestId, documentType) {
   a.href = url;
   a.download = `${documentType}_${requestId}.pdf`;
 
-  // Append to DOM — required for Firefox + Safari to honour the download attribute
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
 
-  // Delay revocation — gives the browser time to start reading the blob
-  // before the object URL is released
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
-// NOTIFICATIONS
-
-// Mock helpers
-
-/**
- * Generate a deterministic notification ID from a requestId + type.
- */
-function _notifId(requestId, type) {
-  return `NOTIF-${type.toUpperCase().replace(/_/g, "-")}-${requestId}`;
-}
-
-/**
- * Load notification overrides from localStorage.
- * Stores: { [notifId]: { read, deleted } }
- */
-function _loadNotifOverrides() {
-  try {
-    return JSON.parse(localStorage.getItem("notif_overrides") || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function _saveNotifOverrides(overrides) {
-  localStorage.setItem("notif_overrides", JSON.stringify(overrides));
-}
-
-/**
- * For admins: track which requestIds have already generated a notification
- * so we don't show duplicates on every page load.
- */
-function _loadSeenRequests() {
-  try {
-    return JSON.parse(localStorage.getItem("seen_requests") || "[]");
-  } catch {
-    return [];
-  }
-}
-
-function _saveSeenRequests(ids) {
-  localStorage.setItem("seen_requests", JSON.stringify(ids));
-}
-
-// MOCK: derive notifications for a USER from their requests
-function _mockUserNotifications(user) {
-  const overrides = _loadNotifOverrides();
-  const requests = _applyOverrides(user.requests || []);
-  const result = [];
-
-  requests.forEach((req) => {
-    if (req.status === "approved" || req.status === "rejected") {
-      const type =
-        req.status === "approved" ? "request_approved" : "request_rejected";
-      const id = _notifId(req.requestId, type);
-      const over = overrides[id] || {};
-
-      if (over.deleted) return; // soft-deleted
-
-      result.push({
-        id,
-        type,
-        message:
-          req.status === "approved"
-            ? `Your ${req.documentType} request has been approved.`
-            : `Your ${req.documentType} request was rejected.${req.note ? " Note: " + req.note : ""}`,
-        requestId: req.requestId,
-        read: over.read || false,
-        deleted: false,
-        createdAt: req.submittedAt
-          ? new Date(req.submittedAt).toISOString()
-          : new Date().toISOString(),
-      });
-    }
-  });
-
-  return result;
-}
-
-// MOCK: derive notifications for an ADMIN from all pending requests ─
-function _mockAdminNotifications(allUsers, adminService) {
-  const overrides = _loadNotifOverrides();
-  const seen = _loadSeenRequests();
-  const result = [];
-  const newSeen = [...seen];
-
-  allUsers.forEach((user) => {
-    if (user.role !== "user") return;
-    const profile = user.profile || {};
-    const requests = _applyOverrides(user.requests || []);
-
-    requests.forEach((req) => {
-      if (req.documentType !== adminService) return;
-      if (req.status !== "pending") return;
-
-      const id = _notifId(req.requestId, "new_request");
-      const over = overrides[id] || {};
-
-      if (over.deleted) return;
-
-      // Register as "seen" so it persists across page loads
-      if (!newSeen.includes(req.requestId)) {
-        newSeen.push(req.requestId);
-      }
-
-      const fullName = [profile.firstName, profile.lastName]
-        .filter(Boolean)
-        .join(" ");
-
-      result.push({
-        id,
-        type: "new_request",
-        message: `New ${req.documentType} request from ${fullName}.`,
-        requestId: req.requestId,
-        read: over.read || false,
-        deleted: false,
-        createdAt: req.submittedAt
-          ? new Date(req.submittedAt).toISOString()
-          : new Date().toISOString(),
-      });
-    });
-  });
-
-  _saveSeenRequests(newSeen);
-  return result;
-}
-
-// GET NOTIFICATIONS
-
+// NOTIFICATIONS 
 /**
  * Fetch all notifications for the logged-in user or admin.
  * Excludes soft-deleted entries.
  *
- * Flask: GET /api/notifications
+ * GET /api/notifications
  * Headers: Authorization: Bearer {token}
- * Response: Array<{
- *   id, type, message, requestId, read, deleted, createdAt
- * }>
+ * Response: Array<{ id, type, message, requestId, read, deleted, createdAt }>
  */
 async function apiGetNotifications() {
-  const role = sessionStorage.getItem("role") || "user";
-  const userId = sessionStorage.getItem("userId") || "";
-  const service = sessionStorage.getItem("service") || "";
-
-  if (USE_MOCK) {
-    const allUsers = await _loadMockUsers();
-
-    if (role === "admin") {
-      return _mockAdminNotifications(allUsers, service);
-    } else {
-      const user = allUsers.find((u) => u.auth.id === userId);
-      if (!user) return [];
-      return _mockUserNotifications(user);
-    }
-  }
-
-  // Flask
   const res = await fetch(`${API_BASE}/api/notifications`, {
     headers: _authHeaders(),
   });
@@ -829,23 +378,14 @@ async function apiGetNotifications() {
   return res.json();
 }
 
-// MARK ONE AS READ
 /**
  * Mark a single notification as read.
  *
- * Flask: POST /api/notifications/{id}/read
+ * POST /api/notifications/{id}/read
  * Headers: Authorization: Bearer {token}
  * Response: { success: true }
  */
 async function apiMarkNotificationRead(notifId) {
-  if (USE_MOCK) {
-    const overrides = _loadNotifOverrides();
-    overrides[notifId] = { ...(overrides[notifId] || {}), read: true };
-    _saveNotifOverrides(overrides);
-    console.log(`[api.js | MOCK] POST /api/notifications/${notifId}/read`);
-    return { success: true };
-  }
-
   const res = await fetch(`${API_BASE}/api/notifications/${notifId}/read`, {
     method: "POST",
     headers: _authHeaders(),
@@ -854,32 +394,14 @@ async function apiMarkNotificationRead(notifId) {
   return res.json();
 }
 
-// MARK ALL AS READ
 /**
  * Mark all notifications as read for the current user/admin.
  *
- * Flask: POST /api/notifications/read-all
+ * POST /api/notifications/read-all
  * Headers: Authorization: Bearer {token}
  * Response: { success: true }
  */
 async function apiMarkAllNotificationsRead() {
-  if (USE_MOCK) {
-    // We don't have the full list here, so we patch each known override
-    // and rely on the caller having already updated _notifications state.
-    // Real IDs come from the caller context; just acknowledge.
-    console.log("[api.js | MOCK] POST /api/notifications/read-all");
-
-    // Read current overrides and mark all non-deleted as read
-    const overrides = _loadNotifOverrides();
-    Object.keys(overrides).forEach((key) => {
-      if (!overrides[key].deleted) {
-        overrides[key].read = true;
-      }
-    });
-    _saveNotifOverrides(overrides);
-    return { success: true };
-  }
-
   const res = await fetch(`${API_BASE}/api/notifications/read-all`, {
     method: "POST",
     headers: _authHeaders(),
@@ -888,26 +410,16 @@ async function apiMarkAllNotificationsRead() {
   return res.json();
 }
 
-// DELETE (SOFT)
-
 /**
  * Soft-delete a notification.
  * Sets deleted: true — the record is NEVER removed from DB.
  * Deleted notifications are not returned by apiGetNotifications().
  *
- * Flask: DELETE /api/notifications/{id}
+ * DELETE /api/notifications/{id}
  * Headers: Authorization: Bearer {token}
  * Response: { success: true }
  */
 async function apiDeleteNotification(notifId) {
-  if (USE_MOCK) {
-    const overrides = _loadNotifOverrides();
-    overrides[notifId] = { ...(overrides[notifId] || {}), deleted: true };
-    _saveNotifOverrides(overrides);
-    console.log(`[api.js | MOCK] DELETE /api/notifications/${notifId} (soft)`);
-    return { success: true };
-  }
-
   const res = await fetch(`${API_BASE}/api/notifications/${notifId}`, {
     method: "DELETE",
     headers: _authHeaders(),
