@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - e-Documents</title>
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png">
     <link rel="stylesheet" href="../assets/css/all.min.css" />
     <link rel="stylesheet" href="../assets/css/auth.css" />
 </head>
@@ -15,7 +16,7 @@
         <div class="language-switcher language-switcher--fixed" data-language-switcher></div>
         <button type="button" class="theme-toggle theme-toggle--fixed" id="theme-toggle" aria-label="Toggle dark mode"
             data-i18n-aria-label="topbar.toggleTheme">
-        <i class="fa-solid fa-moon" id="theme-icon"></i>
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
         </button>
     </div>
 
@@ -106,8 +107,7 @@
                             <div class="input-wrapper">
                                 <i class="fa-regular fa-id-card input-icon"></i>
                                 <input type="text" id="identifier" placeholder="Enter your NIF or admin email"
-                                    data-i18n-placeholder="login.identifierPlaceholder"
-                                    autocomplete="off" required />
+                                    data-i18n-placeholder="login.identifierPlaceholder" autocomplete="off" required />
                             </div>
                             <span class="field-hint" data-i18n="login.identifierHint">
                                 Citizens: enter your NIF (15 digits) &nbsp;|&nbsp; Admins: enter
@@ -123,8 +123,8 @@
                             <div class="input-wrapper">
                                 <i class="fa-solid fa-lock input-icon"></i>
                                 <input type="password" id="password" placeholder="••••••••"
-                                    data-i18n-placeholder="login.passwordPlaceholder"
-                                    autocomplete="current-password" required />
+                                    data-i18n-placeholder="login.passwordPlaceholder" autocomplete="current-password"
+                                    required />
                                 <!-- toggle button -->
                                 <button class="toggle-password" id="toggle-password" type="button"
                                     aria-label="Toggle password visibility" data-i18n-aria-label="login.togglePassword">

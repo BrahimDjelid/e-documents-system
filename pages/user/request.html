@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Request Documents - e-Documents</title>
-
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png">
     <link rel="stylesheet" href="../../assets/css/all.min.css" />
     <link rel="stylesheet" href="../../assets/css/request.css" />
 </head>
@@ -51,8 +51,10 @@
                 <div class="step-panel active" id="panel-step-1">
                     <div class="req-card">
                         <div class="req-card-header">
-                            <h2 class="req-card-title" data-i18n="requestPage.selectDocumentType">Select Document Type</h2>
-                            <p class="req-card-sub" data-i18n="requestPage.selectDocumentSubtitle">Choose the official document you need to request</p>
+                            <h2 class="req-card-title" data-i18n="requestPage.selectDocumentType">Select Document Type
+                            </h2>
+                            <p class="req-card-sub" data-i18n="requestPage.selectDocumentSubtitle">Choose the official
+                                document you need to request</p>
                         </div>
 
                         <div class="doc-cards-grid" id="doc-cards-grid">
@@ -65,7 +67,8 @@
                                 </div>
                                 <div class="doc-card-body">
                                     <h3 class="doc-card-name" data-i18n="document.c20">Certificate C20</h3>
-                                    <p class="doc-card-desc" data-i18n="requestPage.c20Description">Official tax clearance and civil status certificate.
+                                    <p class="doc-card-desc" data-i18n="requestPage.c20Description">Official tax
+                                        clearance and civil status certificate.
                                         Required for administrative procedures.</p>
                                     <span class="doc-delivery-badge doc-delivery-badge--digital">
                                         <i class="fa-solid fa-download"></i>
@@ -88,7 +91,8 @@
                                 </div>
                                 <div class="doc-card-body">
                                     <h3 class="doc-card-name" data-i18n="document.taxRollExtract">Tax Roll Extract</h3>
-                                    <p class="doc-card-desc" data-i18n="requestPage.taxRollDescription">Official tax roll extract confirming your fiscal situation
+                                    <p class="doc-card-desc" data-i18n="requestPage.taxRollDescription">Official tax
+                                        roll extract confirming your fiscal situation
                                         and registered tax obligations.</p>
                                     <span class="doc-delivery-badge doc-delivery-badge--digital">
                                         <i class="fa-solid fa-download"></i>
@@ -124,8 +128,10 @@
                                 <i class="fa-regular fa-file-lines"></i>
                             </div>
                             <div>
-                                <h2 class="form-doc-title"><span data-i18n="requestPage.formTitle">Request Form</span> - <span id="form-doc-name">-</span></h2>
-                                <p class="form-doc-sub" data-i18n="requestPage.formSubtitle">Pre-filled from your profile. Review and submit.</p>
+                                <h2 class="form-doc-title"><span data-i18n="requestPage.formTitle">Request Form</span> -
+                                    <span id="form-doc-name">-</span></h2>
+                                <p class="form-doc-sub" data-i18n="requestPage.formSubtitle">Pre-filled from your
+                                    profile. Review and submit.</p>
                             </div>
                         </div>
 
@@ -137,19 +143,23 @@
                             </div>
                             <div class="profile-grid">
                                 <div class="profile-field">
-                                    <label class="profile-field-label" data-i18n="requestPage.fullName">Full Name</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.fullName">Full
+                                        Name</label>
                                     <input type="text" class="profile-input" id="pf-fullname" readonly />
                                 </div>
                                 <div class="profile-field">
-                                    <label class="profile-field-label" data-i18n="requestPage.nationalId">National ID</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.nationalId">National
+                                        ID</label>
                                     <input type="text" class="profile-input" id="pf-nationalid" readonly />
                                 </div>
                                 <div class="profile-field">
-                                    <label class="profile-field-label" data-i18n="requestPage.dateOfBirth">Date of Birth</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.dateOfBirth">Date of
+                                        Birth</label>
                                     <input type="text" class="profile-input" id="pf-dob" readonly value="–" />
                                 </div>
                                 <div class="profile-field">
-                                    <label class="profile-field-label" data-i18n="requestPage.phoneNumber">Phone Number</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.phoneNumber">Phone
+                                        Number</label>
                                     <input type="text" class="profile-input" id="pf-phone" readonly />
                                 </div>
                                 <div class="profile-field profile-field--full">
@@ -161,19 +171,23 @@
                             <!-- Tax / Business Info -->
                             <div class="profile-section-label" style="margin-top: var(--space-lg);">
                                 <i class="fa-solid fa-building-columns"></i>
-                                <span data-i18n="requestPage.businessAutoFilled">Business Information (Auto-filled)</span>
+                                <span data-i18n="requestPage.businessAutoFilled">Business Information
+                                    (Auto-filled)</span>
                             </div>
                             <div class="profile-grid">
                                 <div class="profile-field">
-                                    <label class="profile-field-label" data-i18n="requestPage.mainActivity">Main Activity</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.mainActivity">Main
+                                        Activity</label>
                                     <input type="text" class="profile-input" id="pf-main-activity" readonly />
                                 </div>
                                 <div class="profile-field">
-                                    <label class="profile-field-label" data-i18n="requestPage.taxRegime">Tax Regime</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.taxRegime">Tax
+                                        Regime</label>
                                     <input type="text" class="profile-input" id="pf-tax-regime" readonly />
                                 </div>
                                 <div class="profile-field profile-field--full">
-                                    <label class="profile-field-label" data-i18n="requestPage.businessAddress">Business Address</label>
+                                    <label class="profile-field-label" data-i18n="requestPage.businessAddress">Business
+                                        Address</label>
                                     <input type="text" class="profile-input" id="pf-biz-address" readonly />
                                 </div>
                             </div>
@@ -196,7 +210,8 @@
                                 <span class="optional-tag" data-i18n="requests.optional">(optional)</span>
                             </label>
                             <textarea class="form-textarea" id="purpose-textarea"
-                                placeholder="Describe the purpose of this document request..." data-i18n-placeholder="requestPage.purposePlaceholder" rows="4"></textarea>
+                                placeholder="Describe the purpose of this document request..."
+                                data-i18n-placeholder="requestPage.purposePlaceholder" rows="4"></textarea>
                         </div>
 
                         <!-- Declaration checkbox -->
@@ -207,7 +222,9 @@
                                     <i class="fa-solid fa-check"></i>
                                 </span>
                                 <span class="declaration-text">
-                                    <span data-i18n="requestPage.declaration">I hereby declare that the information provided is accurate and complete. I understand that false declarations may result in legal consequences.</span>
+                                    <span data-i18n="requestPage.declaration">I hereby declare that the information
+                                        provided is accurate and complete. I understand that false declarations may
+                                        result in legal consequences.</span>
                                 </span>
                             </label>
                         </div>
@@ -238,23 +255,27 @@
                         </div>
 
                         <h2 class="confirm-title" data-i18n="requestPage.requestSubmittedTitle">Request Submitted!</h2>
-                        <p class="confirm-sub" data-i18n="requestPage.requestSubmittedText">Your document request has been received and is now being processed.</p>
+                        <p class="confirm-sub" data-i18n="requestPage.requestSubmittedText">Your document request has
+                            been received and is now being processed.</p>
 
                         <div class="confirm-id-badge">
                             <span class="confirm-id-label" data-i18n="requests.requestId">Request ID</span>
                             <span class="confirm-id-value" id="confirm-req-id">–</span>
-                            <button type="button" class="confirm-copy-btn" id="confirm-copy-btn" title="Copy ID" data-i18n-title="requestPage.copyId">
+                            <button type="button" class="confirm-copy-btn" id="confirm-copy-btn" title="Copy ID"
+                                data-i18n-title="requestPage.copyId">
                                 <i class="fa-regular fa-copy"></i>
                             </button>
                         </div>
 
                         <div class="confirm-summary">
                             <div class="confirm-summary-row">
-                                <span class="confirm-summary-key" data-i18n="requestPage.documentType">Document Type</span>
+                                <span class="confirm-summary-key" data-i18n="requestPage.documentType">Document
+                                    Type</span>
                                 <span class="confirm-summary-val" id="confirm-doc-type">–</span>
                             </div>
                             <div class="confirm-summary-row">
-                                <span class="confirm-summary-key" data-i18n="documentsPage.submissionDate">Submission Date</span>
+                                <span class="confirm-summary-key" data-i18n="documentsPage.submissionDate">Submission
+                                    Date</span>
                                 <span class="confirm-summary-val" id="confirm-date">–</span>
                             </div>
                         </div>

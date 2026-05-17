@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Documents - e-Documents</title>
-
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png">
     <link rel="stylesheet" href="../../assets/css/all.min.css" />
     <link rel="stylesheet" href="../../assets/css/documents.css" />
 </head>
@@ -24,11 +24,13 @@
                 <section class="docs-banner">
                     <div class="docs-banner-text">
                         <h2 class="docs-banner-title" data-i18n="documentsPage.title">My Documents</h2>
-                        <p class="docs-banner-sub" data-i18n="documentsPage.subtitle">View and manage all your requested documents</p>
+                        <p class="docs-banner-sub" data-i18n="documentsPage.subtitle">View and manage all your requested
+                            documents</p>
                     </div>
                     <div class="docs-banner-badge" id="docs-total-badge">
                         <i class="fa-regular fa-folder-open"></i>
-                        <span id="docs-total-count">-</span> <span data-i18n="documentsPage.documentsCount">Documents</span>
+                        <span id="docs-total-count">-</span> <span
+                            data-i18n="documentsPage.documentsCount">Documents</span>
                     </div>
                 </section>
 
@@ -81,8 +83,7 @@
                     <div class="search-wrapper">
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
                         <input type="text" id="search-input" class="search-input" placeholder="Search by ID or type..."
-                            data-i18n-placeholder="requests.searchDocuments"
-                            autocomplete="off" />
+                            data-i18n-placeholder="requests.searchDocuments" autocomplete="off" />
                         <button type="button" class="search-clear" id="search-clear" style="display:none;">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
@@ -119,7 +120,8 @@
                     <div class="empty-state" id="empty-no-results" style="display:none;">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <p data-i18n="requests.noResultsFound">No results found</p>
-                        <span data-i18n="documentsPage.noResultsText">Try adjusting your search or filter criteria.</span>
+                        <span data-i18n="documentsPage.noResultsText">Try adjusting your search or filter
+                            criteria.</span>
                     </div>
 
                     <!-- Table -->
@@ -154,7 +156,8 @@
                     <h3 class="modal-title" id="modal-req-id">-</h3>
                     <span class="modal-doc-type" id="modal-doc-badge"></span>
                 </div>
-                <button type="button" class="modal-close" id="modal-close" aria-label="Close" data-i18n-aria-label="common.close">
+                <button type="button" class="modal-close" id="modal-close" aria-label="Close"
+                    data-i18n-aria-label="common.close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -170,7 +173,8 @@
                         </div>
                         <div class="timeline-info">
                             <span class="timeline-label" data-i18n="documentsPage.submitted">Submitted</span>
-                            <span class="timeline-desc" data-i18n="documentsPage.requestReceived">Request received</span>
+                            <span class="timeline-desc" data-i18n="documentsPage.requestReceived">Request
+                                received</span>
                         </div>
                     </div>
                     <div class="timeline-connector" id="tl-conn-1"></div>
@@ -189,8 +193,10 @@
                             <i class="fa-solid fa-flag-checkered"></i>
                         </div>
                         <div class="timeline-info">
-                            <span class="timeline-label" id="tl-step-3-label" data-i18n="documentsPage.completed">Completed</span>
-                            <span class="timeline-desc" id="tl-step-3-desc" data-i18n="documentsPage.awaitingCompletion">Awaiting completion</span>
+                            <span class="timeline-label" id="tl-step-3-label"
+                                data-i18n="documentsPage.completed">Completed</span>
+                            <span class="timeline-desc" id="tl-step-3-desc"
+                                data-i18n="documentsPage.awaitingCompletion">Awaiting completion</span>
                         </div>
                     </div>
                 </div>
