@@ -223,6 +223,9 @@ e-documents-system/
 ├── index.html
 │
 ├── assets/
+│   ├── images/
+|   │   └──  favicon.png
+|   |
 │   ├── css/
 │   │   ├── all.min.css
 │   │   ├── main.css                    # Global design system, CSS variables, RTL overrides
