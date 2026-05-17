@@ -1,7 +1,3 @@
-// notifications.js — Notification System
-// Works in MOCK mode (derives from users.json + localStorage)
-// Ready for Flask backend with zero refactor (just flip USE_MOCK in api.js)
-//
 // Loaded by components.js after sidebar/topbar mount.
 // Exposes: initNotifications()
 

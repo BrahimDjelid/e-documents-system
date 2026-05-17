@@ -1,7 +1,4 @@
-// profile.js — User Profile Page
-// Handles: avatar upload/remove, profile edit/save, password update
-// Uses api.js: apiGetCurrentUser, apiUpdateProfile,
-//              apiUploadAvatar, apiRemoveAvatar, apiChangePassword
+// Uses api.js: apiGetCurrentUser, apiUpdateProfile, apiUploadAvatar, apiRemoveAvatar, apiChangePassword
 
 (() => {
   "use strict";
@@ -508,7 +505,7 @@
     });
   });
 
-  /* Init — ensure the security section starts fully locked */
+  /* Init - ensure the security section starts fully locked */
   lockSecurityFields();
 
   loadUser().then((user) => {

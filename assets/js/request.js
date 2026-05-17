@@ -4,7 +4,7 @@
   /* State */
   let currentStep = 1;
   let selectedDoc = null;
-  let userData = null; // full user object from users.json
+  let userData = null;
   let isSubmitting = false;
 
   /* Doc config */

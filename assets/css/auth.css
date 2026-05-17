@@ -492,13 +492,6 @@
   }
 }
 
-/*
-  Dark Mode Overrides
-  Only override what the CSS variables in .dark (main.css) cannot handle alone.
-  Text colors, borders, backgrounds → already covered by variable overrides.
-  Only structural/component-specific things that truly need a selector live here.
-*/
-
 /* Card surface — uses --surface-1 */
 .dark .auth-card {
   background: var(--surface-1);

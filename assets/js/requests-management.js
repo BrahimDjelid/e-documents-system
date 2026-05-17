@@ -1,10 +1,3 @@
-// requests-management.js - Admin Request Management
-//
-// Loads all requests from users.json, filters by
-// admin service (sessionStorage.service), allows
-// status updates stored in localStorage (mock).
-//
-// When Flask is ready:
 //   GET  /api/requests          -> replace loadRequests()
 //   POST /api/requests/{id}/decision -> replace saveDecision()
 
@@ -332,11 +325,11 @@ function openModal(requestId) {
   // Notes
   modalNotes.value = effectNote;
 
-  // ── Immutability lock ──────────────────────────────────────────────────────
+  // Immutability lock
   const isFinalized =
     effectStatus === "approved" || effectStatus === "rejected";
 
-  // Status selector — for pending requests, force the admin to actively
+  // Status selector - for pending requests, force the admin to actively
   // choose Approved or Rejected. Pre-selecting "pending" would let Save
   // fire with no real decision, which the backend rejects (400).
   if (isFinalized) {
@@ -387,7 +380,7 @@ function openModal(requestId) {
   } else {
     if (finalizedNotice) finalizedNotice.style.display = "none";
   }
-  // ──────────────────────────────────────────────────────────────────────────
+  
 
   backdrop.classList.add("open");
   document.body.style.overflow = "hidden";

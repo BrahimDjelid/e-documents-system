@@ -1,7 +1,4 @@
-// admin-profile.js — Admin Profile Page
-// Handles: avatar upload/remove, account info edit/save, password update
-// Uses api.js: apiGetCurrentUser, apiUpdateAdminProfile,
-//              apiUploadAvatar, apiRemoveAvatar, apiChangePassword
+// Uses api.js: apiGetCurrentUser, apiUpdateAdminProfile, apiUploadAvatar, apiRemoveAvatar, apiChangePassword
 
 (() => {
   "use strict";
