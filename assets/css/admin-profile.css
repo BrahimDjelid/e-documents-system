@@ -802,9 +802,6 @@ html[dir="rtl"] .sec-toggle-pw {
   transform: translateY(0);
 }
 
-html[dir="rtl"] .ap-toast {
-  inset-inline: var(--space-xl) auto;
-}
 
 .ap-toast-icon {
   font-size: 16px;

@@ -883,9 +883,6 @@ html[dir="rtl"] .sec-toggle-pw {
   transform: translateY(0);
 }
 
-html[dir="rtl"] .profile-toast {
-  inset-inline: var(--space-xl) auto;
-}
 
 .profile-toast-icon {
   font-size: 16px;

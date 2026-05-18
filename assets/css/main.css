@@ -318,14 +318,7 @@ html[dir="rtl"] .sec-input {
   text-align: start;
 }
 
-html[dir="rtl"] .profile-toast,
-html[dir="rtl"] .ap-toast,
-html[dir="rtl"] .rm-toast,
-html[dir="rtl"] .toast,
-html[dir="rtl"] .req-toast {
-  right: auto;
-  left: var(--space-xl);
-}
+/* Toast positioning uses inset-inline-end which auto-flips in RTL — no override needed */
 
 html[dir="rtl"] .notif-dropdown {
   right: auto;

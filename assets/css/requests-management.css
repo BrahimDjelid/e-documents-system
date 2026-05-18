@@ -788,10 +788,9 @@ html[dir="rtl"] #modal-email {
 .rm-toast {
   position: fixed;
   bottom: var(--space-xl);
-  inset-inline: var(--space-md);
-  margin-inline: auto;
+  inset-inline-end: var(--space-xl);
   width: max-content;
-  max-width: calc(100vw - (var(--space-md) * 2));
+  max-width: calc(100vw - (var(--space-xl) * 2));
   transform: translateY(20px);
   background: var(--gray-900);
   color: #fff;
@@ -819,9 +818,6 @@ html[dir="rtl"] #modal-email {
   transform: translateY(0);
 }
 
-html[dir="rtl"] .rm-toast {
-  inset-inline: var(--space-md);
-}
 
 .rm-toast-icon {
   font-size: 16px;

@@ -888,7 +888,8 @@
 .req-toast {
     position: fixed;
     bottom: var(--space-xl);
-    inset-inline-end: var(--space-xl);
+    right: var(--space-xl);
+    left: auto;
     max-width: calc(100vw - (var(--space-xl) * 2));
     background: var(--gray-900);
     color: #fff;
@@ -916,7 +917,8 @@
 }
 
 html[dir="rtl"] .req-toast {
-    inset-inline: var(--space-xl) auto;
+    right: auto;
+    left: var(--space-xl);
 }
 
 .req-toast-icon {
