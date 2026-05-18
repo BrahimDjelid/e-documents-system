@@ -1188,3 +1188,150 @@ html[dir="rtl"] .tax-field-value--mono {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 1024px) {
+  .profile-banner {
+    padding: var(--space-lg);
+  }
+
+  .profile-card {
+    padding: var(--space-lg);
+  }
+
+  .avatar-circle {
+    width: 78px;
+    height: 78px;
+  }
+
+  .info-grid,
+  .tax-general-grid {
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-banner {
+    gap: var(--space-md);
+  }
+
+  .profile-banner-title {
+    font-size: 1.16rem;
+  }
+
+  .profile-banner-sub,
+  .card-section-sub {
+    font-size: 0.82rem;
+  }
+
+  .btn-edit-profile {
+    min-height: 40px;
+    font-size: 0.82rem;
+  }
+
+  .profile-card {
+    border-radius: var(--radius-md);
+  }
+
+  .security-card{
+    grid-column: 1 / -1;
+  }
+
+  .card-section-title,
+  .avatar-name {
+    font-size: 0.98rem;
+  }
+
+  .info-grid,
+  .tax-general-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-field--full {
+    grid-column: 1;
+  }
+
+  .info-input,
+  .sec-input {
+    min-height: 40px;
+    font-size: 0.86rem;
+  }
+
+  .summary-item,
+  .activity-item,
+  .tax-card-header {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-banner {
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+
+  .btn-edit-profile {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profile-grid,
+  .profile-col {
+    gap: var(--space-sm);
+  }
+
+  .profile-card {
+    padding: var(--space-md);
+  }
+
+  .avatar-circle {
+    width: 68px;
+    height: 68px;
+  }
+
+  .avatar-upload-btn,
+  .avatar-remove-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+
+  .avatar-verified-badge,
+  .tax-regime-badge {
+    white-space: normal;
+    text-align: center;
+  }
+
+  .info-card-header,
+  .security-header,
+  .tax-card-header,
+  .tax-card-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tax-card-icon,
+  .activity-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .tax-activity-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tax-activity-code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .btn-save-edit,
+  .btn-cancel-edit,
+  .btn-update-pw,
+  .btn-edit-security {
+    width: 100%;
+    justify-content: center;
+    min-height: 40px;
+  }
+}

@@ -853,7 +853,8 @@ html[dir="rtl"] .ap-toast {
     gap: var(--space-lg);
   }
 
-  .avatar-card {
+  .avatar-card,
+  .service-card {
     grid-column: 1 / -1;
   }
 }
@@ -879,5 +880,135 @@ html[dir="rtl"] .ap-toast {
 
   .sec-fields-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .ap-banner {
+    padding: var(--space-lg);
+  }
+
+  .ap-card {
+    padding: var(--space-lg);
+  }
+
+  .avatar-circle {
+    width: 76px;
+    height: 76px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ap-banner-title {
+    font-size: 1.16rem;
+  }
+
+  .ap-banner-sub,
+  .ap-card-sub {
+    font-size: 0.82rem;
+  }
+
+  .btn-edit-profile {
+    min-height: 40px;
+    font-size: 0.82rem;
+  }
+
+  .ap-card {
+    border-radius: var(--radius-md);
+  }
+
+  .ap-card-title,
+  .avatar-name {
+    font-size: 0.98rem;
+  }
+
+  .avatar-badges {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .service-field,
+  .activity-item,
+  .info-field {
+    min-width: 0;
+  }
+
+  .info-input,
+  .sec-input {
+    min-height: 40px;
+    font-size: 0.86rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ap-banner {
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+
+  .btn-edit-profile {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ap-grid,
+  .ap-col,
+  .ap-col--left {
+    gap: var(--space-sm);
+  }
+
+  .ap-card {
+    padding: var(--space-md);
+  }
+
+  .avatar-circle {
+    width: 66px;
+    height: 66px;
+  }
+
+  .avatar-upload-btn,
+  .avatar-remove-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+
+  .role-badge,
+  .service-badge {
+    white-space: normal;
+    text-align: center;
+  }
+
+  .ap-card-header,
+  .service-card-header,
+  .security-header,
+  .security-header-left {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .service-card-icon,
+  .activity-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .service-readonly-note {
+    align-items: flex-start;
+  }
+
+  .btn-save-edit,
+  .btn-cancel-edit,
+  .btn-update-pw,
+  .btn-edit-security {
+    width: 100%;
+    justify-content: center;
+    min-height: 40px;
+  }
+
+  .ap-toast {
+    inset-inline: var(--space-sm);
+    width: auto;
   }
 }

@@ -992,3 +992,186 @@ html[dir="rtl"] .req-toast {
         justify-content: center;
     }
 }
+
+@media (max-width: 1024px) {
+    .step-indicator {
+        padding: var(--space-md) var(--space-lg);
+    }
+
+    .req-card {
+        padding: var(--space-lg);
+    }
+
+    .doc-card {
+        padding: var(--space-md);
+    }
+}
+
+@media (max-width: 768px) {
+    .step-indicator {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-inline: var(--space-sm);
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .step-circle {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+
+    .step-label {
+        font-size: 12px;
+    }
+
+    .step-line {
+        min-width: 42px;
+        margin-inline: var(--space-sm);
+    }
+
+    .req-card-title {
+        font-size: 18px;
+    }
+
+    .req-card-sub,
+    .form-doc-sub,
+    .profile-input,
+    .form-textarea,
+    .form-select {
+        font-size: 13px;
+    }
+
+    .form-doc-header {
+        align-items: flex-start;
+    }
+
+    .form-doc-title {
+        font-size: 16px;
+        overflow-wrap: anywhere;
+    }
+
+    .form-doc-icon,
+    .doc-card-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+
+    .profile-section {
+        padding: var(--space-md);
+    }
+
+    .req-card-footer {
+        padding-top: var(--space-lg);
+        margin-top: var(--space-lg);
+    }
+
+    .confirm-card {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .step-indicator {
+        margin-bottom: var(--space-md);
+    }
+
+    .step-circle {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+
+    .step-line {
+        min-width: 26px;
+        max-width: 48px;
+    }
+
+    .req-card {
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+        border-radius: var(--radius-md);
+    }
+
+    .req-card-header {
+        margin-bottom: var(--space-lg);
+    }
+
+    .req-card-title {
+        font-size: 17px;
+    }
+
+    .doc-card {
+        border-radius: var(--radius-md);
+    }
+
+    .doc-card-name {
+        font-size: 15px;
+    }
+
+    .doc-card-desc,
+    .doc-card-bullets li,
+    .declaration-text {
+        font-size: 12px;
+    }
+
+    .form-doc-header {
+        gap: var(--space-sm);
+        padding-bottom: var(--space-md);
+        margin-bottom: var(--space-md);
+    }
+
+    .form-doc-icon,
+    .doc-card-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+
+    .profile-section {
+        margin-bottom: var(--space-md);
+    }
+
+    .profile-input,
+    .form-select,
+    .form-textarea {
+        padding: 10px var(--space-sm);
+    }
+
+    .form-field-group,
+    .declaration-box {
+        margin-bottom: var(--space-md);
+    }
+
+    .declaration-box {
+        padding: var(--space-md);
+    }
+
+    .confirm-card {
+        padding: var(--space-xl) var(--space-md);
+    }
+
+    .confirm-icon {
+        width: 62px;
+        height: 62px;
+        font-size: 30px;
+    }
+
+    .confirm-title {
+        font-size: 20px;
+    }
+
+    .confirm-id-badge,
+    .confirm-summary-row {
+        align-items: flex-start;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .confirm-id-value,
+    .confirm-summary-val {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+}

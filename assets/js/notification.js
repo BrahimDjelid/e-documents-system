@@ -6,6 +6,8 @@
 (function () {
   //  State
   let _notifications = [];
+  let _requestLookup = new Map();
+  let _requestContextLoaded = false;
   let _dropdownOpen = false;
   let _role = sessionStorage.getItem("role") || "user";
   let _userId = sessionStorage.getItem("userId") || "";
@@ -69,16 +71,50 @@
   }
 
   document.addEventListener("i18n:change", () => {
-    if (_notifications.length) _render();
+    _render();
   });
 
   async function _loadAndRender() {
     try {
       _notifications = await apiGetNotifications();
+      await _loadNotificationRequestContext();
       _render();
     } catch (err) {
       console.warn("[notifications.js] Could not load notifications:", err);
     }
+  }
+
+  async function _loadNotificationRequestContext() {
+    _requestLookup = new Map();
+    _requestContextLoaded = false;
+
+    const requestIds = new Set(
+      _notifications.map((n) => n.requestId).filter(Boolean),
+    );
+    if (!requestIds.size) return;
+
+    try {
+      if (_role === "admin" && typeof apiGetRequests === "function") {
+        const requests = await apiGetRequests();
+        _indexRequests(requests);
+        _requestContextLoaded = true;
+        return;
+      }
+
+      if (typeof apiGetCurrentUser === "function") {
+        const user = await apiGetCurrentUser();
+        _indexRequests(user?.requests || []);
+        _requestContextLoaded = true;
+      }
+    } catch (err) {
+      console.warn("[notifications.js] Could not load notification context:", err);
+    }
+  }
+
+  function _indexRequests(requests) {
+    (Array.isArray(requests) ? requests : []).forEach((req) => {
+      if (req?.requestId) _requestLookup.set(req.requestId, req);
+    });
   }
 
   function _render() {
@@ -86,12 +122,47 @@
     _renderList();
   }
 
+  function _isAdminSession() {
+    return _role === "admin";
+  }
+
+  function _isNotificationVisibleForRole(notif) {
+    if (!notif || notif.deleted) return false;
+
+    const kind = _notificationKind(notif);
+
+    if (_isAdminSession()) {
+      return true;
+    }
+
+    if (kind === "new_request") {
+      return false;
+    }
+
+    const isCitizenStatusUpdate =
+      kind === "request_approved" ||
+      kind === "request_rejected" ||
+      kind === "";
+
+    if (!isCitizenStatusUpdate) return false;
+
+    if (_requestContextLoaded && notif.requestId) {
+      return _requestLookup.has(notif.requestId);
+    }
+
+    return true;
+  }
+
+  function _visibleNotifications() {
+    return _notifications.filter(_isNotificationVisibleForRole);
+  }
+
   function _renderBadge() {
     const badge = dom("notif-badge");
     const pill = dom("notif-unread-pill");
     if (!badge) return;
 
-    const unread = _notifications.filter((n) => !n.read && !n.deleted).length;
+    const unread = _visibleNotifications().filter((n) => !n.read).length;
 
     if (unread > 0) {
       const label = unread > 99 ? "99+" : String(unread);
@@ -112,7 +183,7 @@
     const emptyState = dom("notif-empty-state");
     if (!list) return;
 
-    const visible = _notifications.filter((n) => !n.deleted);
+    const visible = _visibleNotifications();
 
     if (visible.length === 0) {
       if (emptyState) emptyState.style.display = "flex";
@@ -365,12 +436,31 @@
   }
 
   function _normalizeDocumentType(documentType) {
-    return String(documentType || "").replaceAll("Extrait de rôle", "Tax Roll Extract");
+    return String(documentType || "")
+      .replaceAll("Extrait de rÃ´le", "Extrait de rôle")
+      .trim();
+  }
+
+  function _documentTypeLabel(documentType) {
+    const normalized = _normalizeDocumentType(documentType);
+    const labels = {
+      C20: tr("document.c20"),
+      "Certificate C20": tr("document.c20"),
+      "Certificat C20": tr("document.c20"),
+      "شهادة C20": tr("document.c20"),
+      "Extrait de rôle": tr("document.taxRollExtract"),
+      "Extrait de role": tr("document.taxRollExtract"),
+      "Tax Roll Extract": tr("document.taxRollExtract"),
+      "مستخرج الدور الضريبي": tr("document.taxRollExtract"),
+    };
+    return labels[normalized] || normalized;
   }
 
   function _extractDocumentType(message) {
     const text = String(message || "");
-    const userMatch = text.match(/^Your (.+?) request (has been approved|was rejected|status was updated)/i);
+    const userMatch = text.match(
+      /^Your (.+?) request (has been approved|has been rejected|was rejected|status was updated)/i,
+    );
     if (userMatch) return _normalizeDocumentType(userMatch[1]);
     const adminMatch = text.match(/^New (.+?) request from /i);
     if (adminMatch) return _normalizeDocumentType(adminMatch[1]);
@@ -387,24 +477,83 @@
     return match ? match[1] : "";
   }
 
+  function _requestForNotification(notif) {
+    return notif?.requestId ? _requestLookup.get(notif.requestId) : null;
+  }
+
+  function _rawDocumentTypeForNotification(notif) {
+    const req = _requestForNotification(notif);
+    return (
+      notif?.documentType ||
+      notif?.docType ||
+      notif?.document_type ||
+      notif?.params?.documentType ||
+      notif?.data?.documentType ||
+      req?.documentType ||
+      _extractDocumentType(notif?.message)
+    );
+  }
+
+  function _nameForNotification(notif) {
+    const req = _requestForNotification(notif);
+    return (
+      notif?.name ||
+      notif?.applicantName ||
+      notif?.userName ||
+      notif?.params?.name ||
+      notif?.data?.name ||
+      req?._fullName ||
+      _extractName(notif?.message)
+    );
+  }
+
+  function _notificationKind(notif) {
+    const type = String(notif?.type || "").toLowerCase();
+    if (["request_approved", "approved"].includes(type)) return "request_approved";
+    if (["request_rejected", "rejected"].includes(type)) return "request_rejected";
+    if (["new_request", "request_pending", "pending"].includes(type)) return "new_request";
+
+    const message = String(notif?.message || "").toLowerCase();
+    if (message.includes("approved")) return "request_approved";
+    if (message.includes("rejected")) return "request_rejected";
+    if (message.includes("awaiting review") || message.includes("new request")) {
+      return "new_request";
+    }
+
+    return "";
+  }
+
+  function _messageDescriptor(notif) {
+    const kind = _notificationKind(notif);
+    const documentType = _documentTypeLabel(_rawDocumentTypeForNotification(notif));
+    const note = notif?.note || notif?.params?.note || notif?.data?.note || _extractNote(notif?.message);
+    const name = _nameForNotification(notif);
+
+    const descriptors = {
+      request_approved: {
+        key: "notifications.requestApproved",
+        params: { documentType },
+      },
+      request_rejected: {
+        key: note
+          ? "notifications.requestRejectedWithNote"
+          : "notifications.requestRejected",
+        params: { documentType, note },
+      },
+      new_request: {
+        key: "notifications.newRequest",
+        params: { documentType, name },
+      },
+    };
+
+    return descriptors[kind] || null;
+  }
+
   function _messageForNotification(notif) {
-    const documentType = _extractDocumentType(notif.message);
-    if (notif.type === "request_approved" && documentType) {
-      return tr("notifications.requestApproved", { documentType });
-    }
-    if (notif.type === "request_rejected" && documentType) {
-      const note = _extractNote(notif.message);
-      return note
-        ? tr("notifications.requestRejectedWithNote", { documentType, note })
-        : tr("notifications.requestRejected", { documentType });
-    }
-    if (notif.type === "new_request" && documentType) {
-      return tr("notifications.newRequest", {
-        documentType,
-        name: _extractName(notif.message),
-      });
-    }
-    return _normalizeDocumentType(notif.message);
+    const descriptor = _messageDescriptor(notif);
+    if (descriptor) return tr(descriptor.key, descriptor.params);
+
+    return _documentTypeLabel(notif.message);
   }
 
   window.initNotifications = initNotifications;

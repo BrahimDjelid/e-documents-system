@@ -492,6 +492,98 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .auth-page {
+    min-width: 0;
+  }
+
+  .auth-left {
+    padding: var(--space-xl);
+  }
+
+  .auth-card {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-page {
+    min-height: 100svh;
+  }
+
+  .auth-right {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .auth-card {
+    width: min(100%, 420px);
+    padding: var(--space-xl);
+  }
+
+  .card-logo {
+    width: 56px;
+    height: 56px;
+  }
+
+  .auth-card h2 {
+    font-size: 1.35rem;
+  }
+
+  .auth-subtitle {
+    font-size: 0.84rem;
+  }
+
+  .input-wrapper input {
+    min-height: 42px;
+    font-size: 0.9rem;
+  }
+
+  .btn-login {
+    min-height: 42px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-right {
+    padding: var(--space-sm);
+    align-items: stretch;
+  }
+
+  .auth-card {
+    max-width: none;
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+  }
+
+  .card-logo {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .auth-card h2 {
+    font-size: 1.18rem;
+  }
+
+  .auth-form {
+    gap: var(--space-md);
+  }
+
+  .input-wrapper input {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+
+  .field-hint,
+  .form-error,
+  .forgot-link,
+  .auth-footer-note {
+    font-size: 0.72rem;
+  }
+}
+
 /* Card surface — uses --surface-1 */
 .dark .auth-card {
   background: var(--surface-1);
