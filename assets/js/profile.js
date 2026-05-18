@@ -9,6 +9,9 @@
   let originalEmail = "";
   let originalPhone = "";
 
+  // Track avatar changes separately
+  let avatarChanged = false;
+
   /* DOM refs */
   const btnEditProfile = document.getElementById("btn-edit-profile");
   const btnSaveEdit = document.getElementById("btn-save-edit");
@@ -35,17 +38,24 @@
   }
 
   /* Toast */
-  function showToast(msg, isError = false) {
+  function showToast(msg, isError = false, isInfo = false) {
     const toast = document.getElementById("profile-toast");
     const msgEl = document.getElementById("profile-toast-msg");
     const iconEl = document.getElementById("profile-toast-icon");
     msgEl.textContent = msg;
-    iconEl.className = isError
-      ? "fa-solid fa-circle-exclamation profile-toast-icon"
-      : "fa-solid fa-circle-check profile-toast-icon";
-    iconEl.style.color = isError
-      ? "var(--status-rejected)"
-      : "var(--status-approved)";
+
+    if (isInfo) {
+      iconEl.className = "fa-solid fa-circle-info profile-toast-icon";
+      iconEl.style.color = "#3b82f6"; // blue info color
+    } else {
+      iconEl.className = isError
+        ? "fa-solid fa-circle-exclamation profile-toast-icon"
+        : "fa-solid fa-circle-check profile-toast-icon";
+      iconEl.style.color = isError
+        ? "var(--status-rejected)"
+        : "var(--status-approved)";
+    }
+
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 3200);
   }
@@ -81,6 +91,7 @@
     avatarImg.style.display = "block";
     avatarInitials.style.display = "none";
     if (avatarRemoveBtn) avatarRemoveBtn.style.display = "flex";
+    avatarChanged = true; // Track avatar change
   }
 
   function showInitials(initials) {
@@ -89,6 +100,7 @@
     avatarInitials.textContent = initials;
     avatarInitials.style.display = "";
     if (avatarRemoveBtn) avatarRemoveBtn.style.display = "none";
+    avatarChanged = true; // Track avatar change (removal counts as change)
   }
 
   /* Load & render */
@@ -134,6 +146,9 @@
     } else {
       showInitials(initials);
     }
+
+    /* Reset avatar change flag on render (fresh load) */
+    avatarChanged = false;
 
     /* Personal info */
     setField("pf-fullname", fullName);
@@ -313,6 +328,9 @@
     document.getElementById("pf-email").removeAttribute("readonly");
     document.getElementById("pf-phone").removeAttribute("readonly");
     document.getElementById("pf-email").focus();
+
+    // Reset avatar change flag when entering edit mode
+    avatarChanged = false;
   }
 
   function exitEditMode(save) {
@@ -329,6 +347,9 @@
       document.getElementById("pf-email").value = originalEmail || "-";
       document.getElementById("pf-phone").value = originalPhone || "-";
     }
+
+    // Reset avatar change flag on exit
+    avatarChanged = false;
   }
 
   btnCancelEdit.addEventListener("click", () => exitEditMode(false));
@@ -337,23 +358,53 @@
     const email = document.getElementById("pf-email").value.trim();
     const phone = document.getElementById("pf-phone").value.trim();
 
-    if (!email) {
+    // Check if any text fields changed
+    const emailChanged = email !== originalEmail;
+    const phoneChanged = phone !== originalPhone;
+    const textFieldsChanged = emailChanged || phoneChanged;
+
+    // Check if avatar was changed (tracked via avatarChanged flag)
+    const avatarWasChanged = avatarChanged;
+
+    // If nothing changed at all, show "no changes" toast and exit
+    if (!textFieldsChanged && !avatarWasChanged) {
+      showToast(tr("toast.noChanges"), false, true);
+      exitEditMode(false);
+      return;
+    }
+
+    // Only validate email if it was changed
+    if (emailChanged && !email) {
       showToast(tr("toast.emailRequired"), true);
       return;
     }
 
-    try {
-      // apiUpdateProfile(email, phone) — defined in api.js
-      await apiUpdateProfile(email, phone);
+    // Only validate email format if it was changed
+    if (emailChanged && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showToast(tr("toast.validEmailRequired"), true);
+      return;
+    }
 
-      originalEmail = email;
-      originalPhone = phone;
+    // Only call API if text fields changed
+    if (textFieldsChanged) {
+      try {
+        // apiUpdateProfile(email, phone) — defined in api.js
+        await apiUpdateProfile(email, phone);
 
+        originalEmail = email;
+        originalPhone = phone;
+
+        exitEditMode(true);
+        showToast(tr("toast.profileUpdated"));
+      } catch (err) {
+        showToast(tr("toast.saveChangesFailed"), true);
+        console.error("[profile.js] Save error:", err);
+      }
+    } else if (avatarWasChanged) {
+      // Only avatar changed, no API call needed (avatar already uploaded via separate flow)
+      // Just exit edit mode and show success toast
       exitEditMode(true);
       showToast(tr("toast.profileUpdated"));
-    } catch (err) {
-      showToast(tr("toast.saveChangesFailed"), true);
-      console.error("[profile.js] Save error:", err);
     }
   });
 

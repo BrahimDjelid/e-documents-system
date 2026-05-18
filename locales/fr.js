@@ -421,5 +421,6 @@ window.I18N_FR = {
     passwordsDoNotMatch: "Les nouveaux mots de passe ne correspondent pas.",
     passwordUpdateFailed:
       "Impossible de mettre a jour le mot de passe. Veuillez reessayer.",
+    noChanges: "Aucun changement détecté.",
   },
 };

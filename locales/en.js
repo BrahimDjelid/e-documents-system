@@ -406,5 +406,6 @@ window.I18N_EN = {
     newPasswordMinLength: "New password must be at least 8 characters.",
     passwordsDoNotMatch: "New passwords do not match.",
     passwordUpdateFailed: "Could not update password. Please try again.",
+    noChanges: "No changes detected.",
   },
 };

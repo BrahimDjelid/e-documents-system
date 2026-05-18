@@ -10,6 +10,9 @@
   let originalLastName = "";
   let originalEmail = "";
 
+  // Track avatar changes separately
+  let avatarChanged = false;
+
   /* DOM refs */
   const btnEditProfile = document.getElementById("btn-edit-profile");
   const btnSaveEdit = document.getElementById("btn-save-edit");
@@ -38,17 +41,24 @@
   /* Toast */
   let toastTimer = null;
 
-  function showToast(msg, isError = false) {
+  function showToast(msg, isError = false, isInfo = false) {
     const toast = document.getElementById("ap-toast");
     const msgEl = document.getElementById("ap-toast-msg");
     const iconEl = document.getElementById("ap-toast-icon");
     msgEl.textContent = msg;
-    iconEl.className = isError
-      ? "fa-solid fa-circle-exclamation ap-toast-icon"
-      : "fa-solid fa-circle-check ap-toast-icon";
-    iconEl.style.color = isError
-      ? "var(--status-rejected)"
-      : "var(--status-approved)";
+
+    if (isInfo) {
+      iconEl.className = "fa-solid fa-circle-info ap-toast-icon";
+      iconEl.style.color = "#3b82f6"; // blue info color
+    } else {
+      iconEl.className = isError
+        ? "fa-solid fa-circle-exclamation ap-toast-icon"
+        : "fa-solid fa-circle-check ap-toast-icon";
+      iconEl.style.color = isError
+        ? "var(--status-rejected)"
+        : "var(--status-approved)";
+    }
+
     toast.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
@@ -80,6 +90,7 @@
     avatarImg.style.display = "block";
     avatarInitials.style.display = "none";
     if (avatarRemoveBtn) avatarRemoveBtn.style.display = "flex";
+    avatarChanged = true; // Track avatar change
   }
 
   function showInitials(initials) {
@@ -88,6 +99,7 @@
     avatarInitials.textContent = initials;
     avatarInitials.style.display = "";
     if (avatarRemoveBtn) avatarRemoveBtn.style.display = "none";
+    avatarChanged = true; // Track avatar change (removal counts as change)
   }
 
   /* Load & render */
@@ -123,6 +135,9 @@
     } else {
       showInitials(initials);
     }
+
+    /* Reset avatar change flag on render (fresh load) */
+    avatarChanged = false;
 
     /* Service badge in avatar card */
     const badgeIcon =
@@ -164,6 +179,9 @@
 
     document.getElementById("pf-email").removeAttribute("readonly");
     document.getElementById("pf-email").focus();
+
+    // Reset avatar change flag when entering edit mode
+    avatarChanged = false;
   }
 
   function exitEditMode(save) {
@@ -178,6 +196,9 @@
     if (!save) {
       setField("pf-email", originalEmail);
     }
+
+    // Reset avatar change flag on exit
+    avatarChanged = false;
   }
 
   btnCancelEdit.addEventListener("click", () => exitEditMode(false));
@@ -185,34 +206,57 @@
   btnSaveEdit.addEventListener("click", async () => {
     const email = document.getElementById("pf-email").value.trim();
 
-    if (!email) {
+    // Check if any text fields changed
+    const emailChanged = email !== originalEmail;
+    const textFieldsChanged = emailChanged;
+
+    // Check if avatar was changed (tracked via avatarChanged flag)
+    const avatarWasChanged = avatarChanged;
+
+    // If nothing changed at all, show "no changes" toast and exit
+    if (!textFieldsChanged && !avatarWasChanged) {
+      showToast(tr("toast.noChanges"), false, true);
+      exitEditMode(false);
+      return;
+    }
+
+    // Only validate email if it was changed
+    if (emailChanged && !email) {
       showToast(tr("toast.emailRequired"), true);
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (emailChanged && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       showToast(tr("toast.validEmailRequired"), true);
       return;
     }
 
-    try {
-      const result = await apiUpdateAdminProfile({
-        firstName: originalFirstName,
-        lastName: originalLastName,
-        email,
-      });
+    // Only call API if text fields changed
+    if (textFieldsChanged) {
+      try {
+        const result = await apiUpdateAdminProfile({
+          firstName: originalFirstName,
+          lastName: originalLastName,
+          email,
+        });
 
-      originalEmail = email;
+        originalEmail = email;
 
-      if (result?.newToken) {
-        sessionStorage.setItem("token", result.newToken);
-        sessionStorage.setItem("userId", email);
+        if (result?.newToken) {
+          sessionStorage.setItem("token", result.newToken);
+          sessionStorage.setItem("userId", email);
+        }
+
+        exitEditMode(true);
+        showToast(tr("toast.emailUpdated"));
+      } catch (err) {
+        showToast(tr("toast.saveChangesFailed"), true);
+        console.error("[admin-profile.js] Save error:", err);
       }
-
+    } else if (avatarWasChanged) {
+      // Only avatar changed, no API call needed (avatar already uploaded via separate flow)
+      // Just exit edit mode and show success toast
       exitEditMode(true);
       showToast(tr("toast.emailUpdated"));
-    } catch (err) {
-      showToast(tr("toast.saveChangesFailed"), true);
-      console.error("[admin-profile.js] Save error:", err);
     }
   });
 
