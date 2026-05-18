@@ -336,8 +336,7 @@ html[dir="rtl"] .reports-table td {
 
 html[dir="rtl"] .reports-table .req-id,
 html[dir="rtl"] .reports-table .report-nif,
-html[dir="rtl"] .reports-table .report-date,
-html[dir="rtl"] .stat-value {
+html[dir="rtl"] .reports-table .report-date{
   direction: ltr;
   unicode-bidi: isolate;
 }
@@ -348,7 +347,7 @@ html[dir="rtl"] .stat-value {
   }
 
   .reports-filters {
-    grid-template-columns: repeat(2, minmax(150px, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 

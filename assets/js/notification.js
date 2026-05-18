@@ -216,8 +216,9 @@
     item.className = "notif-item" + (notif.read ? "" : " notif-item--unread");
     item.dataset.id = notif.id;
 
-    const iconClass = _iconForType(notif.type);
-    const iconColor = _colorForType(notif.type);
+    const notificationKind = _notificationKind(notif);
+    const iconClass = _iconForType(notificationKind);
+    const iconColor = _colorForType(notificationKind);
     const timeStr = _formatTime(notif.createdAt);
 
     item.innerHTML = `
@@ -388,6 +389,8 @@
       request_approved: "fa-solid fa-circle-check",
       request_rejected: "fa-solid fa-circle-xmark",
       new_request: "fa-regular fa-file-lines",
+      request_pending: "fa-regular fa-clock",
+      pending: "fa-regular fa-clock",
     };
     return map[type] || "fa-regular fa-bell";
   }
@@ -397,6 +400,8 @@
       request_approved: "green",
       request_rejected: "red",
       new_request: "blue",
+      request_pending: "amber",
+      pending: "amber",
     };
     return map[type] || "blue";
   }
