@@ -399,6 +399,8 @@ window.I18N_FR = {
     approvedSaved: "Demande approuvee et utilisateur notifie.",
     rejectedSaved: "Demande rejetee et utilisateur notifie.",
     statusUpdated: "Statut mis a jour",
+    loadDashboardFailed:
+      "Impossible de charger le tableau de bord. Veuillez reessayer.",
     loadRequestsFailed:
       "Impossible de charger les demandes. Veuillez reessayer.",
     emailRequired: "L'adresse email est obligatoire.",

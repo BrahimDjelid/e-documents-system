@@ -380,6 +380,7 @@ window.I18N_AR = {
     approvedSaved: "تمت الموافقة على الطلب وإشعار المستخدم.",
     rejectedSaved: "تم رفض الطلب وإشعار المستخدم.",
     statusUpdated: "تم تحديث الحالة",
+    loadDashboardFailed: "تعذر تحميل بيانات لوحة التحكم. يرجى المحاولة مرة أخرى.",
     loadRequestsFailed: "تعذر تحميل الطلبات. يرجى المحاولة مرة أخرى.",
     emailRequired: "عنوان البريد الإلكتروني مطلوب.",
     profileUpdated: "تم تحديث الملف الشخصي بنجاح!",

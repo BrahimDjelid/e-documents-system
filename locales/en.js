@@ -388,6 +388,7 @@ window.I18N_EN = {
     approvedSaved: "Request approved and user notified.",
     rejectedSaved: "Request rejected and user notified.",
     statusUpdated: "Status updated",
+    loadDashboardFailed: "Could not load dashboard data. Please try again.",
     loadRequestsFailed: "Could not load requests. Please try again.",
     emailRequired: "Email address is required.",
     profileUpdated: "Profile updated successfully!",

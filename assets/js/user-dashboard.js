@@ -67,6 +67,14 @@ function showToast(message, isError = false) {
   toastTimer = setTimeout(() => toast.classList.remove("show"), 3500);
 }
 
+function showErrorToast(message) {
+  if (typeof window.showGlobalErrorToast === "function") {
+    window.showGlobalErrorToast(message);
+  } else {
+    showToast(message, true);
+  }
+}
+
 //  Main
 async function initDashboard() {
   try {
@@ -308,6 +316,7 @@ async function initDashboard() {
     }
   } catch (err) {
     console.error("Dashboard error:", err);
+    showErrorToast(tr("toast.loadDashboardFailed"));
   }
 }
 

@@ -19,6 +19,96 @@ function _authHeaders() {
   };
 }
 
+const _toastTimers = new WeakMap();
+
+function _toastTarget() {
+  const candidates = [
+    {
+      toast: document.getElementById("ap-toast"),
+      msg: document.getElementById("ap-toast-msg"),
+      icon: document.getElementById("ap-toast-icon"),
+      iconClass: "ap-toast-icon",
+      usesErrorClass: false,
+    },
+    {
+      toast: document.getElementById("profile-toast"),
+      msg: document.getElementById("profile-toast-msg"),
+      icon: document.getElementById("profile-toast-icon"),
+      iconClass: "profile-toast-icon",
+      usesErrorClass: false,
+    },
+    {
+      toast: document.getElementById("rm-toast"),
+      msg: document.getElementById("rm-toast-msg"),
+      icon: document.getElementById("rm-toast-icon"),
+      iconClass: "rm-toast-icon",
+      usesErrorClass: false,
+    },
+    {
+      toast: document.getElementById("reports-toast"),
+      msg: document.getElementById("reports-toast-msg"),
+      icon: document.getElementById("reports-toast-icon"),
+      iconClass: "rm-toast-icon",
+      usesErrorClass: false,
+    },
+    {
+      toast: document.getElementById("req-toast"),
+      msg: document.getElementById("req-toast-msg"),
+      icon: document.querySelector("#req-toast .req-toast-icon"),
+      iconClass: "req-toast-icon",
+      usesErrorClass: false,
+    },
+    {
+      toast: document.getElementById("toast"),
+      msg: document.getElementById("toast-msg"),
+      icon: document.querySelector("#toast .toast-icon"),
+      iconClass: "toast-icon",
+      usesErrorClass: true,
+    },
+  ];
+
+  return candidates.find((target) => target.toast && target.msg) || null;
+}
+
+function showGlobalToast(message, isError = false, isInfo = false) {
+  const target = _toastTarget();
+  if (!target) return;
+
+  target.msg.textContent = message;
+
+  if (target.usesErrorClass) {
+    target.toast.classList.toggle("error", Boolean(isError));
+  }
+
+  if (target.icon) {
+    const iconName = isInfo
+      ? "fa-circle-info"
+      : isError
+        ? "fa-circle-exclamation"
+        : "fa-circle-check";
+    target.icon.className = `fa-solid ${iconName} ${target.iconClass}`;
+    target.icon.style.color = isError
+      ? "var(--status-rejected)"
+      : isInfo
+        ? "var(--primary-blue)"
+        : "var(--status-approved)";
+  }
+
+  target.toast.classList.add("show");
+  clearTimeout(_toastTimers.get(target.toast));
+  _toastTimers.set(
+    target.toast,
+    setTimeout(() => target.toast.classList.remove("show"), 3500),
+  );
+}
+
+function showGlobalErrorToast(message) {
+  showGlobalToast(message, true);
+}
+
+window.showGlobalToast = showGlobalToast;
+window.showGlobalErrorToast = showGlobalErrorToast;
+
 // AUTH 
 
 /**

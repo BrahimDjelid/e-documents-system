@@ -87,6 +87,14 @@ function showToast(message, isError = false) {
   toastTimer = setTimeout(() => toast.classList.remove("show"), 3500);
 }
 
+function showErrorToast(message) {
+  if (typeof window.showGlobalErrorToast === "function") {
+    window.showGlobalErrorToast(message);
+  } else {
+    showToast(message, true);
+  }
+}
+
 function setHTML(id, value) {
   const el = document.getElementById(id);
   if (el) el.innerHTML = value;
@@ -431,6 +439,7 @@ async function init() {
     }
   } catch (err) {
     console.error("Documents page error:", err);
+    showErrorToast(tr("toast.loadRequestsFailed"));
   }
 }
 

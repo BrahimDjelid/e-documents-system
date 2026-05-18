@@ -42,6 +42,12 @@ function getDocumentLabel(type) {
   return map[type] || type || "—";
 }
 
+function showErrorToast(message) {
+  if (typeof window.showGlobalErrorToast === "function") {
+    window.showGlobalErrorToast(message);
+  }
+}
+
 //  Compliance — always recomputed
 function computeCompliance(taxRecords) {
   if (!taxRecords || taxRecords.length === 0) return false;
@@ -178,6 +184,7 @@ async function initAdminDashboard() {
     }
   } catch (err) {
     console.error("[admin-dashboard.js] Error:", err);
+    showErrorToast(tr("toast.loadDashboardFailed"));
   }
 }
 

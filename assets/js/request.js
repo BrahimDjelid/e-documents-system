@@ -64,6 +64,14 @@
     setTimeout(() => toast.classList.remove("show"), 3000);
   }
 
+  function showErrorToast(msg) {
+    if (typeof window.showGlobalErrorToast === "function") {
+      window.showGlobalErrorToast(msg);
+    } else {
+      showToast(msg, true);
+    }
+  }
+
   function getDocumentLabel(type) {
     return DOC_LABELS[type] ? tr(DOC_LABELS[type]) : type || "-";
   }
@@ -157,6 +165,7 @@
       return await apiGetCurrentUser();
     } catch (err) {
       console.warn("[request.js] Could not load user:", err);
+      showErrorToast(tr("toast.loadProfileFailed"));
       return null;
     }
   }
