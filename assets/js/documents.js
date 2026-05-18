@@ -176,9 +176,7 @@ function renderTable(requests) {
         await apiDownloadDocument(req.requestId, req.documentType);
       } catch (err) {
         if (err.message === "MOCK") {
-          showToast(
-            tr("requests.backendDownloadPending"),
-          );
+          showToast(tr("requests.backendDownloadPending"));
         } else {
           showToast(tr("toast.downloadFailed"), true);
         }
@@ -322,8 +320,7 @@ modalDownloadBtn.addEventListener("click", async () => {
 
   _downloading = true;
   const originalHTML = modalDownloadBtn.innerHTML;
-  modalDownloadBtn.innerHTML =
-    `<i class="fa-solid fa-spinner fa-spin"></i> ${tr("requests.preparing")}`;
+  modalDownloadBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${tr("requests.preparing")}`;
   modalDownloadBtn.disabled = true;
 
   try {
@@ -376,6 +373,9 @@ async function init() {
     }
 
     allRequests = user.requests || [];
+    allRequests.sort(
+      (a, b) => new Date(b.submittedAt) - new Date(a.submittedAt),
+    );
 
     // Stats
     const total = allRequests.length;
